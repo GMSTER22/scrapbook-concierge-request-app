@@ -1,0 +1,23 @@
+{
+  "name": "scrapbook-concierge-request-app",
+  "version": "1.0.0",
+  "description": "Scrapbook Concierge Application allowing customers to submit their request of kit, vote for kits, and communicate their wants with the company",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel serve src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "author": "Souleymane Gael Nongnogo",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-vue": "^2.7.0",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.2",
+    "firebase": "^9.10.0",
+    "vue": "^3.2.39",
+    "vue-router": "^4.1.5"
+  }
+}
