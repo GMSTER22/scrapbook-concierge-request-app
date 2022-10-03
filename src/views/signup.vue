@@ -1,15 +1,15 @@
 
 <script setup>
 
+  import { signUpWithEmailAndPassword } from '../utils/firebase.js';
+
   import { computed } from '@vue/reactivity';
 
-  import { inject, reactive } from 'vue';
-
-  import { signUpWithEmailAndPassword } from '../utils/firebase.js';
+  import { reactive, inject } from 'vue';
 
   const formInfo = reactive({
 
-    email: 'yaya22@yahoo.fr',
+    email: 'gaeln92@yahoo.fr',
 
     password: '123456',
 
@@ -19,22 +19,15 @@
 
   let tab = inject('tab');
 
-  let changeTag = target => tab.value = target;
+  let changeTab = target => tab.value = target;
 
   let validateForm = () => {
 
-    if ( !formInfo.email || !formInfo.password || !formInfo.passwordRepeat || formInfo.password !== formInfo.passwordRepeat ) {
-
-      console.log('form is not valid');
-
-      return
-
-    }
+    if ( !formInfo.email || !formInfo.password || !formInfo.passwordRepeat || formInfo.password !== formInfo.passwordRepeat ) return
 
     signUpWithEmailAndPassword( formInfo.email, formInfo.password );
 
   };
-
 
 </script>
 
@@ -98,7 +91,7 @@
 
         <hr>
 
-        <button class="login" type="button" @click="changeTag('login')">Login</button>
+        <button class="login" type="button" @click="changeTab('login')">Login</button>
 
       </div>
 

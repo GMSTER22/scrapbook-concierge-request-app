@@ -1,11 +1,31 @@
 
 <script setup>
 
-  import { inject } from 'vue';
+  import { logInWithEmailAndPassword } from '../utils/firebase.js';
+
+  import { reactive, inject } from 'vue';
+
+  const formInfo = reactive({
+
+    email: '',
+
+    password: ''
+
+  } );
 
   let tab = inject('tab');
 
-  let changeTag = target => tab.value = target;
+  let changeTab = target => tab.value = target;
+
+  let validateForm = () => {
+    console.log('start validation')
+    if ( !formInfo.email || !formInfo.password ) return
+
+    logInWithEmailAndPassword( formInfo.email, formInfo.password );
+
+    console.log('end validation')
+
+  };
 
 </script>
 
@@ -24,6 +44,8 @@
           name="email" 
           
           placeholder="Email" 
+
+          v-model="formInfo.email"
           
           required />
 
@@ -38,6 +60,8 @@
           name="password" 
           
           placeholder="Password" 
+
+          v-model="formInfo.password"
           
           required />
 
@@ -45,11 +69,11 @@
 
       <div>
 
-        <button class="login" type="button">Log In</button>
+        <button class="login" type="button" @click="validateForm">Log In</button>
 
         <hr>
 
-        <button class="signup" type="button" @click="changeTag('signup')">Sign Up</button>
+        <button class="signup" type="button" @click="changeTab('signup')">Sign Up</button>
 
       </div>
 

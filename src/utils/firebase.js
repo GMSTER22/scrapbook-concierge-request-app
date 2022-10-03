@@ -3,10 +3,16 @@ import { initializeApp } from 'firebase/app';
 
 import { getAnalytics } from 'firebase/analytics';
 
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  FacebookAuthProvider  
+} from 'firebase/auth';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -33,21 +39,71 @@ const analytics = getAnalytics( app );
 
 const auth = getAuth( app );
 
-export const signUpWithEmailAndPassword = (email, password) => createUserWithEmailAndPassword( auth, email, password )
+let isAuthenticated = false;
+
+export const signUpWithEmailAndPassword = ( email, password ) => createUserWithEmailAndPassword( auth, email, password )
   .then( userCredential => {
+
     console.log(userCredential);
     //Signed in
     const user = userCredential.user;
 
-    console.log(user);
-
   } )
   .catch( error => {
-    console.log('error happened')
 
     console.log(error)
+    console.log(error.code)
+
     const errorCode = error.code;
 
     const errorMessage = error.message;
 
+  } );
+
+export const logInWithEmailAndPassword = ( email, password ) => signInWithEmailAndPassword( auth, email, password )
+  .then( userCredential => {
+
+    console.log(userCredential)
+
+    console.log(userCredential.user)
+
+    const user = userCredential.user;
+
   } )
+  .catch( ( error ) => {
+
+    console.log(error)
+
+    console.log(error.code)
+
+    const errorCode = error.code;
+
+    const errorMessage = error.message;
+    
+  } );
+
+const authenticate = onAuthStateChanged(auth, (user, isAuthenticated) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/firebase.User
+    const uid = user.uid;
+
+    isAuthenticated = true;
+    console.log(uid);
+    console.log(user);
+    // userStatus.isAuthenticated = true;
+    // userStatus.email = user.email;
+    // userStatus.displayName = user.displayName;
+    // console.log({...userStatus})
+    // ...
+  } else {
+    // User is signed out
+    // ...
+    userStatus.isAuthenticated = fasle;
+    console.log('user is signed out');
+
+  }
+});
+// console.log(userStatus.displayName, 'hereeeeee')
+// console.log(userStatus.email, 'hereeeeee')
+// console.log(userStatus.isAuthenticated, 'hereeeeee')
