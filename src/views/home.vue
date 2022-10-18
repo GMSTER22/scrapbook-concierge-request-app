@@ -9,6 +9,10 @@
 
   import signup from './signup.vue';
 
+  import welcome from "./welcome.vue";
+
+  import { isAuthenticated } from "../utils/firebase";
+
   let tab = ref('login');
 
   let currentTab = computed( () => {
@@ -16,6 +20,8 @@
     if ( tab.value === 'login' ) return login;
 
     if ( tab.value === 'signup' ) return signup;
+
+    if ( isAuthenticated.value ) return welcome;
 
   } );
 
@@ -25,7 +31,9 @@
 
 <template>
 
-  <component :is="currentTab"></component>
+  <component v-if="!isAuthenticated" :is="currentTab"></component>
+
+  <welcome />
 
 </template>
 

@@ -3,6 +3,8 @@ import { initializeApp } from 'firebase/app';
 
 import { getAnalytics } from 'firebase/analytics';
 
+import { ref } from 'vue';
+
 import { 
   getAuth, 
   createUserWithEmailAndPassword, 
@@ -18,17 +20,11 @@ import {
 const firebaseConfig = {
 
   apiKey: process.env.VUE_APP_API_KEY,
-
   authDomain: process.env.VUE_APP_AUTH_DOMAIN,
-
   projectId: process.env.VUE_APP_PROJECT_ID,
-
   storageBucket: process.env.VUE_APP_STORAGE_BUCKET,
-
   messagingSenderId: process.env.VUE_APP_MESSAGING_SENDER_ID,
-
   appId: process.env.VUE_APP_APP_ID,
-
   measurementId: process.env.VUE_APP_MEASUREMENT_ID
 
 };
@@ -39,7 +35,7 @@ const analytics = getAnalytics( app );
 
 const auth = getAuth( app );
 
-let isAuthenticated = false;
+export let isAuthenticated = ref(false);
 
 export const signUpWithEmailAndPassword = ( email, password ) => createUserWithEmailAndPassword( auth, email, password )
   .then( userCredential => {
@@ -82,28 +78,27 @@ export const logInWithEmailAndPassword = ( email, password ) => signInWithEmailA
     
   } );
 
-const authenticate = onAuthStateChanged(auth, (user, isAuthenticated) => {
+const authenticate = onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
-
-    isAuthenticated = true;
-    console.log(uid);
+    
     console.log(user);
-    // userStatus.isAuthenticated = true;
-    // userStatus.email = user.email;
-    // userStatus.displayName = user.displayName;
-    // console.log({...userStatus})
+    if ( !isAuthenticated.value ) isAuthenticated.value = true;
+
+    console.log(isAuthenticated.value, "checking authentication IF")
+    // email = user.email;
+    // displayName = user.displayName;
     // ...
   } else {
     // User is signed out
     // ...
-    userStatus.isAuthenticated = fasle;
+    console.log(user)
+    if ( isAuthenticated.value ) isAuthenticated.value = false;
     console.log('user is signed out');
+
+    console.log(isAuthenticated.value, "checking authentication ELSE")
 
   }
 });
-// console.log(userStatus.displayName, 'hereeeeee')
-// console.log(userStatus.email, 'hereeeeee')
-// console.log(userStatus.isAuthenticated, 'hereeeeee')
