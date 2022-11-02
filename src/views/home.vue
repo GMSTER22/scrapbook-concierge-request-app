@@ -9,10 +9,6 @@
 
   import signup from './signup.vue';
 
-  import welcome from "./welcome.vue";
-
-  import { isAuthenticated } from "../utils/firebase";
-
   let tab = ref('login');
 
   let currentTab = computed( () => {
@@ -20,8 +16,6 @@
     if ( tab.value === 'login' ) return login;
 
     if ( tab.value === 'signup' ) return signup;
-
-    if ( isAuthenticated.value ) return welcome;
 
   } );
 
@@ -31,9 +25,7 @@
 
 <template>
 
-  <component v-if="!isAuthenticated" :is="currentTab"></component>
-
-  <welcome />
+  <component :is="currentTab"></component>
 
 </template>
 
@@ -60,6 +52,8 @@
     text-align: center;
 
     border: 1px solid #ccc;
+
+    border-radius: 5px;
 
   }
 
@@ -96,18 +90,6 @@
   button:active {
 
     transform: scale(0.98);
-
-  }
-
-  button.login {
-
-    background: rgb(77, 157, 248);
-
-  }
-
-  button.signup {
-
-    background: rgb(6, 247, 6);
 
   }
 

@@ -1,9 +1,9 @@
 
 <script setup>
 
-  import { signUpWithEmailAndPassword } from '../utils/firebase.js';
+  import { registerWithEmailAndPassword } from '../utils/firebase.js';
 
-  import { computed } from '@vue/reactivity';
+  // import { computed } from '@vue/reactivity';
 
   import { reactive, inject } from 'vue';
 
@@ -25,7 +25,7 @@
 
     if ( !formInfo.email || !formInfo.password || !formInfo.passwordRepeat || formInfo.password !== formInfo.passwordRepeat ) return
 
-    signUpWithEmailAndPassword( formInfo.email, formInfo.password );
+    registerWithEmailAndPassword( formInfo.email, formInfo.password );
 
   };
 
@@ -39,49 +39,19 @@
 
       <div>
       
-        <input 
-        
-          type="email" 
-          
-          name="email" 
-          
-          placeholder="Email"
-
-          v-model="formInfo.email"
-          
-          required/>
+        <input type="email" name="email" placeholder="Email" v-model="formInfo.email" required/>
 
       </div>
 
       <div>
 
-        <input 
-        
-          type="password" 
-          
-          name="password" 
-          
-          placeholder="Password"
-
-          v-model="formInfo.password"
-          
-          required />
+        <input type="password" name="password" placeholder="Password" v-model="formInfo.password" required />
 
       </div>
 
       <div>
 
-        <input 
-        
-          type="password" 
-          
-          name="passwordRepeat" 
-          
-          placeholder="Repeat Password"
-
-          v-model="formInfo.passwordRepeat"
-          
-          required/>
+        <input type="password" name="passwordRepeat" placeholder="Repeat Password" v-model="formInfo.passwordRepeat" required/>
 
       </div>
 
@@ -109,78 +79,20 @@
 
   }
 
-  /* .login-form {
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    width: 100vw;
-
-    height: 100vh;
-
-  }
-
-  .form {
-
-    display: flex;
-
-    flex-direction: column;
-
-    max-width: 500px;
-
-    border: 1px solid #ccc;
-
-  }
-
-  input {
-
-    display: block;
-
-    min-width: 280px;    
-
-    margin: 10px;
-
-    padding: 10px 20px;
-
-  }
-
-  button {
-
-    padding: 10px 20px;
-
-    border: none;
-
-    border-radius: 3px;
-
-    color: white;
-
-  }
-
-  button:hover {
-
-    cursor: pointer;
-
-  }
-
   button.login {
 
-    background: rgb(77, 157, 248);
+    background: #eee;
+
+    color: #000;
 
   }
 
   button.signup {
 
-    background: rgb(6, 247, 6);
+    background: #004ba1;
+
+    color: #fff;
 
   }
-
-  hr {
-
-    margin: 15px;
-
-  } */
 
 </style>

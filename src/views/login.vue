@@ -18,12 +18,10 @@
   let changeTab = target => tab.value = target;
 
   let validateForm = () => {
-    console.log('start validation')
+
     if ( !formInfo.email || !formInfo.password ) return
 
     logInWithEmailAndPassword( formInfo.email, formInfo.password );
-
-    console.log('end validation')
 
   };
 
@@ -37,33 +35,15 @@
       
       <div>
 
-        <input 
-        
-          type="email" 
-          
-          name="email" 
-          
-          placeholder="Email" 
+        <!-- <label for="email">Email Address</label> -->
 
-          v-model="formInfo.email"
-          
-          required />
+        <input id="email" type="email" name="email" placeholder="Email" v-model="formInfo.email" required />
 
       </div>
 
       <div>
 
-        <input 
-        
-          type="password" 
-          
-          name="password" 
-          
-          placeholder="Password" 
-
-          v-model="formInfo.password"
-          
-          required />
+        <input type="password" name="password" placeholder="Password" v-model="formInfo.password" required />
 
       </div>
 
@@ -91,76 +71,18 @@
 
   }
 
-  /* .login-form {
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    width: 100vw;
-
-    height: 100vh;
-
-  }
-
-  .form {
-
-    display: flex;
-
-    flex-direction: column;
-
-    max-width: 500px;
-
-    border: 1px solid #ccc;
-
-  }
-
-  input {
-
-    display: block;
-
-    min-width: 280px;
-
-    padding: 10px 20px;
-
-  }
-
-  button {
-
-    padding: 10px 20px;
-
-    border: none;
-
-    border-radius: 3px;
-
-    color: white;
-
-  }
-
-  button:hover {
-
-    cursor: pointer;
-
-  }
-
   button.login {
 
-    background: rgb(77, 157, 248);
+    background: rgb(0, 75, 161);
 
   }
 
   button.signup {
 
-    background: rgb(6, 247, 6);
+    background: #eee;
+
+    color: #000;
 
   }
-
-  hr {
-
-    margin: 15px;
-
-  } */
-
+  
 </style>

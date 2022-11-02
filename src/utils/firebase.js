@@ -37,7 +37,7 @@ const auth = getAuth( app );
 
 export let isAuthenticated = ref(false);
 
-export const signUpWithEmailAndPassword = ( email, password ) => createUserWithEmailAndPassword( auth, email, password )
+export const registerWithEmailAndPassword = ( email, password ) => createUserWithEmailAndPassword( auth, email, password )
   .then( userCredential => {
 
     console.log(userCredential);
@@ -84,21 +84,15 @@ const authenticate = onAuthStateChanged(auth, (user) => {
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
     
-    console.log(user);
     if ( !isAuthenticated.value ) isAuthenticated.value = true;
 
-    console.log(isAuthenticated.value, "checking authentication IF")
     // email = user.email;
     // displayName = user.displayName;
     // ...
   } else {
     // User is signed out
     // ...
-    console.log(user)
     if ( isAuthenticated.value ) isAuthenticated.value = false;
-    console.log('user is signed out');
-
-    console.log(isAuthenticated.value, "checking authentication ELSE")
 
   }
 });
