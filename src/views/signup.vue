@@ -9,6 +9,8 @@
 
   const formInfo = reactive({
 
+    name: 'Gael',
+
     email: 'gaeln92@yahoo.fr',
 
     password: '123456',
@@ -23,9 +25,9 @@
 
   let validateForm = () => {
 
-    if ( !formInfo.email || !formInfo.password || !formInfo.passwordRepeat || formInfo.password !== formInfo.passwordRepeat ) return
+    if ( !formInfo.name || !formInfo.email || !formInfo.password || !formInfo.passwordRepeat || formInfo.password !== formInfo.passwordRepeat ) return
 
-    registerWithEmailAndPassword( formInfo.email, formInfo.password );
+    registerWithEmailAndPassword( formInfo.email, formInfo.password, formInfo.name );
 
   };
 
@@ -36,6 +38,12 @@
   <div class="login-form">
 
     <div class="form">
+
+      <div>
+      
+        <input type="name" name="name" placeholder="name" v-model="formInfo.name" required/>
+
+      </div>
 
       <div>
       

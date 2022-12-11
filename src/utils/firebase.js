@@ -37,12 +37,16 @@ const auth = getAuth( app );
 
 export let isAuthenticated = ref(false);
 
-export const registerWithEmailAndPassword = ( email, password ) => createUserWithEmailAndPassword( auth, email, password )
+export const registerWithEmailAndPassword = ( email, password, name ) => createUserWithEmailAndPassword( auth, email, password, name )
   .then( userCredential => {
 
     console.log(userCredential);
     //Signed in
     const user = userCredential.user;
+
+    user.displayName = name;
+
+    console.log(user);
 
   } )
   .catch( error => {

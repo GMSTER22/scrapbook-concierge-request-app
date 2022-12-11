@@ -5,6 +5,10 @@
 
   import { reactive, inject } from 'vue';
 
+  import { isAuthenticated } from '../utils/firebase.js';
+  
+  import router from '../router/router';
+
   const formInfo = reactive({
 
     email: '',
@@ -22,6 +26,8 @@
     if ( !formInfo.email || !formInfo.password ) return
 
     logInWithEmailAndPassword( formInfo.email, formInfo.password );
+    console.log(isAuthenticated.value)
+    if ( isAuthenticated.value ) router.push({name: 'welcome'});
 
   };
 
