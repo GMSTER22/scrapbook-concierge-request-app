@@ -10,14 +10,18 @@
   "author": "Souleymane Gael Nongnogo",
   "license": "ISC",
   "devDependencies": {
-    "@parcel/transformer-vue": "^2.7.0",
-    "parcel": "^2.7.0",
-    "process": "^0.11.10"
+    "@parcel/transformer-vue": "latest",
+    "@tailwindcss/forms": "^0.5.5",
+    "parcel": "latest",
+    "postcss": "latest",
+    "process": "latest",
+    "rimraf": "^5.0.1",
+    "tailwindcss": "latest"
   },
   "dependencies": {
-    "dotenv": "^16.0.2",
-    "firebase": "^9.10.0",
-    "vue": "^3.2.39",
-    "vue-router": "^4.1.5"
+    "dotenv": "latest",
+    "firebase": "latest",
+    "vue": "latest",
+    "vue-router": "latest"
   }
 }

@@ -1,18 +1,6 @@
 
-*,
+@tailwind base;
 
-*::after,
+@tailwind components;
 
-*::before {
-
-  margin: 0;
-
-  padding: 0;
-
-}
-
-body {
-
-  font-size: 18px;
-
-}
+@tailwind utilities;
