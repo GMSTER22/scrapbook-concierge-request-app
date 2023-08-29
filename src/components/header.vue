@@ -7,7 +7,7 @@
 
 <template>
 
-  <header class="flex justify-between items-center py-4">
+  <header class="max-w-5xl mx-auto flex justify-between items-center py-4">
 
     <div class="font-bold text-xl">
 
@@ -15,11 +15,11 @@
 
     </div>
 
-    <form action="">
+    <form class="basis-5/12" action="">
 
       <label for="search"></label>
 
-      <input class="border-0 border-b-2 focus:border-b-purple-800 focus:ring-0" type="search" name="search" id="search" placeholder="search request...">
+      <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request...">
 
     </form>
 
