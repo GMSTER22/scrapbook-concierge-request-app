@@ -50,7 +50,7 @@ const routes = [
     name: 'make-request', 
     component: MakeRequest 
 
-  },
+  }
 
 ]
 

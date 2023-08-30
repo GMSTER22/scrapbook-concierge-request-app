@@ -25,9 +25,9 @@
 
     <nav class="flex gap-x-4">
 
-      <router-link to="/requests">requests</router-link>
+      <router-link to="/requests">Requests</router-link>
 
-      <router-link to="/make-request">make request</router-link>
+      <router-link to="/make-request">Make request</router-link>
 
       <!-- <router-link to="/profile">profile</router-link> -->
 

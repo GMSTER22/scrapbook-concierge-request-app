@@ -1,13 +1,34 @@
 
 <script setup>
 
+  import { reactive, ref, computed } from 'vue';
+
   import Header from '../components/header.vue';
 
   import { HeartIcon } from '@heroicons/vue/24/solid';
 
   import { formatDate } from "../utils/utils";
 
-  import requests from '../data/requests.json';
+  import requestsData from '../data/requests.json';
+
+  const requests = reactive( requestsData );
+
+  const sortBy = ref( '' );
+
+  const sortByChanged = computed(() => console.log(sortBy.value, 'sort by value') );
+
+  console.log(requests)
+
+  const onLikedClicked = index => {
+
+    
+    if ( requests[ index ].liked ) requests[ index ].votes -= 1;
+    
+    else requests[ index ].votes += 1;
+    
+    requests[ index ].liked = ! requests[ index ].liked;
+
+  }
 
 </script>
 
@@ -21,9 +42,9 @@
 
       <label for="sort"></label>
 
-      <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort">
+      <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortBy">
 
-        <option value="" disabled selected>Sort by</option>
+        <option value="" disabled>Sort by</option>
 
         <option value="date">Date</option>
 
@@ -35,25 +56,29 @@
 
     <ul class="max-w-2xl mx-auto">
 
-      <li class="flex justify-between items-center py-2" v-for="{ date, name, votes } in requests">
-      
-        <div class="">
+      <li class="w-full flex items-center gap-x-3 py-2 shadow-sm" v-for="({ date, name, votes, liked }, index) in requests" :key="index">
+        
+        <span class="basis-20 text-right text-sm text-neutral-500">{{ formatDate( date ) }}</span>
 
-          <span class="mr-5 text-sm text-neutral-500">{{ formatDate( date ) }}</span>
+        <span class="basis-3/4 font-semibold">{{ name }}</span>
 
-          <span class="font-semibold">{{ name }}</span>
+        <div class="basis-auto flex items-center">
+
+          <button class="mr-1 group hover:pointer" :class="{ 'is-liked': liked }" type="button" @click="()=> onLikedClicked( index )">
+  
+            <HeartIcon class="h-6 w-6 stroke-neutral-500 fill-transparent group-[.is-liked]:fill-red-700 group-[.is-liked]:stroke-transparent transition-colors duration-150" />
+  
+          </button>
+  
+          <span class="text-sm">{{ votes }}</span>
 
         </div>
-
-        <button type="button">
-
-          <HeartIcon class="h-8 w-8 text-red-600" />
-
-        </button>
         
       </li>
 
     </ul>
+
+    <div>{{sortByChanged}}</div>
 
   </main>
 
