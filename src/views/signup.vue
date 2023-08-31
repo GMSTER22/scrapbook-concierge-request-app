@@ -41,9 +41,9 @@
 
           <fieldset class="flex flex-col mb-4">
 
-            <label class="font-medium mb-2" for="firstname">Firstname</label>
+            <label class="font-medium mb-2" for="username">Username</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="text" name="firstname" id="firstname" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="text" name="username" id="username" required>
 
           </fieldset>
 
@@ -54,7 +54,6 @@
             <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" required>
 
           </fieldset>
-
 
           <fieldset class="flex flex-col mb-6">
 

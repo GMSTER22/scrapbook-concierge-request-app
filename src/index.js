@@ -13,8 +13,6 @@ import Signup from './views/signup.vue';
 
 import Requests from './views/requests.vue';
 
-import MakeRequest from './views/make-request.vue';
-
 window.__VUE_OPTIONS_API__ = false;
 window.__VUE_PROD_DEVTOOLS__ = true;
 
@@ -43,12 +41,6 @@ const routes = [
     path: '/requests', 
     name: 'requests', 
     component: Requests
-
-  }, {
-
-    path: '/make-request', 
-    name: 'make-request', 
-    component: MakeRequest 
 
   }
 

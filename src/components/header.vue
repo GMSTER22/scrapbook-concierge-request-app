@@ -15,19 +15,11 @@
 
     </div>
 
-    <form class="basis-5/12" action="">
+    <nav class="flex items-center gap-x-8">
 
-      <label for="search"></label>
+      <router-link to="/requests">My requests</router-link>
 
-      <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request...">
-
-    </form>
-
-    <nav class="flex gap-x-4">
-
-      <router-link to="/requests">Requests</router-link>
-
-      <router-link to="/make-request">Make request</router-link>
+      <button type="button" class="bg-purple-800 text-white px-4 py-1 rounded">Make request</button>
 
       <!-- <router-link to="/profile">profile</router-link> -->
 
