@@ -1,39 +1,19 @@
 
 <script setup>
 
-  import { reactive, ref, computed } from 'vue';
+  import { ref, computed } from 'vue'; 
 
   import Header from '../components/header.vue';
 
   import RequestList from '../components/request-list.vue';
 
-  import MakeRequestModal from '../components/make-request-modal.vue';
-
-  import { HeartIcon } from '@heroicons/vue/24/solid';
-
-  import { formatDate } from "../utils/utils";
-
-  // import requestsData from '../data/requests.json';
-
   import { state, onLikeButtonClicked } from '../store/state';
 
-  // const requests = reactive( requestsData );
+  const myRequestList = computed( () => state.requests.filter( ({ liked }) => !! liked ) );
 
   const sortBy = ref( '' );
 
   const sortByChanged = computed(() => console.log(sortBy.value, 'sort by value') );
-
-  // console.log( state.requests );
-
-  // const onLikeButtonClicked = index => {
-    
-  //   if ( state.requests[ index ].liked ) state.requests[ index ].votes -= 1;
-    
-  //   else state.requests[ index ].votes += 1;
-    
-  //   state.requests[ index ].liked = ! state.requests[ index ].liked;
-
-  // }
 
 </script>
 
@@ -41,7 +21,7 @@
 
   <Header />
 
-  <main class="max-w-5xl mx-auto py-20">
+  <main class="py-14">
 
     <div class="max-w-2xl mx-auto justify-between flex mb-10">
 
@@ -54,30 +34,26 @@
       </form>
 
       <fieldset class="flex flex-col">
-  
-        <label for="sort">
-          
-          <span class="sr-only">Sort By</span>
-        
-        </label>
-  
+
+        <label for="sort"><span class="sr-only">Sort By</span></label>
+
         <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortBy">
-  
+
           <option value="" disabled>Sort by</option>
-  
+
           <option value="date">Date</option>
-  
+
           <option value="released">Released</option>
           
           <option value="most-likes">Most liked</option>
-  
+
         </select>
-  
+
       </fieldset>
 
     </div>
 
-    <RequestList :requests="state.requests" @likeButtonClicked="onLikeButtonClicked" />
+    <RequestList :requests="myRequestList" @likeButtonClicked="onLikeButtonClicked" />
 
   </main>
 

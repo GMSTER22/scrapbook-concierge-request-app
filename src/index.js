@@ -11,7 +11,9 @@ import Signin from './views/signin.vue';
 
 import Signup from './views/signup.vue';
 
-import Requests from './views/requests.vue';
+import MyRequests from './views/my-requests.vue';
+
+import Admin from './views/admin.vue';
 
 window.__VUE_OPTIONS_API__ = false;
 window.__VUE_PROD_DEVTOOLS__ = true;
@@ -20,27 +22,33 @@ const routes = [
 
   {
 
-    path: '/', 
+    path: '/',
     name: 'home',
     component: Home 
 
   }, {
 
-    path: '/signin', 
-    name: 'signin', 
+    path: '/signin',
+    name: 'signin',
     component: Signin 
 
   }, {
 
-    path: '/signup', 
-    name: 'signup', 
+    path: '/signup',
+    name: 'signup',
     component: Signup 
 
   }, {
 
-    path: '/requests', 
-    name: 'requests', 
-    component: Requests
+    path: '/my-requests',
+    name: 'my-requests',
+    component: MyRequests
+
+  }, {
+
+    path: '/admin',
+    name: 'admin',
+    component: Admin
 
   }
 
