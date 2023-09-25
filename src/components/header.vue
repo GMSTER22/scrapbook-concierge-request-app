@@ -11,7 +11,7 @@
 
 <template>
 
-  <header class="bg-neutral-200">
+  <header class="bg-purple-300">
 
     <div class="max-w-5xl mx-auto flex justify-between items-center py-4">
 
@@ -21,7 +21,7 @@
 
       </div>
 
-      <nav class="flex items-center gap-x-8">
+      <nav class="flex items-center text-purple-900 font-semibold gap-x-8">
 
         <router-link to="/my-requests">My requests</router-link>
 
@@ -29,7 +29,7 @@
 
         <div>
 
-          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-purple-300" @click="openRequestModal">Make request</button>
+          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="openRequestModal">Make request</button>
 
           <div aria-hidden="true">
 

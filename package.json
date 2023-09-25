@@ -4,7 +4,7 @@
   "description": "Scrapbook Concierge Application allowing customers to submit their request of kit, vote for kits, and communicate their wants with the company",
   "main": "index.js",
   "scripts": {
-    "start": "rimraf dist .parcel-cache && parcel serve src/index.html",
+    "start": "rimraf dist .parcel-cache & parcel serve src/index.html",
     "build": "rimraf dist .parcel-cache && parcel build src/index.html"
   },
   "author": "Souleymane Gael Nongnogo",

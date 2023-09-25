@@ -7,6 +7,10 @@
 
   import RequestList from '../components/request-list.vue';
 
+  import { HeartIcon, PencilIcon, PaperAirplaneIcon, TrashIcon } from '@heroicons/vue/24/solid';
+
+  import { formatDate } from '../utils/utils';
+
   import { state, onLikeButtonClicked } from '../store/state';
 
   const myRequestList = computed( () => state.requests.filter( ({ liked }) => !! liked ) );
@@ -21,7 +25,7 @@
 
   <Header />
 
-  <main class="py-14">
+  <main class="py-14 px-5 lg:px-0">
 
     <div class="max-w-2xl mx-auto justify-between flex mb-10">
 
@@ -53,7 +57,49 @@
 
     </div>
 
-    <RequestList :requests="myRequestList" @likeButtonClicked="onLikeButtonClicked" />
+    <!-- <RequestList :requests="myRequestList" @likeButtonClicked="onLikeButtonClicked" /> -->
+
+    <ul class="max-w-3xl mx-auto">
+
+      <li class="grid gap-x-3 mb-3 px-2 py-2 rounded bg-neutral-200 sm:grid-cols-[64px_1fr_auto_auto] sm:items-center sm:bg-transparent sm:odd:bg-purple-100" v-for="({ id, date, name, votes, liked }, index) in myRequestList" :key="id">
+        
+        <span class="text-left sm:text-right text-xs text-neutral-600">
+          
+          {{ formatDate( date ) }}
+        
+        </span>
+
+        <span class="px-5 mb-3 text-lg font-semibold text-center sm:pr-20 sm:pl-0 sm:mb-0 sm:text-base sm:text-left">
+
+          {{ name }}
+
+        </span>
+
+        <div class="flex gap-x-1 items-center justify-self-end">
+
+          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => onLikeButtonClicked( id )">
+
+            <PencilIcon class="h-4 w-4 fill-black" />
+
+          </button>
+
+          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => onLikeButtonClicked( id )">
+
+            <TrashIcon class="h-4 w-4 fill-black" />
+
+          </button>
+
+          <button class="mr-1 group hover:pointer" :class="{ 'is-liked': liked }" type="button" @click="() => onLikeButtonClicked( id )">
+
+            <HeartIcon class="h-6 w-6 stroke-neutral-500 fill-black group-[.is-liked]:fill-red-500 group-[.is-liked]:stroke-transparent transition-colors duration-150" />
+
+          </button>
+
+        </div>
+
+      </li>
+
+    </ul>
 
   </main>
 
