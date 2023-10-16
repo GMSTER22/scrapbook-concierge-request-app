@@ -7,7 +7,9 @@ export const state = reactive( {
 
   requests,
 
-  open: false
+  isModalOpen: false,
+
+  requestToUpdateID: null
 
 } );
 
@@ -20,5 +22,17 @@ export const onLikeButtonClicked = id => {
   else request.votes += 1;
 
   request.liked = ! request.liked;
+
+}
+
+export const openModal = () => {
+
+  if ( ! state.isModalOpen ) state.isModalOpen = true;
+
+}
+
+export const closeModal = () => {
+
+  if ( state.isModalOpen ) state.isModalOpen = false;
 
 }

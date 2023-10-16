@@ -5,8 +5,6 @@
 
   import Header from '../components/header.vue';
 
-  import RequestList from '../components/request-list.vue';
-
   import { HeartIcon, PencilIcon, PaperAirplaneIcon, TrashIcon } from '@heroicons/vue/24/solid';
 
   import { formatDate } from '../utils/utils';
@@ -27,7 +25,7 @@
 
   <main class="py-14 px-5 lg:px-0">
 
-    <div class="max-w-2xl mx-auto justify-between flex mb-10">
+    <div class="flex justify-between max-w-2xl mx-auto mb-20">
 
       <form class="w-1/2" action="">
 
@@ -61,7 +59,7 @@
 
     <ul class="max-w-3xl mx-auto">
 
-      <li class="grid gap-x-3 mb-3 px-2 py-2 rounded bg-neutral-200 sm:grid-cols-[64px_1fr_auto_auto] sm:items-center sm:bg-transparent sm:odd:bg-purple-100" v-for="({ id, date, name, votes, liked }, index) in myRequestList" :key="id">
+      <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto_auto] sm:items-center sm:bg-transparent sm:odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ id, date, name, votes, liked }, index) in myRequestList" :key="id">
         
         <span class="text-left sm:text-right text-xs text-neutral-600">
           
@@ -69,7 +67,7 @@
         
         </span>
 
-        <span class="px-5 mb-3 text-lg font-semibold text-center sm:pr-20 sm:pl-0 sm:mb-0 sm:text-base sm:text-left">
+        <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
 
           {{ name }}
 

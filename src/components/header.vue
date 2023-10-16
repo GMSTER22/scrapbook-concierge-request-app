@@ -1,11 +1,9 @@
 
 <script setup>
 
-  import MakeRequestModal from './make-request-modal.vue';
+  import Modal from './modal.vue';
 
-  import { state } from '../store/state';
-
-  const openRequestModal = () => state.open = true;
+  import { state, openModal } from '../store/state';
 
 </script>
 
@@ -29,11 +27,11 @@
 
         <div>
 
-          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="openRequestModal">Make request</button>
+          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="openModal">Make request</button>
 
-          <div aria-hidden="true">
+          <div :aria-hidden="! state.open">
 
-            <MakeRequestModal />
+            <Modal />
 
           </div>
 

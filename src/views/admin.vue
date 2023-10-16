@@ -19,9 +19,9 @@
 
   <Header />
 
-  <main class="py-20">
+  <main class="py-14 px-5 lg:px-0">
 
-    <div class="max-w-3xl mx-auto justify-between flex mb-20">
+    <div class="flex justify-between max-w-3xl mx-auto mb-20">
 
       <form class="w-1/2" action="">
 
@@ -53,23 +53,31 @@
 
     <ul class="max-w-4xl mx-auto">
 
-      <li class="w-full flex justify-between items-center py-2 shadow-sm odd:bg-purple-100" v-for="({ date, name, votes, liked }, index) in state.requests" :key="index">
+      <li class="grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ date, name, votes, liked }, index) in state.requests" :key="index">
         
-        <div class="basis-96 flex items-center gap-x-3">
+        <!-- <div class="flex items-center gap-x-3"> -->
 
-          <span class="basis-16 shrink-0 text-right text-xs text-neutral-600">{{ formatDate( date ) }}</span>
+          <span class="text-left text-xs text-neutral-600 sm:text-right">
+            
+            {{ formatDate( date ) }}
+          
+          </span>
 
-          <span class="basis-auto font-semibold">{{ name }}</span>
+          <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
+            
+            {{ name }}
+          
+          </span>
 
-        </div>
+        <!-- </div> -->
 
-        <div class="basis-14 text-right">
+        <div class="text-right">
 
           <span class="text-sm">{{ votes }}</span>
 
         </div>
 
-        <div class="basis-auto flex gap-x-2">
+        <div class="flex gap-x-2 justify-self-end">
           
           <!-- <button class="text-xs px-4 py-1 rounded font-bold text-green-900 bg-green-300" type="button">Release</button>
           
