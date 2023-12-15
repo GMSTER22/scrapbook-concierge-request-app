@@ -3,7 +3,7 @@
 
   import { ref } from 'vue';
 
-  import { state } from '../store/state'; 
+  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onSendButtonClicked } from '../store/state'; 
 
   import Header from '../components/header.vue';
 
@@ -53,7 +53,7 @@
 
     <ul class="max-w-4xl mx-auto">
 
-      <li class="grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ date, name, votes, liked }, index) in state.requests" :key="index">
+      <li class="grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ id, date, name, votes, liked }, index) in state.requests" :key="index">
         
         <!-- <div class="flex items-center gap-x-3"> -->
 
@@ -83,13 +83,13 @@
           
           <button class="text-xs px-4 py-1 rounded font-bold text-red-900 bg-red-300" type="button">Delete</button> -->
 
-          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => emitLikeButtonClicked( id )">
+          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => onUpdateButtonClicked( id )">
 
             <PencilIcon class="h-4 w-4 fill-black" />
 
           </button>
 
-          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => emitLikeButtonClicked( id )">
+          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => onDeleteButtonClicked( id )">
 
             <TrashIcon class="h-4 w-4 fill-black" />
 
@@ -101,7 +101,7 @@
 
           </button> -->
 
-          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-green-700 rounded" type="button" @click="() => emitLikeButtonClicked( id )">
+          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-green-700 rounded" type="button" @click="() => onSendButtonClicked( id )">
 
             <PaperAirplaneIcon class="h-4 w-4 fill-green-700" />
 

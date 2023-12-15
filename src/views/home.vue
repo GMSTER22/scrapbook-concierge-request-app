@@ -1,13 +1,13 @@
 
 <script setup>
 
-  import { reactive, ref, computed } from 'vue';
+  import { ref, computed } from 'vue';
 
   import Header from '../components/header.vue';
 
-  import RequestList from '../components/request-list.vue';
-
   import Modal from '../components/modal.vue';
+
+  import LikeButton from '../components/buttons/likeButton.vue';
 
   import { HeartIcon } from '@heroicons/vue/24/solid';
 
@@ -19,43 +19,45 @@
 
   const sortByChanged = computed(() => console.log(sortBy.value, 'sort by value') );
 
-  function onButtonClicked( id ) {
+  // function onButtonClicked( id ) {
 
-    onLikeButtonClicked( id );
+  //   onLikeButtonClicked( id );
+    
+  //   return;
 
-    const options = {
+  //   const options = {
 
-      method: 'post',
+  //     method: 'post',
 
-      body: JSON.stringify({
+  //     body: JSON.stringify({
 
-        user_id: '6355314dfs4564',
+  //       user_id: '6355314dfs4564',
 
-        request_id: '896784dfsfa5545'
+  //       request_id: '896784dfsfa5545'
 
-      }),
+  //     }),
 
-      headers: {
+  //     headers: {
 
-        'Content-Type': 'application/json',
+  //       'Content-Type': 'application/json',
 
-        // 'Host': 'http://127.0.0.1:3000'
+  //       // 'Host': 'http://127.0.0.1:3000'
 
-      },
+  //     },
 
-      credentials: 'include'
+  //     credentials: 'include'
 
-    }
+  //   }
 
-    fetch( 'http://localhost:3000/request', options )
+  //   fetch( 'http://localhost:3000/request', options )
 
-      .then( res => res.json() )
+  //     .then( res => res.json() )
 
-      .then( data => console.log( data ) )
+  //     .then( data => console.log( data ) )
 
-      .catch( error => alert( error.message ) )
+  //     .catch( error => alert( error.message ) )
 
-  }
+  // }
 
 </script>
 
@@ -101,7 +103,7 @@
 
     <ul class="max-w-3xl mx-auto">
 
-      <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto_auto] sm:items-center sm:bg-transparent sm:odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ id, date, name, votes, liked }, index) in state.requests" :key="id">
+      <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent sm:odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ id, date, name, votes, liked }, index) in state.requests" :key="id">
         
         <span class="text-left sm:text-right text-xs text-neutral-600">
           
@@ -123,11 +125,13 @@
 
           </span>
 
-          <button class="mr-1 group hover:pointer" :class="{ 'is-liked': liked }" type="button" @click="() => onButtonClicked( id )">
+          <!-- <button class="mr-1 group hover:pointer" :class="{ 'is-liked': liked }" type="button" @click="() => onButtonClicked( id )">
 
             <HeartIcon class="h-6 w-6 stroke-neutral-500 fill-black group-[.is-liked]:fill-red-500 group-[.is-liked]:stroke-transparent transition-colors duration-150" />
 
-          </button>
+          </button> -->
+
+          <LikeButton :id="id" :is-liked="liked" @like-button-clicked="( n )=> onLikeButtonClicked( id )" />
 
         </div>
 

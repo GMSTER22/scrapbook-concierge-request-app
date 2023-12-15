@@ -5,11 +5,17 @@
 
   import Header from '../components/header.vue';
 
+  import LikeButton from '../components/buttons/likeButton.vue';
+
+  import UpdateButton from '../components/buttons/updateButton.vue';
+  
+  import DeleteButton from '../components/buttons/deleteButton.vue';
+
   import { HeartIcon, PencilIcon, PaperAirplaneIcon, TrashIcon } from '@heroicons/vue/24/solid';
 
   import { formatDate } from '../utils/utils';
 
-  import { state, onLikeButtonClicked } from '../store/state';
+  import { state, onLikeButtonClicked, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
 
   const myRequestList = computed( () => state.requests.filter( ({ liked }) => !! liked ) );
 
@@ -75,24 +81,12 @@
 
         <div class="flex gap-x-1 items-center justify-self-end">
 
-          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => onLikeButtonClicked( id )">
+          <DeleteButton :id="id" @update-button-clicked="( id )=> onDeleteButtonClicked( id )" />
 
-            <PencilIcon class="h-4 w-4 fill-black" />
+          <UpdateButton :id="id" @update-button-clicked="( id )=> onUpdateButtonClicked( id )" />
 
-          </button>
-
-          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => onLikeButtonClicked( id )">
-
-            <TrashIcon class="h-4 w-4 fill-black" />
-
-          </button>
-
-          <button class="mr-1 group hover:pointer" :class="{ 'is-liked': liked }" type="button" @click="() => onLikeButtonClicked( id )">
-
-            <HeartIcon class="h-6 w-6 stroke-neutral-500 fill-black group-[.is-liked]:fill-red-500 group-[.is-liked]:stroke-transparent transition-colors duration-150" />
-
-          </button>
-
+          <LikeButton :id="id" :is-liked="liked" @like-button-clicked="( id )=> onLikeButtonClicked( id )" />
+            
         </div>
 
       </li>

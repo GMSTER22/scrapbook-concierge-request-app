@@ -3,7 +3,32 @@
 
   import { useRouter } from 'vue-router';
 
+  import { computed, ref } from 'vue';
+
   const router = useRouter();
+
+  const email = ref( '' );
+  
+  const password = ref( '' );
+
+  const passwordCompute = computed( () => {
+
+    console.log(password, 'Check password');
+
+    return password;
+
+  } );
+
+  const emailCompute = computed( () => {
+
+    console.log(email, 'Check email');
+
+    return email;
+
+  } );
+
+  // 'Johndoe@22'
+  // 'johndoe@gmail.com'
 
   const submitForm = e => {
 
@@ -11,9 +36,9 @@
 
     const data = JSON.stringify( {
 
-      password: 'Johndoe@22',
-
-      email: 'johndoe@gmail.com'
+      'email' : email.value,
+      
+      'password': password.value
 
     } );
 
@@ -31,7 +56,7 @@
 
         'Accept': 'application/json',
 
-        'Cache': 'no-cache'
+        // 'Cache': 'no-cache'
 
         // 'Access-Control-Allow-Origin': 'http://localhost:3000'
         
@@ -45,15 +70,18 @@
 
       .then( res => {
 
+        console.log( 'response ===>', res );
+
         if ( res.ok ) router.push( { name: 'home'} );
+        // if ( res.ok ) return res.json();
 
       } )
 
-      .then( data => console.log( data ) )
+      // .then( data => console.log( data ) )
 
       .catch( error => alert( error.message ) )
 
-    }
+  }
 
 </script>
 
@@ -71,6 +99,8 @@
 
         <button type="button" class="border border-neutral-300 px-4 py-2 rounded">Login with Facebook</button>
 
+        <button type="button" class="border border-neutral-300 px-4 py-2 rounded">{{ passwordCompute }} {{ emailCompute }}</button>
+
       </div>
 
       <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-x-2 my-5">
@@ -85,12 +115,13 @@
 
       <div>
 
-        <form class="mb-4" action="" method="post">
+        <form class="mb-4">
 
           <fieldset class="flex flex-col mb-4">
 
             <label class="font-medium mb-2" for="email">Email</label>
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email">
+
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email">
 
           </fieldset>
 
@@ -98,7 +129,8 @@
           <fieldset class="flex flex-col mb-6">
 
             <label class="font-medium mb-2" for="password">Password</label>
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password">
+
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password">
 
           </fieldset>
 

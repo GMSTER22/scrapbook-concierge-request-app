@@ -3,7 +3,15 @@
 
   import { useRouter } from 'vue-router';
 
+  import { computed, ref } from 'vue';
+
   const router = useRouter();
+
+  const username = ref( 'Jane' );
+  
+  const email = ref( 'janedoe@gmail.com' );
+  
+  const password = ref( 'Janedoe@22' );
 
   const submitForm = e => {
 
@@ -11,17 +19,19 @@
 
     const data = JSON.stringify( {
 
-      username: 'John',
+      username: username.value,
 
-      password: 'Johndoe@22',
-
-      email: 'johndoe@gmail.com'
+      email: email.value,
+      
+      password: password.value
 
     } );
 
+    console.log( data );
+
     const options = {
 
-      method: 'post',
+      method: 'POST',
 
       body: data,
 
@@ -29,11 +39,15 @@
 
         'Content-Type': 'application/json',
 
+        // 'Access-Control-Allow-Origin': 'http://localhost:3000',
+
         // 'Host': 'http://127.0.0.1:3000'
 
       } 
 
     }
+
+    // fetch( 'http://localhost:3000/requests' )
 
     fetch( 'http://localhost:3000/signup/password', options )
 
@@ -85,7 +99,7 @@
 
             <label class="font-medium mb-2" for="username">Username</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="text" name="username" id="username" value="John" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="text" name="username" id="username" v-model="username" required>
 
           </fieldset>
 
@@ -93,7 +107,7 @@
 
             <label class="font-medium mb-2" for="email">Email</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" value="johndoe@gmail.com" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" required>
 
           </fieldset>
 
@@ -101,7 +115,7 @@
 
             <label class="font-medium mb-2" for="password">Password</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" value="Johndoe@22" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" required>
 
           </fieldset>
 

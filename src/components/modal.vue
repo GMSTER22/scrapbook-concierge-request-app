@@ -1,23 +1,23 @@
 
 <script setup>
 
-  // import { ref, computed } from 'vue';
+  import { onBeforeMount, onBeforeUnmount, onMounted, onUnmounted } from 'vue';
 
-  // import { XMarkIcon } from '@heroicons/vue/24/solid';
+  import { state, closeModal, currentModalComponent, setCurrentModalComponent, MODAL_COMPONENTS } from '../store/state';
 
-  import MakeRequest from './make-request.vue';
-
-  import UpdateRequest from './udpate-request.vue';
-
-  import DeleteRequest from './delete-request.vue';
-
-  import { state, openModal, closeModal } from '../store/state';
+  // console.log(currentModalComponent.component);
 
   const onModalBackgroundClicked = e => {
 
     if ( event.target.id === 'backdrop' ) closeModal();
 
   };
+
+  // onBeforeMount(() => {
+
+  //   console.log( currentModalComponent )
+
+  // });
 
 </script>
 
@@ -27,7 +27,7 @@
 
     <div 
 
-      id="backdrop" 
+      id="backdrop"
       
       class="fixed top-0 left-0 z-10 w-full h-full flex justify-center items-center bg-gradient-to-br from-[#000000b2] to-[#000000b2]" 
       
@@ -35,7 +35,7 @@
       
     >
     
-      <component :is="MakeRequest"></component>
+      <component :is="currentModalComponent.component"></component>
 
     </div>
 

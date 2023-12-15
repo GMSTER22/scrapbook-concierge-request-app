@@ -5,21 +5,9 @@
 
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
-  import { state, closeModal } from '../store/state';
-  
-  const requestValue = ref( null );
+  import { state, currentModalComponent, closeModal } from '../store/state';
 
-  const numberOfCharactersLeft = computed( () => {
-
-    return requestValue.value ? 
-    
-      100 - requestValue.value.length
-
-      :
-
-      100
-
-  } );
+  const request = state.requests.find( request => request.id === currentModalComponent.id );
 
 </script>
 
@@ -35,7 +23,7 @@
 
     <fieldset class="mb-3">
 
-      <legend class="mb-4 text-xl text-center font-bold">Make Request</legend>
+      <legend class="mb-4 text-xl text-center font-bold">Notify Requesters</legend>
 
       <div class="w-full">
 
@@ -56,7 +44,7 @@
 
     <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button">
 
-      Submit Request
+      Confirm
 
     </button>
 
