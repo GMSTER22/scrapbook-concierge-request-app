@@ -5,6 +5,8 @@
 
   import { computed, ref } from 'vue';
 
+  import { state } from '../store/state';
+
   const router = useRouter();
 
   const email = ref( '' );
@@ -72,12 +74,18 @@
 
         console.log( 'response ===>', res );
 
-        if ( res.ok ) router.push( { name: 'home'} );
+        if ( res.ok ) return res.json();
         // if ( res.ok ) return res.json();
 
       } )
 
-      // .then( data => console.log( data ) )
+      .then( data => {
+
+        state.user = data.user;
+
+        router.push( { name: 'home'} );
+
+      } )
 
       .catch( error => alert( error.message ) )
 

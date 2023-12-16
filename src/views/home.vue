@@ -125,13 +125,7 @@
 
           </span>
 
-          <!-- <button class="mr-1 group hover:pointer" :class="{ 'is-liked': liked }" type="button" @click="() => onButtonClicked( id )">
-
-            <HeartIcon class="h-6 w-6 stroke-neutral-500 fill-black group-[.is-liked]:fill-red-500 group-[.is-liked]:stroke-transparent transition-colors duration-150" />
-
-          </button> -->
-
-          <LikeButton :id="id" :is-liked="liked" @like-button-clicked="( n )=> onLikeButtonClicked( id )" />
+          <LikeButton :id="id" :is-liked="liked" @like-button-clicked="() => onLikeButtonClicked( id )" />
 
         </div>
 

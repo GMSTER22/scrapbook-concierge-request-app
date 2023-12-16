@@ -4,8 +4,6 @@
   import { HeartIcon } from '@heroicons/vue/24/solid';
 
   const props = defineProps( {
-
-    id: Number,
     
     isLiked: Boolean
   
@@ -13,7 +11,7 @@
 
   const emits = defineEmits( [ 'likeButtonClicked' ] );
 
-  const emitLikeButtonClicked = () => emits( 'likeButtonClicked', props.id );
+  const emitLikeButtonClicked = () => emits( 'likeButtonClicked' );
 
 </script>
 

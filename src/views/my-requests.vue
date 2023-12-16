@@ -11,8 +11,6 @@
   
   import DeleteButton from '../components/buttons/deleteButton.vue';
 
-  import { HeartIcon, PencilIcon, PaperAirplaneIcon, TrashIcon } from '@heroicons/vue/24/solid';
-
   import { formatDate } from '../utils/utils';
 
   import { state, onLikeButtonClicked, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
@@ -81,12 +79,12 @@
 
         <div class="flex gap-x-1 items-center justify-self-end">
 
-          <DeleteButton :id="id" @update-button-clicked="( id )=> onDeleteButtonClicked( id )" />
-
-          <UpdateButton :id="id" @update-button-clicked="( id )=> onUpdateButtonClicked( id )" />
-
-          <LikeButton :id="id" :is-liked="liked" @like-button-clicked="( id )=> onLikeButtonClicked( id )" />
+          <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
             
+          <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
+
+          <LikeButton :is-liked="liked" @like-button-clicked="()=> onLikeButtonClicked( id )" />
+
         </div>
 
       </li>

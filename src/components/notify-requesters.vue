@@ -9,6 +9,8 @@
 
   const request = state.requests.find( request => request.id === currentModalComponent.id );
 
+  const requestValue = ref( request.name );
+
 </script>
 
 <template>
@@ -34,11 +36,11 @@
 
       </div>
 
-      <p class="text-xs text-right">
+      <!-- <p class="text-xs text-right">
 
         {{ numberOfCharactersLeft }} characters left.
 
-      </p>
+      </p> -->
 
     </fieldset>
 

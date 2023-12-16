@@ -3,13 +3,17 @@
 
   import { ref } from 'vue';
 
-  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onSendButtonClicked } from '../store/state'; 
-
   import Header from '../components/header.vue';
 
-  import { formatDate } from '../utils/utils';
+  import UpdateButton from '../components/buttons/updateButton.vue';
+  
+  import DeleteButton from '../components/buttons/deleteButton.vue';
 
-  import { HeartIcon, PencilIcon, PaperAirplaneIcon, TrashIcon } from '@heroicons/vue/24/solid';
+  import NotifyButton from '../components/buttons/notifyButton.vue';
+  
+  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onNotifyButtonClicked } from '../store/state'; 
+
+  import { formatDate } from '../utils/utils';
 
   const sortBy = ref( '' );
 
@@ -78,34 +82,12 @@
         </div>
 
         <div class="flex gap-x-2 justify-self-end">
-          
-          <!-- <button class="text-xs px-4 py-1 rounded font-bold text-green-900 bg-green-300" type="button">Release</button>
-          
-          <button class="text-xs px-4 py-1 rounded font-bold text-red-900 bg-red-300" type="button">Delete</button> -->
 
-          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => onUpdateButtonClicked( id )">
+          <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
 
-            <PencilIcon class="h-4 w-4 fill-black" />
+          <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
 
-          </button>
-
-          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="() => onDeleteButtonClicked( id )">
-
-            <TrashIcon class="h-4 w-4 fill-black" />
-
-          </button>
-
-          <!-- <button class="mr-1 group hover:pointer" :class="{ 'is-liked': liked }" type="button" @click="() => emitLikeButtonClicked( id )">
-
-            <HeartIcon class="h-6 w-6 stroke-neutral-500 fill-black group-[.is-liked]:fill-red-500 group-[.is-liked]:stroke-transparent transition-colors duration-150" />
-
-          </button> -->
-
-          <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-green-700 rounded" type="button" @click="() => onSendButtonClicked( id )">
-
-            <PaperAirplaneIcon class="h-4 w-4 fill-green-700" />
-
-          </button>
+          <NotifyButton @notify-button-clicked="()=> onNotifyButtonClicked( id )" />
 
         </div>
         

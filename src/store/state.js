@@ -75,7 +75,7 @@ export const onDeleteButtonClicked = id => {
 
 }
 
-export const onSendButtonClicked = id => {
+export const onNotifyButtonClicked = id => {
     
   // const request = state.requests.find( request => request.id === id );
 
