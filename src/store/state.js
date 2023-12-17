@@ -9,8 +9,6 @@ import DeleteRequest from '../components/delete-request.vue';
 
 import NotifyRequesters from '../components/notify-requesters.vue';
 
-import requests from '../data/requests.json';
-
 export const MODAL_COMPONENTS = {
 
   MAKE_REQUEST : MakeRequest,
@@ -35,9 +33,9 @@ export const state = reactive( {
 
   isModalOpen: false,
 
-  user: null,
+  user: {},
   
-  requests
+  requests: null
 
 } );
 
@@ -102,5 +100,13 @@ export const setCurrentModalComponent = ( component, id = null ) => {
   currentModalComponent.component = component;
 
   currentModalComponent.id = id;
+
+}
+
+export const isAuthenticated = () => {
+
+  if ( ! state.user ) return false;
+
+  else true;
 
 }

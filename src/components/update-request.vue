@@ -23,7 +23,43 @@
 
   } );
 
-  console.log(request);
+  const options = {
+
+    method: 'PATCH',
+
+    body: data,
+
+    headers: {
+
+      'Content-Type': 'application/json',
+
+      'Accept': 'application/json'
+      
+    },
+
+    credentials: 'include'
+
+  }
+
+  const onRequestUpdate = async () => {
+
+    if ( ! state.user ) return router.push( { name: 'login' } );
+
+    try {
+
+      let response = await fetch( `http://localhost:3000/requests/${ state.user.id }`, options );
+
+      let data = await response.json();
+
+      console.log( data, 'data' );
+      
+    } catch (error) {
+      
+      console.log( error );
+      
+    }
+
+  }
 
 </script>
 
@@ -58,7 +94,7 @@
 
     </fieldset>
 
-    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button">
+    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button" @click="onRequestUpdate">
 
       Update Kit
 

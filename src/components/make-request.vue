@@ -3,9 +3,13 @@
 
   import { ref, computed } from 'vue';
 
+  import { useRouter } from 'vue-router';
+
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
   import { state, closeModal } from '../store/state';
+
+  const router = useRouter();
   
   const requestValue = ref( null );
 
@@ -20,6 +24,46 @@
       100
 
   } );
+
+  const options = {
+
+    method: 'POST',
+
+    body: JSON.stringify( { title: requestValue.value } ),
+
+    headers: {
+
+      'Content-Type': 'application/json',
+
+      'Accept': 'application/json'
+      
+    },
+
+    credentials: 'include'
+
+  }
+
+  const onRequestSubmit = async ( e ) => {
+
+    e.preventDefault();
+
+    if ( ! state.user ) return router.push( { name: 'login' } );
+
+    try {
+
+      let response = await fetch( `http://localhost:3000/requests/${ state.user.id }`, options );
+
+      let data = await response.json();
+
+      console.log( data, 'data' );
+      
+    } catch (error) {
+      
+      console.log( error );
+      
+    }
+
+  }
 
 </script>
 
@@ -54,7 +98,7 @@
 
     </fieldset>
 
-    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button">
+    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button" @click="onRequestSubmit">
 
       Submit Request
 

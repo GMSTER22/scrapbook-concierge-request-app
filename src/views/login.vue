@@ -13,6 +13,18 @@
   
   const password = ref( '' );
 
+  const isEmail = ref( false );
+
+  const isPassword = ref( false );
+
+  const updateFormFieldsErrorMessages = () => {
+
+    isEmail.value = email.value.length < 1;
+
+    isPassword.value = password.value.length < 1;
+
+  };
+
   const passwordCompute = computed( () => {
 
     console.log(password, 'Check password');
@@ -23,7 +35,7 @@
 
   const emailCompute = computed( () => {
 
-    console.log(email, 'Check email');
+    console.log( email, 'Check email' );
 
     return email;
 
@@ -32,15 +44,15 @@
   // 'Johndoe@22'
   // 'johndoe@gmail.com'
 
-  const submitForm = e => {
+  const submitForm = async ( event ) => {
 
-    e.preventDefault();
+    if ( ! isEmail.value || ! isPassword.value ) return updateFormFieldsErrorMessages();
 
     const data = JSON.stringify( {
 
-      'email' : email.value,
+      email : email.value,
       
-      'password': password.value
+      password: password.value
 
     } );
 
@@ -64,30 +76,27 @@
         
       },
 
-      credentials: 'include'
+      // credentials: 'include'
 
     }
 
-    fetch( 'http://localhost:3000/login', options )
+    try {
+      
+      const response = await fetch( 'http://localhost:3000/login', options )
+  
+      console.log( 'response ===>', response );
+      
+      const userInfo = await response.json();
+      
+      state.user = data.user;
+      
+      router.push( { name: 'home'} );
+      
+    } catch ( error ) {
 
-      .then( res => {
-
-        console.log( 'response ===>', res );
-
-        if ( res.ok ) return res.json();
-        // if ( res.ok ) return res.json();
-
-      } )
-
-      .then( data => {
-
-        state.user = data.user;
-
-        router.push( { name: 'home'} );
-
-      } )
-
-      .catch( error => alert( error.message ) )
+      alert( error.message )
+      
+    }
 
   }
 
@@ -129,7 +138,9 @@
 
             <label class="font-medium mb-2" for="email">Email</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email">
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" required>
+
+            <span class="pt-1 text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isEmail">Please enter your email</span>
 
           </fieldset>
 
@@ -138,7 +149,9 @@
 
             <label class="font-medium mb-2" for="password">Password</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password">
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" required>
+
+            <span class="pt-1 text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="! isPassword">Please enter your password</span>
 
           </fieldset>
 

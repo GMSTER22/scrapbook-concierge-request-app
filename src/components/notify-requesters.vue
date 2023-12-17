@@ -5,11 +5,17 @@
 
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
-  import { state, currentModalComponent, closeModal } from '../store/state';
+  import { state, currentModalComponent, closeModal, onNotifyButtonClicked } from '../store/state';
 
   const request = state.requests.find( request => request.id === currentModalComponent.id );
 
   const requestValue = ref( request.name );
+
+  // const onNotifyButtonClicked = async () => {
+
+  //   return 2;
+
+  // }
 
 </script>
 
@@ -31,22 +37,15 @@
 
         <label for="request"></label>
 
-        <textarea class="w-full rounded" name="request" id="request" maxlength="100" v-model="requestValue"></textarea>
-        
+        <textarea class="w-full rounded" name="request" id="request" maxlength="100" v-model="requestValue" disabled></textarea>        
 
       </div>
 
-      <!-- <p class="text-xs text-right">
-
-        {{ numberOfCharactersLeft }} characters left.
-
-      </p> -->
-
     </fieldset>
 
-    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button">
+    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button" @click="">
 
-      Confirm
+      Notify
 
     </button>
 
