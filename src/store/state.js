@@ -33,7 +33,7 @@ export const state = reactive( {
 
   isModalOpen: false,
 
-  user: {},
+  user: null,
   
   requests: null
 
@@ -103,10 +103,12 @@ export const setCurrentModalComponent = ( component, id = null ) => {
 
 }
 
-export const isAuthenticated = () => {
+export const isAuthenticated = computed( () => {
 
   if ( ! state.user ) return false;
 
-  else true;
+  else return true;
 
-}
+} );
+
+export const isAdmin = computed( () => state.user?.admin );

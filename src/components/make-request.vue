@@ -43,9 +43,9 @@
 
   }
 
-  const onRequestSubmit = async ( e ) => {
+  const onRequestSubmit = async ( event ) => {
 
-    e.preventDefault();
+    event.preventDefault();
 
     if ( ! state.user ) return router.push( { name: 'login' } );
 
@@ -53,11 +53,19 @@
 
       let response = await fetch( `http://localhost:3000/requests/${ state.user.id }`, options );
 
-      let data = await response.json();
+      if ( response.ok ) {
 
-      console.log( data, 'data' );
+        let result = await response.json();
+
+        console.log( 'request creation result ===>', result );
+
+      } else {
+
+        console.log( 'creation failed ===>' );
+
+      }
       
-    } catch (error) {
+    } catch ( error ) {
       
       console.log( error );
       

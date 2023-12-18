@@ -49,9 +49,9 @@
 
       let response = await fetch( `http://localhost:3000/requests/${ state.user.id }`, options );
 
-      let data = await response.json();
+      let result = await response.json();
 
-      console.log( data, 'data' );
+      console.log( result, 'data' );
       
     } catch (error) {
       

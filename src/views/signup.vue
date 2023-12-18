@@ -7,17 +7,21 @@
 
   const router = useRouter();
 
-  const username = ref( 'Jane' );
+  const username = ref( '' );
   
-  const email = ref( 'janedoe@gmail.com' );
+  const email = ref( '' );
+
+  const password = ref( '' );
   
-  const password = ref( 'Janedoe@22' );
+  // const validateEmail = computed( () => )
 
-  const submitForm = e => {
+  const passwordCompute = computed( () => password );
 
-    e.preventDefault();
+  const submitForm = event => {
 
-    const data = JSON.stringify( {
+    event.preventDefault();
+
+    const userInfo = JSON.stringify( {
 
       username: username.value,
 
@@ -27,13 +31,13 @@
 
     } );
 
-    console.log( data );
+    console.log( userInfo );
 
     const options = {
 
       method: 'POST',
 
-      body: data,
+      body: userInfo,
 
       headers: {
 
@@ -79,6 +83,8 @@
 
         <button type="button" class="border border-neutral-300 px-4 py-2 rounded">Sign up with Facebook</button>
 
+        <button type="button" class="border border-neutral-300 px-4 py-2 rounded">{{ passwordCompute }}</button>
+
       </div>
 
       <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-x-2 my-5">
@@ -97,7 +103,7 @@
 
           <fieldset class="flex flex-col mb-4">
 
-            <label class="font-medium mb-2" for="username">Username</label>
+            <label class="font-medium mb-1" for="username">Username</label>
 
             <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="text" name="username" id="username" v-model="username" required>
 
@@ -105,7 +111,7 @@
 
           <fieldset class="flex flex-col mb-4">
 
-            <label class="font-medium mb-2" for="email">Email</label>
+            <label class="font-medium mb-1" for="email">Email</label>
 
             <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" required>
 
@@ -113,7 +119,7 @@
 
           <fieldset class="flex flex-col mb-6">
 
-            <label class="font-medium mb-2" for="password">Password</label>
+            <label class="font-medium mb-1" for="password">Password</label>
 
             <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" required>
 

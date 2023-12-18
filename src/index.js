@@ -3,7 +3,7 @@ import { createApp } from 'vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { isAuthenticated } from './store/state';
+import { isAuthenticated, isAdmin, state } from './store/state';
 
 import App from './app.vue';
 
@@ -31,35 +31,15 @@ const routes = [
 
     component: Home,
 
-    beforeEnter: async ( to, from ) => {
+    beforeEnter: ( to, from, next ) => {
 
-      if ( isAuthenticated() && ! state.requests ) {
+      console.log(state.user);
 
-        const options = {
+      console.log(isAuthenticated.value);
 
-          method: 'GET',
-    
-          headers: {
-    
-            'Accept': 'application/json'
-            
-          },
-    
-          credentials: 'include'
-    
-        }
-    
-        const response = await fetch( 'http://localhost:3000/requests', options );
+      if ( ! isAuthenticated.value ) next( { name: 'login' } );
 
-        const requests = response.json();
-
-        console.log( 'requests set' );
-
-        state.requests = requests;
-
-        console.log( 'before enter HOME VIEW Fired' );
-
-      }
+      else next();
 
     }
 
@@ -69,7 +49,7 @@ const routes = [
 
     name: 'login',
 
-    component: Login 
+    component: Login
 
   }, {
 
@@ -85,7 +65,15 @@ const routes = [
 
     name: 'my-requests',
 
-    component: MyRequests
+    component: MyRequests,
+
+    beforeEnter: ( to, from, next ) => {
+
+      if ( ! isAuthenticated.value ) next( { name: 'login' } );
+
+      else next();
+
+    }
 
   }, {
 
@@ -93,7 +81,17 @@ const routes = [
 
     name: 'admin',
 
-    component: Admin
+    component: Admin,
+
+    beforeEnter: ( to, from, next ) => {
+
+      console.log( isAdmin.value, 'isAdmin' )
+
+      if ( ! isAdmin.value ) next( { name: 'home' } );
+
+      else next();
+
+    }
 
   }
 
@@ -107,13 +105,15 @@ const router = createRouter( {
 
 } );
 
-router.beforeEach( ( to, from, next ) => {
+// router.beforeEach( ( to, from, next ) => {
 
-  if ( ( to.name !== 'login' ) && ! isAuthenticated() ) next( { name: 'login' } );
+//   if ( to.name === 'home' || to.name === 'my-requests' || to.name === 'admin' ) {
 
-  else next();
 
-} );
+
+//   }
+
+// } );
 
 const app = createApp( App );
 

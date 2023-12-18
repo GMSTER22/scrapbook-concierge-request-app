@@ -1,7 +1,7 @@
 
 <script setup>
 
-  import { ref, computed } from 'vue'; 
+  import { ref, computed, onBeforeMount } from 'vue'; 
 
   import Header from '../components/header.vue';
 
@@ -11,7 +11,7 @@
   
   import DeleteButton from '../components/buttons/deleteButton.vue';
 
-  import { formatDate } from '../utils/utils';
+  import { formatDate, fetchRequests } from '../utils/utils';
 
   import { state, onLikeButtonClicked, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
 
@@ -20,6 +20,16 @@
   const sortBy = ref( '' );
 
   const sortByChanged = computed(() => console.log(sortBy.value, 'sort by value') );
+
+  onBeforeMount( async () => {
+
+    if ( state.requests ) return;
+
+    const fetchedRequests = await fetchRequests();
+      
+    state.requests = fetchedRequests;
+
+  } );
 
 </script>
 

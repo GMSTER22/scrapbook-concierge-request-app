@@ -13,54 +13,48 @@
   
   const password = ref( '' );
 
-  const isEmail = ref( false );
+  const isEmailMessage = ref( false );
 
-  const isPassword = ref( false );
+  const isPasswordMessage = ref( false );
 
   const updateFormFieldsErrorMessages = () => {
 
-    isEmail.value = email.value.length < 1;
+    isEmailMessage.value = email.value === '';
 
-    isPassword.value = password.value.length < 1;
+    isPasswordMessage.value = password.value === '';
+
+    console.log(email.value === '')
 
   };
 
-  const passwordCompute = computed( () => {
+  const passwordCompute = computed( () => password );
 
-    console.log(password, 'Check password');
-
-    return password;
-
-  } );
-
-  const emailCompute = computed( () => {
-
-    console.log( email, 'Check email' );
-
-    return email;
-
-  } );
+  const emailCompute = computed( () => email );
 
   // 'Johndoe@22'
   // 'johndoe@gmail.com'
 
   const submitForm = async ( event ) => {
 
-    if ( ! isEmail.value || ! isPassword.value ) return updateFormFieldsErrorMessages();
+    event.preventDefault();
 
-    const data = JSON.stringify( {
+    // updateFormFieldsErrorMessages();
+
+    const userInfo = {
 
       email : email.value,
       
       password: password.value
 
-    } );
+    };
+
+    console.log( userInfo );
 
     const options = {
 
-      method: 'post',
+      method: 'POST',
 
-      body: data,
+      body: JSON.stringify( userInfo ),
 
       headers: {
 
@@ -68,7 +62,7 @@
 
         // 'Host': 'http://127.0.0.1:3000',
 
-        'Accept': 'application/json',
+        // 'Accept': 'application/json',
 
         // 'Cache': 'no-cache'
 
@@ -82,21 +76,25 @@
 
     try {
       
-      const response = await fetch( 'http://localhost:3000/login', options )
+      const response = await fetch( 'http://localhost:3000/login', options );
   
-      console.log( 'response ===>', response );
+      if ( response.ok ) {
+
+        const result = await response.json();
       
-      const userInfo = await response.json();
-      
-      state.user = data.user;
-      
-      router.push( { name: 'home'} );
+        state.user = result;
+        
+        router.push( { name: 'home'} );
+
+      }
       
     } catch ( error ) {
 
       alert( error.message )
       
     }
+
+    console.log( 'OVER' );
 
   }
 
@@ -136,26 +134,26 @@
 
           <fieldset class="flex flex-col mb-4">
 
-            <label class="font-medium mb-2" for="email">Email</label>
+            <label class="font-medium mb-1" for="email">Email</label>
 
             <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" required>
 
-            <span class="pt-1 text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isEmail">Please enter your email</span>
+            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isEmailMessage">Please enter your email</span>
 
           </fieldset>
 
 
           <fieldset class="flex flex-col mb-6">
 
-            <label class="font-medium mb-2" for="password">Password</label>
+            <label class="font-medium mb-1" for="password">Password</label>
 
             <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" required>
 
-            <span class="pt-1 text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="! isPassword">Please enter your password</span>
+            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isPasswordMessage">Please enter your password</span>
 
           </fieldset>
 
-          <button class="px-5 py-2 bg-purple-800 text-white w-full text-bold rounded" type="button" @click="submitForm">Login</button>
+          <button class="px-5 py-2 bg-purple-800 text-white w-full text-bold rounded" type="submit" @click="submitForm">Login</button>
 
         </form>
 

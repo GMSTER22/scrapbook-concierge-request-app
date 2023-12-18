@@ -1,7 +1,7 @@
 
 <script setup>
 
-  import { ref } from 'vue';
+  import { ref, onBeforeMount } from 'vue';
 
   import Header from '../components/header.vue';
 
@@ -13,9 +13,19 @@
   
   import { state, onUpdateButtonClicked, onDeleteButtonClicked, onNotifyButtonClicked } from '../store/state'; 
 
-  import { formatDate } from '../utils/utils';
+  import { formatDate, fetchRequests } from '../utils/utils';
 
   const sortBy = ref( '' );
+
+  onBeforeMount( async () => {
+
+    if ( state.requests ) return;
+
+    const fetchedRequests = await fetchRequests();
+      
+    state.requests = fetchedRequests;
+
+  } );
 
 </script>
 
