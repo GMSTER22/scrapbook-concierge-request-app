@@ -71,11 +71,11 @@
 
     <ul class="max-w-3xl mx-auto">
 
-      <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent sm:odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, date, title, votes, liked }, index) in state.requests" :key="id">
+      <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent sm:odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }) in state.requests" :key="id">
         
         <span class="text-left sm:text-right text-xs text-neutral-600">
           
-          {{ formatDate( date ) }}
+          {{ formatDate( createdAt ) }}
         
         </span>
 
@@ -89,11 +89,11 @@
 
           <span>
 
-            {{ votes }}
+            {{ users.length }}
 
           </span>
 
-          <LikeButton :id="id" :is-liked="liked" @like-button-clicked="() => onLikeButtonClicked( id )" />
+          <LikeButton :id="id" :is-liked="users.includes(state.user.id)" @like-button-clicked="() => onLikeButtonClicked( id )" />
 
         </div>
 

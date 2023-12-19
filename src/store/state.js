@@ -41,9 +41,43 @@ export const state = reactive( {
 
 // functions interacting with state
 
-export const onLikeButtonClicked = id => {
+export const onLikeButtonClicked = async ( id ) => {
+
+  const options = {
+
+    method: 'PATCH',
+
+    // headers: {
+
+    //   'Content-Type': 'application/json'
+      
+    // },
+
+    credentials: 'include'
+
+  }
+
+  try {
+
+    const response = await fetch( `http://localhost:3000/user-requests/${ id }/users/${ state.user.id }`, options );
+
+    if ( response.ok ) {
+
+      console.log( response, 'successfully added user request' )
+      
+      const result = response.json();
+
+      console.log( result );
+
+    }
     
-  const request = state.requests.find( request => request.id === id );
+  } catch ( error ) {
+    
+    console.log( error );
+
+  }
+    
+  const request = state.requests.find( request => request._id === id );
 
   if ( request.liked ) request.votes -= 1;
   

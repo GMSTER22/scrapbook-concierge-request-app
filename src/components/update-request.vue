@@ -23,35 +23,47 @@
 
   } );
 
-  const options = {
+  const onRequestUpdate = async ( event ) => {
 
-    method: 'PATCH',
-
-    body: data,
-
-    headers: {
-
-      'Content-Type': 'application/json',
-
-      'Accept': 'application/json'
-      
-    },
-
-    credentials: 'include'
-
-  }
-
-  const onRequestUpdate = async () => {
+    event.preventDefault();
 
     if ( ! state.user ) return router.push( { name: 'login' } );
 
     try {
 
+      const data = JSON.stringify( { title: requestValue.value } );
+
+      const options = {
+
+        method: 'PATCH',
+
+        body: data,
+
+        headers: {
+
+          'Content-Type': 'application/json',
+
+          'Accept': 'application/json'
+          
+        },
+
+        credentials: 'include'
+
+      }
+
       let response = await fetch( `http://localhost:3000/requests/${ state.user.id }`, options );
 
-      let result = await response.json();
+      if ( response.ok ) {
 
-      console.log( result, 'data' );
+        let result = await response.json();
+
+        console.log( 'updated request result ===>', result );
+
+      } else {
+
+        console.log( 'update failed ===>' );
+
+      }
       
     } catch (error) {
       
@@ -94,7 +106,7 @@
 
     </fieldset>
 
-    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button" @click="onRequestUpdate">
+    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="submit" @click="onRequestUpdate">
 
       Update Kit
 

@@ -25,39 +25,47 @@
 
   } );
 
-  const options = {
-
-    method: 'POST',
-
-    body: JSON.stringify( { title: requestValue.value } ),
-
-    headers: {
-
-      'Content-Type': 'application/json',
-
-      'Accept': 'application/json'
-      
-    },
-
-    credentials: 'include'
-
-  }
-
+  
   const onRequestSubmit = async ( event ) => {
-
+    
     event.preventDefault();
-
+    
     if ( ! state.user ) return router.push( { name: 'login' } );
-
+    
     try {
+
+      console.log( requestValue.value );
+
+      const data = JSON.stringify( { title: requestValue.value } );
+
+      console.log(data);
+
+      const options = {
+    
+        method: 'POST',
+    
+        body: data,
+    
+        headers: {
+    
+          'Content-Type': 'application/json',
+    
+          // 'Accept': 'application/json'
+          
+        },
+    
+        credentials: 'include'
+    
+      }
 
       let response = await fetch( `http://localhost:3000/requests/${ state.user.id }`, options );
 
       if ( response.ok ) {
 
-        let result = await response.json();
+        // let result = await response.json();
+        closeModal();
 
-        console.log( 'request creation result ===>', result );
+        console.log( 'request creation result ===>', response );
 
       } else {
 

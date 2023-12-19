@@ -13,6 +13,50 @@
 
   console.log(request);
 
+  const options = {
+
+    method: 'DELETE',
+
+    headers: {
+
+      'Content-Type': 'application/json'
+      
+    },
+
+    credentials: 'include'
+
+  }
+
+  const onDeleteRequest = async ( event ) => {
+
+    event.preventDefault();
+
+    if ( ! state.user ) return router.push( { name: 'login' } );
+
+    try {
+
+      let response = await fetch( `http://localhost:3000/user-requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
+
+      if ( response.ok ) {
+
+        let result = await response.json();
+
+        console.log( 'updated request result ===>', result );
+
+      } else {
+
+        console.log( 'update failed ===>' );
+
+      }
+      
+    } catch (error) {
+      
+      console.log( error );
+      
+    }
+
+  }
+
 </script>
 
 <template>
@@ -40,7 +84,7 @@
 
     </fieldset>
 
-    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button">
+    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="submit" @click="onDeleteRequest">
 
       Delete Request
 

@@ -41,7 +41,7 @@
 
         <router-link to="/admin">Admin</router-link>
 
-        <div>
+        <div v-show="state.user.admin">
 
           <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">Make request</button>
 
@@ -50,6 +50,12 @@
             <Modal />
 
           </div>
+
+        </div>
+
+        <div>
+
+          Hi, {{ state.user?.username ?? 'scrapbooker' }}
 
         </div>
 
