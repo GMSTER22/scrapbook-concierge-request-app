@@ -7,7 +7,7 @@
 
   import { Bars3Icon } from '@heroicons/vue/24/solid';
 
-  import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent } from '../store/state';
+  import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, isAdmin } from '../store/state';
 
   const isNavOpen = ref( false );
 
@@ -39,7 +39,7 @@
 
         <router-link to="/my-requests">My requests</router-link>
 
-        <router-link to="/admin">Admin</router-link>
+        <router-link v-show="isAdmin" to="/admin">Admin</router-link>
 
         <div v-show="state.user.admin">
 

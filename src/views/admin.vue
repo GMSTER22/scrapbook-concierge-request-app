@@ -67,13 +67,13 @@
 
     <ul class="max-w-4xl mx-auto">
 
-      <li class="grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ id, date, title, votes, liked }, index) in state.requests" :key="index">
+      <li class="grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }, index) in state.requests" :key="index">
         
         <!-- <div class="flex items-center gap-x-3"> -->
 
           <span class="text-left text-xs text-neutral-600 sm:text-right">
             
-            {{ formatDate( date ) }}
+            {{ format( createdAt ) }}
           
           </span>
 
