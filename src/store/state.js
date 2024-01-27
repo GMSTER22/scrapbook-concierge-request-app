@@ -63,11 +63,21 @@ export const onLikeButtonClicked = async ( id ) => {
 
     if ( response.ok ) {
 
-      console.log( response, 'successfully added user request' )
+      console.log( response, 'successfully added/removed user request' )
       
-      const result = response.json();
+      const result = await response.text();
 
       console.log( result );
+
+      const requestIndex = state.requests.findIndex( request => request._id === id );
+
+      const request = state.requests[ requestIndex ];
+
+      if ( requestIndex === -1 ) return;
+
+      if ( request.users.includes( state.user.id ) ) request.users = request.users.filter( userId => userId !== state.user.id );
+
+      else request.users.push( state.user.id );
 
     }
     
@@ -77,19 +87,19 @@ export const onLikeButtonClicked = async ( id ) => {
 
   }
     
-  const request = state.requests.find( request => request._id === id );
+  // const request = state.requests.find( request => request._id === id );
 
-  if ( request.liked ) request.votes -= 1;
+  // if ( request.liked ) request.votes -= 1;
   
-  else request.votes += 1;
+  // else request.votes += 1;
 
-  request.liked = ! request.liked;
+  // request.liked = ! request.liked;
 
 }
 
 export const onUpdateButtonClicked = id => {
     
-  // const request = state.requests.find( request => request.id === id );
+  // const request = state.requests.find( request => request._id === id );
 
   setCurrentModalComponent( MODAL_COMPONENTS.UPDATE_REQUEST, id );
 
@@ -99,7 +109,7 @@ export const onUpdateButtonClicked = id => {
 
 export const onDeleteButtonClicked = id => {
     
-  // const request = state.requests.find( request => request.id === id );
+  // const request = state.requests.find( request => request._id === id );
 
   setCurrentModalComponent( MODAL_COMPONENTS.DELETE_REQUEST, id );
 
@@ -109,7 +119,7 @@ export const onDeleteButtonClicked = id => {
 
 export const onNotifyButtonClicked = id => {
     
-  // const request = state.requests.find( request => request.id === id );
+  // const request = state.requests.find( request => request._id === id );
 
   setCurrentModalComponent( MODAL_COMPONENTS.NOTIFY_REQUESTERS, id );
 
@@ -137,12 +147,33 @@ export const setCurrentModalComponent = ( component, id = null ) => {
 
 }
 
-export const isAuthenticated = computed( () => {
+function getCookie(name) {
+  const cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].trim();
+    if (cookie.startsWith(name + '=')) {
+      return cookie.substring(name.length + 1);
+    }
+  }
+  return null;
+}
 
-  if ( ! state.user ) return false;
+export const isAuthenticated = () => {
 
-  else return true;
+  const encodedCookieValue = getCookie( 'scr-user' );
 
-} );
+  if ( ! encodedCookieValue ) return false;
+
+  const decodedCookieValue = decodeURIComponent( encodedCookieValue );
+
+  const parsedData = JSON.parse( decodedCookieValue );
+
+  console.log(parsedData, "user data")
+
+  state.user = parsedData;
+
+  return true;
+
+};
 
 export const isAdmin = computed( () => state.user?.admin );

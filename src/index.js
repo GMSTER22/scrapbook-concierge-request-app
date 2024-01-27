@@ -5,6 +5,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import { isAuthenticated, isAdmin, state } from './store/state';
 
+import { fetchRequests } from './utils/utils';
+
 import App from './app.vue';
 
 import Home from './views/home.vue';
@@ -33,11 +35,9 @@ const routes = [
 
     beforeEnter: ( to, from, next ) => {
 
-      console.log(state.user);
+      console.log(isAuthenticated(), 'Auth value in HOME');
 
-      console.log(isAuthenticated.value);
-
-      if ( ! isAuthenticated.value ) next( { name: 'login' } );
+      if ( ! isAuthenticated() ) next( { name: 'login' } );
 
       else next();
 
@@ -69,7 +69,7 @@ const routes = [
 
     beforeEnter: ( to, from, next ) => {
 
-      if ( ! isAuthenticated.value ) next( { name: 'login' } );
+      if ( ! isAuthenticated() ) next( { name: 'login' } );
 
       else next();
 
@@ -85,11 +85,13 @@ const routes = [
 
     beforeEnter: ( to, from, next ) => {
 
-      console.log( isAdmin.value, 'isAdmin' )
+      console.log( isAdmin.value, typeof isAdmin.value, 'isAdmin' );
 
-      if ( ! isAdmin.value ) next( { name: 'home' } );
+      if ( ! isAuthenticated() ) return next( { name: 'login' } );
+      
+      if ( ! isAdmin.value ) return next( { name: 'home' } );
 
-      else next();
+      next();
 
     }
 
@@ -105,15 +107,26 @@ const router = createRouter( {
 
 } );
 
-// router.beforeEach( ( to, from, next ) => {
+router.beforeEach( async ( to, from, next ) => {
 
-//   if ( to.name === 'home' || to.name === 'my-requests' || to.name === 'admin' ) {
+  if ( state.requests ) return next();
 
+  const fetchedRequests = await fetchRequests();
+    
+  state.requests = fetchedRequests;
 
+  next();
 
-//   }
+  // if ( to.name == 'signup' ) {
+    
+  //   next( { name: 'signup' } );
 
-// } );
+  // } else {
+  //   if ( ! isAuthenticated() ) next( { name: 'login' } );
+  //   console.log(isAuthenticated(), 'auth')
+  // }
+
+} );
 
 const app = createApp( App );
 

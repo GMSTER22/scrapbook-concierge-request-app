@@ -17,9 +17,9 @@
 
 <template>
 
-  <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-black rounded" type="button" @click="emitDeleteButtonClicked">
+  <button class="mr-1 px-[2px] py-[2px] hover:pointer hover:scale-110 focus:scale-110 transition-transform duration-150 border border-black rounded" aria-label="delete request" type="button" @click="emitDeleteButtonClicked">
 
-    <TrashIcon class="h-4 w-4 fill-black" />
+    <TrashIcon class="h-5 w-5 fill-black" />
 
   </button>
 

@@ -7,7 +7,7 @@
 
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
-  import { state, closeModal } from '../store/state';
+  import { state, closeModal, isAuthenticated } from '../store/state';
 
   const router = useRouter();
   
@@ -30,7 +30,7 @@
     
     event.preventDefault();
     
-    if ( ! state.user ) return router.push( { name: 'login' } );
+    if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
     
     try {
 
@@ -62,10 +62,14 @@
 
       if ( response.ok ) {
 
-        // let result = await response.json();
+        let createdRequest = await response.json();
+
+        console.log( 'request creation result ===>', createdRequest );
+
+        state.requests.push( createdRequest );
+
         closeModal();
 
-        console.log( 'request creation result ===>', response );
 
       } else {
 

@@ -3,13 +3,19 @@
 
   import { ref, computed } from 'vue';
 
+  import { useRouter } from 'vue-router';
+
+  import { state, currentModalComponent, closeModal, isAuthenticated } from '../store/state';
+  
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
-  import { state, currentModalComponent, closeModal } from '../store/state';
+  const router = useRouter();
 
-  const request = state.requests.find( request => request.id === currentModalComponent.id );
+  console.log( state.requests );
 
-  const requestValue = ref( request.name );
+  const request = state.requests.find( request => request._id === currentModalComponent.id );
+
+  const requestValue = ref( request.title );
 
   const numberOfCharactersLeft = computed( () => {
 
@@ -27,7 +33,7 @@
 
     event.preventDefault();
 
-    if ( ! state.user ) return router.push( { name: 'login' } );
+    if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
 
     try {
 
@@ -43,7 +49,7 @@
 
           'Content-Type': 'application/json',
 
-          'Accept': 'application/json'
+          // 'Accept': 'application/json'
           
         },
 
@@ -51,17 +57,17 @@
 
       }
 
-      let response = await fetch( `http://localhost:3000/requests/${ state.user.id }`, options );
+      let response = await fetch( `http://localhost:3000/requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
 
       if ( response.ok ) {
 
-        let result = await response.json();
+        console.log( state.requests, 'BEFORE' );
 
-        console.log( 'updated request result ===>', result );
+        state.requests.find( request => request._id === currentModalComponent.id ).title = requestValue.value;
 
-      } else {
+        console.log( state.requests, 'AFTER' );
 
-        console.log( 'update failed ===>' );
+        closeModal();
 
       }
       

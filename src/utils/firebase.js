@@ -88,7 +88,7 @@ const authenticate = onAuthStateChanged(auth, (user) => {
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
     
-    if ( !isAuthenticated.value ) isAuthenticated.value = true;
+    if ( !isAuthenticated() ) isAuthenticated() = true;
 
     // email = user.email;
     // displayName = user.displayName;
@@ -96,7 +96,7 @@ const authenticate = onAuthStateChanged(auth, (user) => {
   } else {
     // User is signed out
     // ...
-    if ( isAuthenticated.value ) isAuthenticated.value = false;
+    if ( isAuthenticated() ) isAuthenticated() = false;
 
   }
 });

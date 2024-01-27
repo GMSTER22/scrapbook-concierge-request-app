@@ -3,13 +3,17 @@
 
   import { ref, computed } from 'vue';
 
-  import { XMarkIcon } from '@heroicons/vue/24/solid';
+  import { useRouter } from 'vue-router';
 
   import { state, currentModalComponent, closeModal, onNotifyButtonClicked } from '../store/state';
+  
+  import { XMarkIcon } from '@heroicons/vue/24/solid';
 
-  const request = state.requests.find( request => request.id === currentModalComponent.id );
+  const router = useRouter();
 
-  const requestValue = ref( request.name );
+  const request = state.requests.find( request => request._id === currentModalComponent.id );
+
+  const requestValue = ref( request.title );
 
   // const onNotifyButtonClicked = async () => {
 

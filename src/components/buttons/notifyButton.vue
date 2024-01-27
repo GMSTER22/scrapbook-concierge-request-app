@@ -17,9 +17,9 @@
 
 <template>
 
-  <button class="mr-1 px-[2px] py-[2px] hover:pointer border border-green-700 rounded" type="button" @click="emitNotifyButtonClicked">
+  <button class="mr-1 px-[2px] py-[2px] hover:pointer hover:scale-110 focus:scale-110 transition-transform duration-150 border border-green-700 rounded" type="button" aria-label="email requesters" @click="emitNotifyButtonClicked">
 
-    <PaperAirplaneIcon class="h-4 w-4 fill-green-700" />
+    <PaperAirplaneIcon class="h-5 w-5 fill-green-700" />
 
   </button>
 

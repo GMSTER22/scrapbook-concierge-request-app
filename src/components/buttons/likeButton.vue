@@ -5,7 +5,9 @@
 
   const props = defineProps( {
     
-    isLiked: Boolean
+    isLiked: Boolean,
+
+    isDisabled: Boolean
   
   } );
 
@@ -17,9 +19,9 @@
 
 <template>
 
-  <button class="mr-1 group hover:pointer" :class="{ 'is-liked': props.isLiked }" type="button" @click="emitLikeButtonClicked">
+  <button class="mr-1 group hover:pointer focus:scale-110" :class="{ 'is-liked': props.isLiked }" type="button" aria-label="like request" @click="emitLikeButtonClicked" :disabled="props.isDisabled">
 
-    <HeartIcon class="h-6 w-6 stroke-neutral-500 fill-black group-[.is-liked]:fill-red-500 group-[.is-liked]:stroke-transparent transition-colors duration-150" />
+    <HeartIcon class="h-8 w-8 stroke-neutral-500 fill-black hover:scale-110 group-[.is-liked]:fill-red-500 group-[.is-liked]:stroke-transparent transition-all duration-150" />
 
   </button>
 

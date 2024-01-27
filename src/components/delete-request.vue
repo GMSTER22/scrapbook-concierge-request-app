@@ -3,13 +3,18 @@
 
   import { ref, computed } from 'vue';
 
+  import { useRouter } from 'vue-router';
+
+  import { state, currentModalComponent, closeModal, isAuthenticated } from '../store/state';
+  
   import { XMarkIcon } from '@heroicons/vue/24/solid';
+import { resolve } from 'path';
 
-  import { state, currentModalComponent, closeModal } from '../store/state';
+  const router = useRouter();
 
-  const request = state.requests.find( request => request.id === currentModalComponent.id );
+  const request = state.requests.find( request => request._id === currentModalComponent.id );
 
-  const requestValue = ref( request.name );
+  const requestValue = ref( request.title );
 
   console.log(request);
 
@@ -31,27 +36,45 @@
 
     event.preventDefault();
 
-    if ( ! state.user ) return router.push( { name: 'login' } );
+    if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
 
     try {
 
-      let response = await fetch( `http://localhost:3000/user-requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
+      let response = await fetch( `http://localhost:3000/requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
+
+      console.log( response, 'RESPONSE' );
 
       if ( response.ok ) {
 
-        let result = await response.json();
+        // let result = await response.json();
 
-        console.log( 'updated request result ===>', result );
+        // console.log( 'updated request result ===>', result );
 
-      } else {
+        console.log( state.requests, 'BEFORE' );
 
-        console.log( 'update failed ===>' );
+        state.requests = state.requests.filter( request => request._id !== currentModalComponent.id );
+
+        console.log( state.requests, 'AFTER' );
+
+        closeModal();
+
+      }
+      
+      if ( response.status === 403 ) {
+
+        const responseText = await response.text();
+
+        await new Promise( ( resolve, reject ) => resolve(closeModal()) );
+
+        // closeModal();
+
+        alert( responseText );
 
       }
       
     } catch (error) {
       
-      console.log( error );
+      console.log( error, 'BOOM YAKAKA' );
       
     }
 

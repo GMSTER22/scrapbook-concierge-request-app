@@ -17,15 +17,15 @@
 
   const sortBy = ref( '' );
 
-  onBeforeMount( async () => {
+  // onBeforeMount( async () => {
 
-    if ( state.requests ) return;
+  //   if ( state.requests ) return;
 
-    const fetchedRequests = await fetchRequests();
+  //   const fetchedRequests = await fetchRequests();
       
-    state.requests = fetchedRequests;
+  //   state.requests = fetchedRequests;
 
-  } );
+  // } );
 
 </script>
 
@@ -33,77 +33,87 @@
 
   <Header />
 
-  <main class="py-14 px-5 lg:px-0">
+  <main class="py-14 px-5 min-h-[calc(100vh-60px)] sm:min-h-[calc(100vh-72px)] lg:px-0">
 
-    <div class="flex justify-between max-w-3xl mx-auto mb-20">
+    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
+      
+      Admin
+    
+    </h1>
 
-      <form class="w-1/2" action="">
+    <div>
 
-        <label for="search"></label>
+      <div class="flex justify-between max-w-4xl mx-auto mb-20">
 
-        <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request...">
+        <form class="w-1/2" action="">
 
-      </form>
+          <label for="search"></label>
 
-      <fieldset class="flex flex-col">
+          <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request...">
 
-        <label for="sort"><span class="sr-only">Sort By</span></label>
+        </form>
 
-        <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortBy">
+        <fieldset class="flex flex-col">
 
-          <option value="" disabled>Sort by</option>
+          <label for="sort"><span class="sr-only">Sort By</span></label>
 
-          <option value="date">Date</option>
+          <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortBy">
 
-          <option value="released">Released</option>
+            <option value="" disabled>Sort by</option>
+
+            <option value="date">Date</option>
+
+            <option value="released">Released</option>
+            
+            <option value="most-likes">Most liked</option>
+
+          </select>
+
+        </fieldset>
+
+      </div>
+
+      <ul class="max-w-4xl mx-auto">
+
+        <li class="grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }, index) in state.requests" :key="index">
           
-          <option value="most-likes">Most liked</option>
+          <!-- <div class="flex items-center gap-x-3"> -->
 
-        </select>
+            <span class="text-left text-xs text-neutral-600 sm:text-right">
+              
+              {{ formatDate( createdAt ) }}
+            
+            </span>
 
-      </fieldset>
+            <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
+              
+              {{ title }}
+            
+            </span>
+
+          <!-- </div> -->
+
+          <div class="text-right">
+
+            <span class="text-sm">{{ users.length - 1 }}</span>
+
+          </div>
+
+          <div class="flex gap-x-2 justify-self-end">
+
+            <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
+
+            <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
+
+            <NotifyButton @notify-button-clicked="()=> onNotifyButtonClicked( id )" />
+
+          </div>
+          
+        </li>
+
+      </ul>
 
     </div>
-
-    <ul class="max-w-4xl mx-auto">
-
-      <li class="grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }, index) in state.requests" :key="index">
-        
-        <!-- <div class="flex items-center gap-x-3"> -->
-
-          <span class="text-left text-xs text-neutral-600 sm:text-right">
-            
-            {{ format( createdAt ) }}
-          
-          </span>
-
-          <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
-            
-            {{ title }}
-          
-          </span>
-
-        <!-- </div> -->
-
-        <div class="text-right">
-
-          <span class="text-sm">{{ votes }}</span>
-
-        </div>
-
-        <div class="flex gap-x-2 justify-self-end">
-
-          <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
-
-          <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
-
-          <NotifyButton @notify-button-clicked="()=> onNotifyButtonClicked( id )" />
-
-        </div>
-        
-      </li>
-
-    </ul>
 
   </main>
 

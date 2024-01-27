@@ -31,6 +31,8 @@
 
   const emailCompute = computed( () => email );
 
+  console.log(document.cookie, 'cookies')
+
   // 'Johndoe@22'
   // 'johndoe@gmail.com'
 
@@ -70,17 +72,21 @@
         
       },
 
-      // credentials: 'include'
+      credentials: 'include'
 
     }
 
     try {
       
       const response = await fetch( 'http://localhost:3000/login', options );
+
+      console.log(response, 'RESPONSE');
   
       if ( response.ok ) {
 
         const result = await response.json();
+
+        console.log( result, 'RESULT' );
       
         state.user = result;
         
