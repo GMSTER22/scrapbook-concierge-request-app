@@ -15,13 +15,42 @@
 
   import { state, onLikeButtonClicked, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
 
-  const myRequestList = computed( () => state.requests.filter( ( { users } ) => users[0] === state.user.id ) );
+  const searchRequestValue = ref( '' );
+  
+  const sortRequestValue = ref( '' );
+  
+  const userRequestList = computed( () => state.requests.filter( ( { users } ) => users[0] === state.user.id ) );
 
-  console.log(myRequestList.value)
+  const filteredRequests = computed( () => {
 
-  const sortBy = ref( '' );
+    return userRequestList.value.sort( ( a, b ) => {
 
-  const sortByChanged = computed(() => console.log(sortBy.value, 'sort by value') );
+      switch ( sortRequestValue.value ) {
+
+        case 'date-asc':
+          return new Date( a.createdAt ).valueOf() - new Date( b.createdAt ).valueOf();
+
+        case 'date-desc':
+          return new Date( b.createdAt ).valueOf() - new Date( a.createdAt ).valueOf();
+
+        case 'likes-asc':
+          return a.users.length - b.users.length;
+
+        case 'likes-desc':
+          return b.users.length - a.users.length;
+      
+        default:
+          return 0;
+
+      }
+      
+    } )
+    
+    .filter( request => request.title.toLocaleLowerCase().includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
+
+  } );
+
+  console.log( filteredRequests.value );
 
   onBeforeMount( async () => {
 
@@ -47,23 +76,19 @@
     
     </h1>
 
-    <div class="grid grid-rows-1 grid-cols-1">
+    <div class="max-w-3xl mx-auto">
 
-      <div v-if="! myRequestList.length" class="row-start-1 col-start-1 text-center">
+      <p v-if="! userRequestList.length">No requests have been made</p>
 
-        <h1 class="text-lg font-bold">No request made</h1>
+      <div v-else>
 
-      </div>
-
-      <div v-else class="row-start-1 col-start-1">
-
-        <div class="flex justify-between max-w-3xl mx-auto mb-20">
+        <div class="flex justify-between mb-20">
 
           <form class="w-1/2" action="">
 
             <label for="search"></label>
 
-            <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request...">
+            <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue">
 
           </form>
 
@@ -71,15 +96,17 @@
 
             <label for="sort"><span class="sr-only">Sort By</span></label>
 
-            <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortBy">
+            <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue">
 
               <option value="" disabled>Sort by</option>
 
-              <option value="date">Date</option>
+              <option value="date-asc">Date Asc</option>
 
-              <option value="released">Released</option>
+              <option value="date-desc">Date Desc</option>
               
-              <option value="most-likes">Most liked</option>
+              <option value="likes-asc">Likes Asc</option>
+
+              <option value="likes-desc">Likes Desc</option>
 
             </select>
 
@@ -87,11 +114,9 @@
 
         </div>
 
-        <!-- <RequestList :requests="myRequestList" @likeButtonClicked="onLikeButtonClicked" /> -->
+        <ul v-if="filteredRequests.length">
 
-        <ul class="max-w-3xl mx-auto">
-
-          <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent sm:odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }) in myRequestList" :key="id">
+          <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }) in filteredRequests" :key="id">
             
             <span class="text-left sm:text-right text-xs text-neutral-600">
               
@@ -124,6 +149,8 @@
           </li>
 
         </ul>
+
+        <p v-else class="text-2xl text-center">No result found...</p>
 
       </div>
 
