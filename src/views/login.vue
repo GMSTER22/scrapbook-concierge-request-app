@@ -7,6 +7,8 @@
 
   import { state } from '../store/state';
 
+  import SocialMediaAuthButton from '../components/buttons/socialMediaAuthButton.vue';
+
   const router = useRouter();
 
   const email = ref( '' );
@@ -35,6 +37,48 @@
 
   // 'Johndoe@22'
   // 'johndoe@gmail.com'
+
+  // const authenticateWithGoogle = async () => {
+
+  //   const options = {
+
+  //     method: 'GET',
+
+  //     headers: {
+
+  //       'Content-Type': 'application/json',
+
+  //       'Host': 'http://127.0.0.1:3000',
+
+  //       'Accept': 'application/json',
+
+  //       'Cache': 'no-cache'
+
+  //       'Access-Control-Allow-Origin': 'http://localhost:3000'
+
+  //     },
+
+  //     credentials: 'include'
+
+  //   }
+
+  //   const response = await fetch( 'http://localhost:3000/auth/google', options );
+
+  //   console.log(response, 'RESPONSE');
+
+  //   if ( response.ok ) {
+
+  //     const result = await response.json();
+
+  //     console.log( result, 'RESULT' );
+    
+  //     state.user = result;
+      
+  //     router.push( { name: 'home'} );
+
+  //   }
+
+  // }
 
   const submitForm = async ( event ) => {
 
@@ -96,7 +140,7 @@
       
     } catch ( error ) {
 
-      alert( error.message )
+      alert( error.message );
       
     }
 
@@ -116,11 +160,27 @@
 
       <div class="flex flex-col gap-3">
 
-        <button type="button" class="border border-neutral-300 px-4 py-2 rounded">Login with Google</button>
+        <form 
+        
+          action="http://localhost:3000/auth/google" 
+          
+          method="GET">
 
-        <button type="button" class="border border-neutral-300 px-4 py-2 rounded">Login with Facebook</button>
+          <SocialMediaAuthButton callToAction="Continue With Google" />
 
-        <button type="button" class="border border-neutral-300 px-4 py-2 rounded">{{ passwordCompute }} {{ emailCompute }}</button>
+        </form>
+
+        <form 
+        
+          action="http://localhost:3000/auth/facebook" 
+          
+          method="GET">
+
+          <SocialMediaAuthButton callToAction="Continue With Facebook" />
+
+        </form>
+
+        <p class="border border-neutral-300 px-4 py-2 rounded">{{ passwordCompute }} {{ emailCompute }}</p>
 
       </div>
 
@@ -148,7 +208,6 @@
 
           </fieldset>
 
-
           <fieldset class="flex flex-col mb-6">
 
             <label class="font-medium mb-1" for="password">Password</label>
@@ -163,7 +222,13 @@
 
         </form>
 
-        <p class="text-center text-sm">Don't have an account? <router-link class="underline" to="/signup">Sign up</router-link></p>
+        <p class="mb-1 text-center text-sm">Don't have an account? <router-link class="underline" to="/signup">Sign up</router-link></p>
+
+        <div class="text-center text-sm">
+          
+          <router-link class="underline" to="/password-forgot">Forgot Password?</router-link>
+        
+        </div>
 
       </div>
 

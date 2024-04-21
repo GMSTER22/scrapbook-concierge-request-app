@@ -19,6 +19,10 @@ import MyRequests from './views/my-requests.vue';
 
 import Admin from './views/admin.vue';
 
+import PasswordForgot from './views/password-forgot.vue';
+
+import PasswordReset from './views/password-reset.vue';
+
 window.__VUE_OPTIONS_API__ = false;
 
 window.__VUE_PROD_DEVTOOLS__ = true;
@@ -58,6 +62,22 @@ const routes = [
     name: 'signup',
 
     component: Signup 
+
+  }, {
+
+    path: '/password-forgot',
+
+    name: 'password-forgot',
+
+    component: PasswordForgot
+
+  }, {
+
+    path: '/password-reset',
+
+    name: 'password-reset',
+
+    component: PasswordReset
 
   }, {
 
@@ -109,11 +129,13 @@ const router = createRouter( {
 
 router.beforeEach( async ( to, from, next ) => {
 
-  if ( state.requests ) return next();
+  if ( ! state.requests && isAuthenticated() ) {
 
-  const fetchedRequests = await fetchRequests();
-    
-  state.requests = fetchedRequests;
+    const fetchedRequests = await fetchRequests();
+      
+    state.requests = fetchedRequests;
+
+  }
 
   next();
 

@@ -140,7 +140,19 @@
 
               </span>
 
-              <LikeButton :id="id" :is-liked="users.includes(state.user.id)"  :likes="users.length - 1" :is-disabled="users[0] === state.user.id" @like-button-clicked="() => onLikeButtonClicked( id )" />
+              <LikeButton 
+                
+                :id="id" 
+                
+                :is-liked="users.includes(state.user.id)" 
+                
+                :likes="users.length - 1" 
+                
+                :is-disabled="users[0] === state.user.id" 
+                
+                @like-button-clicked="() => onLikeButtonClicked( id )" 
+                
+              />
 
             </div>
 
