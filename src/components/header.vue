@@ -25,7 +25,7 @@
 
   }
 
-  const onLogoutButtonClick = async ( event ) => {
+  const onLogoutButtonClick = async () => {
 
     const options = {
 
@@ -54,6 +54,8 @@
     if ( response.ok ) router.push( { name: 'login' } );
 
   }
+
+  // console.log( state.value, "USERNAME" )
 
 </script>
 

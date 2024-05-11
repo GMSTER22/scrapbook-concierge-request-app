@@ -5,19 +5,11 @@
 
   import { state, closeModal, currentModalComponent, setCurrentModalComponent, MODAL_COMPONENTS } from '../store/state';
 
-  // console.log(currentModalComponent.component);
-
-  const onModalBackgroundClicked = e => {
+  const onModalBackgroundClicked = event => {
 
     if ( event.target.id === 'backdrop' ) closeModal();
 
   };
-
-  // onBeforeMount(() => {
-
-  //   console.log( currentModalComponent )
-
-  // });
 
 </script>
 
@@ -40,5 +32,11 @@
     </div>
 
   </Teleport>
+
+  <!-- <dialog class="::">
+
+
+
+  </dialog> -->
 
 </template>

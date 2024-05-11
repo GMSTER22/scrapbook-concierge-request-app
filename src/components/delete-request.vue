@@ -6,17 +6,16 @@
   import { useRouter } from 'vue-router';
 
   import { state, currentModalComponent, closeModal, isAuthenticated } from '../store/state';
+
+  import { fetchRequests } from '../utils/utils';
   
   import { XMarkIcon } from '@heroicons/vue/24/solid';
-import { resolve } from 'path';
 
   const router = useRouter();
 
   const request = state.requests.find( request => request._id === currentModalComponent.id );
 
   const requestValue = ref( request.title );
-
-  console.log(request);
 
   const options = {
 
@@ -42,19 +41,13 @@ import { resolve } from 'path';
 
       let response = await fetch( `http://localhost:3000/requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
 
-      console.log( response, 'RESPONSE' );
-
       if ( response.ok ) {
 
-        // let result = await response.json();
+        // state.requests = state.requests.filter( request => request._id !== currentModalComponent.id );
 
-        // console.log( 'updated request result ===>', result );
+        const fetchedRequests = await fetchRequests();
 
-        console.log( state.requests, 'BEFORE' );
-
-        state.requests = state.requests.filter( request => request._id !== currentModalComponent.id );
-
-        console.log( state.requests, 'AFTER' );
+        if ( fetchedRequests ) state.requests = fetchedRequests;
 
         closeModal();
 
@@ -64,7 +57,7 @@ import { resolve } from 'path';
 
         const responseText = await response.text();
 
-        await new Promise( ( resolve, reject ) => resolve(closeModal()) );
+        await new Promise( ( resolve, reject ) => resolve( closeModal() ) );
 
         // closeModal();
 
@@ -86,9 +79,9 @@ import { resolve } from 'path';
 
   <form class="relative w-full max-w-sm px-5 py-8 border shadow rounded bg-white" action="">
 
-    <button class="absolute top-2 right-2" type="button" @click="closeModal">
+    <button class="absolute top-2 right-2 p-1 rounded-full bg-red-700" type="button" @click="closeModal">
 
-      <XMarkIcon class="h-6 w-6 text-black" />
+      <XMarkIcon class="h-6 w-6 text-white" />
 
     </button>
 

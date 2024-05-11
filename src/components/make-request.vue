@@ -9,6 +9,8 @@
 
   import { state, closeModal, isAuthenticated } from '../store/state';
 
+  import { fetchRequests } from '../utils/utils';
+
   const router = useRouter();
   
   const requestValue = ref( null );
@@ -62,11 +64,15 @@
 
       if ( response.ok ) {
 
-        let createdRequest = await response.json();
+        let data = await response.text();
 
-        console.log( 'request creation result ===>', createdRequest );
+        const fetchedRequests =  await fetchRequests();
 
-        state.requests.push( createdRequest );
+        if ( fetchedRequests ) state.requests = fetchedRequests;
+
+        // console.log( 'request creation result ===>', createdRequest );
+
+        // state.requests.push( createdRequest );
 
         closeModal();
 
@@ -91,9 +97,9 @@
 
   <form class="relative w-full max-w-sm px-5 py-8 border shadow rounded bg-white" action="">
 
-    <button class="absolute top-2 right-2" type="button" @click="closeModal">
+    <button class="absolute top-2 right-2 p-1 rounded-full bg-red-700" type="button" @click="closeModal">
 
-      <XMarkIcon class="h-6 w-6 text-black" />
+      <XMarkIcon class="h-6 w-6 text-white" />
 
     </button>
 
@@ -105,8 +111,7 @@
 
         <label for="request"></label>
 
-        <textarea class="w-full rounded" name="request" id="request" maxlength="100" v-model="requestValue"></textarea>
-        
+        <textarea class="w-full rounded" name="request" id="request" maxlength="100" v-model="requestValue" placeholder="Enter Title"></textarea>        
 
       </div>
 

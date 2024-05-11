@@ -23,7 +23,7 @@
 
   const filteredRequests = computed( () => {
 
-    return userRequestList.value.sort( ( a, b ) => {
+    return userRequestList.value?.sort( ( a, b ) => {
 
       switch ( sortRequestValue.value ) {
 
@@ -46,21 +46,23 @@
       
     } )
     
-    .filter( request => request.title.toLocaleLowerCase().includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
-
-  } );
-
-  console.log( filteredRequests.value );
-
-  onBeforeMount( async () => {
-
-    if ( state.requests ) return;
-
-    const fetchedRequests = await fetchRequests();
+    .filter( request => request.title.toLocaleLowerCase()
       
-    state.requests = fetchedRequests;
+      .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
 
   } );
+
+  // console.log( filteredRequests.value );
+
+  // onBeforeMount( async () => {
+
+  //   if ( state.value.requests ) return;
+
+  //   const fetchedRequests = await fetchRequests();
+      
+  //   state.value.requests = fetchedRequests;
+
+  // } );
 
 </script>
 
@@ -78,7 +80,15 @@
 
     <div class="max-w-3xl mx-auto">
 
-      <p v-if="! userRequestList.length">No requests have been made</p>
+      <p 
+        
+        v-if="! userRequestList.length"
+        
+        class="text-center">
+        
+        No requests have been made
+      
+      </p>
 
       <div v-else>
 
@@ -116,7 +126,13 @@
 
         <ul v-if="filteredRequests.length">
 
-          <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }) in filteredRequests" :key="id">
+          <li class="relative grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users, released, url }) in filteredRequests" :key="id">
+
+            <span v-show="released && url" class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
+
+              released
+
+            </span>
             
             <span class="text-left sm:text-right text-xs text-neutral-600">
               
@@ -141,6 +157,8 @@
               <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
                 
               <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
+
+              <a v-show="released && url" class="bg-red-600 text-white px-1 rounded-md" :href="url">Buy Now</a>
 
               <!-- <LikeButton :is-liked="users.includes(state.user.id)" @like-button-clicked="()=> onLikeButtonClicked( id )" /> -->
 

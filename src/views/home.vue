@@ -1,7 +1,7 @@
 
 <script setup>
 
-  import { ref, computed, onBeforeMount } from 'vue';
+  import { ref, computed, onBeforeMount, onMounted } from 'vue';
 
   import Header from '../components/header.vue';
 
@@ -12,6 +12,8 @@
   import { formatDate, fetchRequests } from "../utils/utils";
 
   import { state, onLikeButtonClicked } from '../store/state';
+
+  // onMounted( () => state.value.user );
 
   const searchRequestValue = ref( '' );
   
@@ -42,7 +44,9 @@
       
     } )
     
-    .filter( request => request.title.toLocaleLowerCase().includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
+    .filter( request => request.title.toLocaleLowerCase()
+    
+      .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
 
   } );
 
@@ -74,7 +78,7 @@
 
     <div class="max-w-3xl mx-auto">
 
-      <p v-if="! state.requests.length">No requests have been made</p>
+      <p class="text-center" v-if="! state.requests.length">No requests have been made</p>
 
       <div v-else>
 
@@ -144,11 +148,11 @@
                 
                 :id="id" 
                 
-                :is-liked="users.includes(state.user.id)" 
+                :is-liked="users.includes( state.user?.id )" 
                 
                 :likes="users.length - 1" 
                 
-                :is-disabled="users[0] === state.user.id" 
+                :is-disabled="users[0] === state.user?.id" 
                 
                 @like-button-clicked="() => onLikeButtonClicked( id )" 
                 

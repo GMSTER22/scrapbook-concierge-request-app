@@ -1,5 +1,5 @@
 
-import { createApp } from 'vue';
+import { createApp, ref } from 'vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -105,7 +105,7 @@ const routes = [
 
     beforeEnter: ( to, from, next ) => {
 
-      console.log( isAdmin.value, typeof isAdmin.value, 'isAdmin' );
+      // console.log( isAdmin.value, typeof isAdmin.value, 'isAdmin' );
 
       if ( ! isAuthenticated() ) return next( { name: 'login' } );
       
@@ -132,21 +132,12 @@ router.beforeEach( async ( to, from, next ) => {
   if ( ! state.requests && isAuthenticated() ) {
 
     const fetchedRequests = await fetchRequests();
-      
-    state.requests = fetchedRequests;
 
+    if ( fetchRequests ) state.requests = fetchedRequests;
+    
   }
 
   next();
-
-  // if ( to.name == 'signup' ) {
-    
-  //   next( { name: 'signup' } );
-
-  // } else {
-  //   if ( ! isAuthenticated() ) next( { name: 'login' } );
-  //   console.log(isAuthenticated(), 'auth')
-  // }
 
 } );
 

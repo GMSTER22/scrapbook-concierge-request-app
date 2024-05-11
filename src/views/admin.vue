@@ -1,7 +1,7 @@
 
 <script setup>
 
-  import { ref, computed, onBeforeMount } from 'vue';
+  import { ref, computed } from 'vue';
 
   import Header from '../components/header.vue';
 
@@ -11,17 +11,25 @@
 
   import NotifyButton from '../components/buttons/notifyButton.vue';
   
-  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onNotifyButtonClicked } from '../store/state'; 
+  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onReleaseButtonClicked } from '../store/state';
 
-  import { formatDate, fetchRequests } from '../utils/utils';
+  import { formatDate } from '../utils/utils';
 
   const searchRequestValue = ref( '' );
   
   const sortRequestValue = ref( '' );
 
+  // const releaseStatus = ref( state.requests.map( request => request.released ) );
+
+  // const test = ref( 'false' );
+
+  // function onTest() { test.value = ! test.value }
+
   const filteredRequests = computed( () => {
 
     return state.requests.sort( ( a, b ) => {
+
+      console.log( 'COMPUTEDDDD' );
 
       switch ( sortRequestValue.value ) {
 
@@ -44,21 +52,23 @@
       
     } )
     
-    .filter( request => request.title.toLocaleLowerCase().includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
+    .filter( request => request.title.toLocaleLowerCase()
+    
+      .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
 
   } );
 
-  console.log( filteredRequests.value );
+  const requestsReleaseListIds = computed( () => state.requestsReleaseList.map( request => request.id ) );
 
-  // onBeforeMount( async () => {
+  function toggleIdFromRequestList( id, title ) {
 
-  //   if ( state.requests ) return;
+    const index = state.requestsReleaseList.findIndex( request => request.id === id );
 
-  //   const fetchedRequests = await fetchRequests();
-      
-  //   state.requests = fetchedRequests;
+    if ( index != -1 ) state.requestsReleaseList.splice( index, 1 );
 
-  // } );
+    else state.requestsReleaseList.push( { id, title } );
+
+  }
 
 </script>
 
@@ -66,7 +76,7 @@
 
   <Header />
 
-  <main class="py-14 px-5 min-h-[calc(100vh-60px)] sm:min-h-[calc(100vh-72px)] lg:px-0">
+  <main class="relative py-14 px-5 min-h-[calc(100vh-60px)] sm:min-h-[calc(100vh-72px)] lg:px-0">
 
     <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
       
@@ -114,9 +124,15 @@
 
         <ul v-if="filteredRequests.length">
 
-          <li class="grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }, index) in filteredRequests" :key="index">
+          <li class="relative grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users, released, url }, index) in filteredRequests" :key="id">
             
             <!-- <div class="flex items-center gap-x-3"> -->
+
+              <span v-show="released" class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
+
+                Released
+
+              </span>
 
               <span class="text-left text-xs text-neutral-600 sm:text-right">
                 
@@ -144,7 +160,21 @@
 
               <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
 
-              <NotifyButton @notify-button-clicked="()=> onNotifyButtonClicked( id )" />
+              <NotifyButton 
+              
+                :release="requestsReleaseListIds.includes( id )"
+                
+                @notify-button-clicked="() => toggleIdFromRequestList( id, title )" 
+                
+              />
+
+              <!-- <NotifyButton :release="requestsReleaseListIds.includes( id )"
+
+                :disable="! released || ! url"
+                
+                @notify-button-clicked="() => toggleIdFromRequestList( id, title )" 
+                
+              /> -->
 
             </div>
             
@@ -153,9 +183,21 @@
         </ul>
 
         <p v-else class="text-2xl text-center">No result found...</p>
-
+        
       </div>
 
+      <button 
+      
+        class="absolute bottom-5 right-5 px-2 py-1 rounded-md bg-purple-700 text-white" 
+        
+        type="button" 
+        
+        @click="onReleaseButtonClicked">
+        
+        Email Requesters
+      
+      </button>
+      
     </div>
 
   </main>

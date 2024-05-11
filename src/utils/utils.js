@@ -48,9 +48,7 @@ export async function fetchRequests() {
     if ( response.ok ) {
 
       const requests = await response.json();
-  
-      console.log( requests, 'requests' );
-  
+
       return requests;
 
     } else {
