@@ -76,13 +76,15 @@
 
   <Header />
 
-  <main class="relative py-14 px-5 min-h-[calc(100vh-60px)] sm:min-h-[calc(100vh-72px)] lg:px-0">
+  <main class="py-14 px-5 min-h-[calc(100vh-60px)] sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0">
 
-    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
+    <!-- py-14 px-5 sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0 min-h-[calc(100vh-60px)] -->
+
+    <!-- <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
       
       Admin
     
-    </h1>
+    </h1> -->
 
     <div class="max-w-4xl mx-auto">
 
@@ -90,15 +92,15 @@
 
       <div v-else>
 
-        <div class="flex justify-between mb-20">
+        <form class="flex justify-between mb-20">
 
-          <form class="w-1/2" action="">
+          <fieldset class="w-1/2" action="">
 
             <label for="search"></label>
 
             <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue">
 
-          </form>
+          </fieldset>
 
           <fieldset class="flex flex-col">
 
@@ -120,7 +122,7 @@
 
           </fieldset>
 
-        </div>
+        </form>
 
         <ul v-if="filteredRequests.length">
 
@@ -188,7 +190,7 @@
 
       <button 
       
-        class="absolute bottom-5 right-5 px-2 py-1 rounded-md bg-purple-700 text-white" 
+        class="absolute bottom-5 right-5 px-4 py-2 rounded-md bg-purple-700 text-white" 
         
         type="button" 
         

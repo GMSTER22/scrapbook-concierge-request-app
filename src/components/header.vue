@@ -55,8 +55,6 @@
 
   }
 
-  // console.log( state.value, "USERNAME" )
-
 </script>
 
 <template>
@@ -71,15 +69,18 @@
 
       </div>
 
-      <nav :class="['absolute top-[60px] left-0 flex flex-col items-center gap-x-8 gap-y-5 w-full h-0 text-ellipsis overflow-hidden bg-neutral-200 text-purple-900 font-semibold sm:relative sm:top-auto sm:left-auto sm:flex-row sm:w-auto sm:h-auto sm:bg-transparent transition-[height_padding] duration-300', { 'h-[212px] py-5': isNavOpen }]" aria-labelledby="menu-button">
+      <nav :class="['absolute top-[60px] left-0 flex flex-col items-center gap-x-8 gap-y-5 w-full h-0 z-10 text-ellipsis overflow-hidden text-purple-900 bg-neutral-200 font-semibold md:relative md:top-auto md:left-auto md:flex-row md:w-auto md:h-auto md:bg-transparent transition-[height_padding] duration-300', { 'h-[212px] py-5': isNavOpen }]" aria-labelledby="menu-button">
 
         <router-link to="/my-requests">My requests</router-link>
 
+        <router-link to="/released-requests">Released Requests</router-link>
+
         <router-link v-show="isAdmin" to="/admin">Admin</router-link>
 
-        <div>
+        <!-- <div>
 
           <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">Make request</button>
+          <button type="button" class="" @click="onMakeRequestButtonClick">Make request</button>
 
           <div :aria-hidden="! state.open">
 
@@ -87,7 +88,7 @@
 
           </div>
 
-        </div>
+        </div> -->
 
         <div v-show="state.user?.username">
 
@@ -99,7 +100,7 @@
 
       </nav>
 
-      <button class="sm:hidden" type="button" id="menu-button" aria-label="Menu" :aria-expanded="isNavOpen" @click="onMenuButtonClick">
+      <button class="md:hidden" type="button" id="menu-button" aria-label="Menu" :aria-expanded="isNavOpen" @click="onMenuButtonClick">
 
         <Bars3Icon class="h-6 w-6" />
 

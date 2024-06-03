@@ -5,6 +5,8 @@
 
   import Header from '../components/header.vue';
 
+  import Modal from '../components/modal.vue';
+
   import LikeButton from '../components/buttons/likeButton.vue';
 
   import UpdateButton from '../components/buttons/updateButton.vue';
@@ -13,7 +15,8 @@
 
   import { formatDate, fetchRequests } from '../utils/utils';
 
-  import { state, onLikeButtonClicked, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
+  import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, onLikeButtonClicked, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
+  // import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, isAdmin } from '../store/state';
 
   const searchRequestValue = ref( '' );
   
@@ -52,17 +55,13 @@
 
   } );
 
-  // console.log( filteredRequests.value );
+  const onMakeRequestButtonClick = () => {
 
-  // onBeforeMount( async () => {
+    if ( currentModalComponent.component !== MODAL_COMPONENTS.MAKE_REQUEST ) setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST );
 
-  //   if ( state.value.requests ) return;
+    openModal();
 
-  //   const fetchedRequests = await fetchRequests();
-      
-  //   state.value.requests = fetchedRequests;
-
-  // } );
+  }
 
 </script>
 
@@ -70,13 +69,13 @@
 
   <Header />
 
-  <main class="py-14 px-5 lg:px-0 min-h-[calc(100vh-60px)] sm:min-h-[calc(100vh-72px)]">
+  <main class="py-14 px-5 sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0 min-h-[calc(100vh-60px)]">
 
-    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
+    <!-- <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
       
       My Requests
     
-    </h1>
+    </h1> -->
 
     <div class="max-w-3xl mx-auto">
 
@@ -84,91 +83,109 @@
         
         v-if="! userRequestList.length"
         
-        class="text-center">
+        class="text-2xl text-center">
         
-        No requests have been made
+        You haven't made any requests yet
       
       </p>
 
-      <div v-else>
+      <div>
 
-        <div class="flex justify-between mb-20">
+        <div :class="[ 'my-5', userRequestList.length ? 'text-right' : 'text-center' ]">
 
-          <form class="w-1/2" action="">
+          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
+            
+            Make A Request
 
-            <label for="search"></label>
-
-            <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue">
-
-          </form>
-
-          <fieldset class="flex flex-col">
-
-            <label for="sort"><span class="sr-only">Sort By</span></label>
-
-            <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue">
-
-              <option value="" disabled>Sort by</option>
-
-              <option value="date-asc">Date Asc</option>
-
-              <option value="date-desc">Date Desc</option>
-              
-              <option value="likes-asc">Likes Asc</option>
-
-              <option value="likes-desc">Likes Desc</option>
-
-            </select>
-
-          </fieldset>
+          </button>
 
         </div>
 
-        <ul v-if="filteredRequests.length">
+        <div v-if="userRequestList.length">
 
-          <li class="relative grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users, released, url }) in filteredRequests" :key="id">
+          <form class="flex justify-between mb-20">
 
-            <span v-show="released && url" class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
+            <fieldset class="w-1/2">
 
-              released
+              <label for="search"></label>
 
-            </span>
-            
-            <span class="text-left sm:text-right text-xs text-neutral-600">
-              
-              {{ formatDate( createdAt ) }}
-            
-            </span>
+              <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue">
 
-            <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
+            </fieldset>
 
-              {{ title }}
+            <fieldset class="flex flex-col">
 
-            </span>
+              <label for="sort"><span class="sr-only">Sort By</span></label>
 
-            <div class="flex gap-x-1 items-center justify-self-end">
+              <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue">
 
-              <span class="px-3">
+                <option value="" disabled>Sort by</option>
 
-                {{ users.length - 1 }}
+                <option value="date-asc">Date Asc</option>
 
-              </span>
-
-              <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
+                <option value="date-desc">Date Desc</option>
                 
-              <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
+                <option value="likes-asc">Likes Asc</option>
 
-              <a v-show="released && url" class="bg-red-600 text-white px-1 rounded-md" :href="url">Buy Now</a>
+                <option value="likes-desc">Likes Desc</option>
 
-              <!-- <LikeButton :is-liked="users.includes(state.user.id)" @like-button-clicked="()=> onLikeButtonClicked( id )" /> -->
+              </select>
 
-            </div>
+            </fieldset>
 
-          </li>
+          </form>
 
-        </ul>
+          <div>
 
-        <p v-else class="text-2xl text-center">No result found...</p>
+            <ul v-if="filteredRequests.length">
+
+              <li class="relative grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users, released, url }) in filteredRequests" :key="id">
+
+                <span v-show="released && url" class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
+
+                  released
+
+                </span>
+                
+                <span class="text-left sm:text-right text-xs text-neutral-600">
+                  
+                  {{ formatDate( createdAt ) }}
+                
+                </span>
+
+                <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
+
+                  {{ title }}
+
+                </span>
+
+                <div class="flex gap-x-1 items-center justify-self-end">
+
+                  <span class="px-3">
+
+                    {{ users.length - 1 }}
+
+                  </span>
+
+                  <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
+                    
+                  <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
+
+                  <a v-show="released && url" class="bg-red-600 text-white px-1 rounded-md" :href="url">Buy Now</a>
+
+                  <!-- <LikeButton :is-liked="users.includes(state.user.id)" @like-button-clicked="()=> onLikeButtonClicked( id )" /> -->
+
+                </div>
+
+              </li>
+
+            </ul>
+
+            <p v-else class="text-2xl text-center">No result found...</p>
+
+          </div>
+
+        </div>
 
       </div>
 

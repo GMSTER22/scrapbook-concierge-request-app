@@ -17,6 +17,8 @@ import Signup from './views/signup.vue';
 
 import MyRequests from './views/my-requests.vue';
 
+import ReleasedRequests from './views/released-requests.vue';
+
 import Admin from './views/admin.vue';
 
 import PasswordForgot from './views/password-forgot.vue';
@@ -97,6 +99,22 @@ const routes = [
 
   }, {
 
+    path: '/released-requests',
+
+    name: 'released-requests',
+
+    component: ReleasedRequests,
+
+    beforeEnter: ( to, from, next ) => {
+
+      if ( ! isAuthenticated() ) next( { name: 'login' } );
+
+      else next();
+
+    }
+
+  }, {
+
     path: '/admin',
 
     name: 'admin',
@@ -121,6 +139,8 @@ const routes = [
 
 const router = createRouter( {
 
+  linkExactActiveClass: 'border-b-[1px] border-purple-900',
+  
   history: createWebHistory(),
 
   routes

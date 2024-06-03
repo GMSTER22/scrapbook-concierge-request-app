@@ -1,18 +1,20 @@
 
 <script setup>
 
-  // import { reactive } from 'vue'
+  import { state } from './store/state';
 
-  // const state = reactive({ count: 0 })
-
-  // function increment() {
-  //   state.count++
-  // }
+  import Modal from './components/modal.vue';
 
 </script>
 
 <template>
 
-  <router-view></router-view>
+  <div :aria-hidden="! state.open">
+    
+    <Modal />
+    
+  </div>
 
+  <router-view></router-view>
+  
 </template>

@@ -68,13 +68,13 @@
 
   <Header />
 
-  <main class="py-14 px-5 lg:px-0 min-h-[calc(100vh-60px)] sm:min-h-[calc(100vh-72px)]">
+  <main class="py-14 px-5 sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0 min-h-[calc(100vh-60px)]">
 
-    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
+    <!-- <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
       
       Requests
     
-    </h1>
+    </h1> -->
 
     <div class="max-w-3xl mx-auto">
 

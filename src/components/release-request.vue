@@ -5,7 +5,7 @@
 
   import { useRouter } from 'vue-router';
 
-  import { state, currentModalComponent, closeModal } from '../store/state';
+  import { state, currentModalComponent, closeModal, isAdmin, isAuthenticated } from '../store/state';
   
   import { XMarkIcon, MinusCircleIcon } from '@heroicons/vue/24/solid';
 
@@ -21,19 +21,19 @@
 
   }
 
-  const onFormSubmit = async event => {
+  const onEmailRequestersButtonClick = async () => {
 
-    event.preventDefault();
-
-    if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
+    if ( ! isAuthenticated() || ! isAdmin ) return router.push( { name: 'login' } );
 
     try {
 
+      const requestIds = state.requestsReleaseList.map( request => request.id );
+
       const options = {
 
-        method: 'PATCH',
+        method: 'POST',
 
-        body: JSON.stringify( { released: ! request.released } ),
+        body: JSON.stringify( { requestIds } ),
 
         headers: {
 
@@ -45,15 +45,19 @@
 
       }
 
-      // let response = await fetch( `http://localhost:3000/requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
+      console.log( requestIds );
 
-      // if ( response.ok ) {
+      let response = await fetch( 'http://localhost:3000/notifications/notify-users', options );
 
-      //   state.requests.find( request => request._id === currentModalComponent.id ).released = ! request.released;
+      if ( response.ok ) {
 
-      //   closeModal();
+        // state.requests.find( request => request._id === currentModalComponent.id ).released = ! request.released;
 
-      // }
+        alert( 'Email requesters successful' );
+
+        closeModal();
+
+      }
       
     } catch (error) {
       
@@ -121,7 +125,7 @@
 
         </p>
 
-        <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button" @click="onRequestSubmit">
+        <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button" @click="onEmailRequestersButtonClick">
 
           Email Requesters
 
