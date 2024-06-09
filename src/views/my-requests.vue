@@ -9,24 +9,35 @@
 
   import LikeButton from '../components/buttons/likeButton.vue';
 
+  import Pagination from '../components/pagination.vue';
+
+  import Spinner from '../components/spinner.vue';
+
   import UpdateButton from '../components/buttons/updateButton.vue';
   
   import DeleteButton from '../components/buttons/deleteButton.vue';
 
   import { formatDate, fetchRequests } from '../utils/utils';
 
-  import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, onLikeButtonClicked, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
-  // import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, isAdmin } from '../store/state';
+  import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
 
+  const REQUESTS_PER_PAGE = 15;
+
+  const isLoadingUserRequests = ref( true );
+
+  const userRequests = ref( null );
+
+  const currentPage = ref( 1 );
+
+  const totalPages = ref( 1 );
+  
   const searchRequestValue = ref( '' );
   
   const sortRequestValue = ref( '' );
-  
-  const userRequestList = computed( () => state.requests.filter( ( { users } ) => users[0] === state.user.id ) );
 
   const filteredRequests = computed( () => {
 
-    return userRequestList.value?.sort( ( a, b ) => {
+    return userRequests.value?.sort( ( a, b ) => {
 
       switch ( sortRequestValue.value ) {
 
@@ -55,6 +66,14 @@
 
   } );
 
+  const options = {
+
+    method: "GET",
+
+    credentials: 'include'
+
+  }
+
   const onMakeRequestButtonClick = () => {
 
     if ( currentModalComponent.component !== MODAL_COMPONENTS.MAKE_REQUEST ) setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST );
@@ -63,45 +82,95 @@
 
   }
 
+  const fetchPage = async ( page ) => {
+
+    if ( page === currentPage.value ) return;
+
+    isLoadingUserRequests.value = true;
+
+    const response = await fetch( `http://localhost:3000/requests/users/${ state.user.id }?page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
+
+    if ( response.ok ) {
+
+      const data = await response.json();
+
+      userRequests.value = data.requests;
+
+      currentPage.value = data.page;
+
+      totalPages.value = data.total;
+
+    }
+      
+    isLoadingUserRequests.value = false;
+
+  }
+
+  onBeforeMount( async () => {
+
+    const response = await fetch( `http://localhost:3000/requests/users/${ state.user.id }?page=1&limit=${REQUESTS_PER_PAGE}`, options );
+
+    if ( response.ok ) {
+
+      const data = await response.json();
+
+      userRequests.value = data.requests;
+
+      currentPage.value = data.page;
+
+      totalPages.value = data.total;
+
+    }
+      
+    isLoadingUserRequests.value = false;
+
+  } )
+
 </script>
 
 <template>
 
   <Header />
 
-  <main class="py-14 px-5 sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0 min-h-[calc(100vh-60px)]">
-
-    <!-- <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
-      
-      My Requests
-    
-    </h1> -->
+  <main class="min-h-[calc(100vh-60px)] py-14 px-5 sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto">
 
-      <p 
-        
-        v-if="! userRequestList.length"
-        
-        class="text-2xl text-center">
-        
-        You haven't made any requests yet
-      
-      </p>
+      <div v-if="isLoadingUserRequests">
 
-      <div>
+        <Spinner />
 
-        <div :class="[ 'my-5', userRequestList.length ? 'text-right' : 'text-center' ]">
+      </div>
+
+      <div v-else>
+
+        <div v-if="! userRequests.length" class="text-center">
+        
+          <p class="mb-8 text-2xl">
+
+            You haven't made any requests yet
+
+          </p>
 
           <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
-            
+              
             Make A Request
 
           </button>
-
+        
         </div>
 
-        <div v-if="userRequestList.length">
+        <div v-else>
+
+          <div class="my-5 text-right">
+
+            <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
+              
+              Make A Request
+
+            </button>
+
+          </div>
 
           <form class="flex justify-between mb-20">
 
@@ -135,61 +204,69 @@
 
           </form>
 
-          <div>
+          <ul v-if="filteredRequests.length">
 
-            <ul v-if="filteredRequests.length">
+            <li class="relative grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users, released, url }) in filteredRequests" :key="id">
 
-              <li class="relative grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users, released, url }) in filteredRequests" :key="id">
+              <span v-show="released && url" class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
 
-                <span v-show="released && url" class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
+                released
 
-                  released
+              </span>
+              
+              <span class="text-left sm:text-right text-xs text-neutral-600">
+                
+                {{ formatDate( createdAt ) }}
+              
+              </span>
+
+              <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
+
+                {{ title }}
+
+              </span>
+
+              <div class="flex gap-x-1 items-center justify-self-end">
+
+                <span class="px-3">
+
+                  {{ users.length - 1 }}
 
                 </span>
-                
-                <span class="text-left sm:text-right text-xs text-neutral-600">
+
+                <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
                   
-                  {{ formatDate( createdAt ) }}
-                
-                </span>
+                <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
 
-                <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
+                <a v-show="released && url" class="bg-red-600 text-white px-1 rounded-md" :href="url">Buy Now</a>
 
-                  {{ title }}
+                <!-- <LikeButton :is-liked="users.includes(state.user.id)" @like-button-clicked="()=> onLikeButtonClicked( id )" /> -->
 
-                </span>
+              </div>
 
-                <div class="flex gap-x-1 items-center justify-self-end">
+            </li>
 
-                  <span class="px-3">
+          </ul>
 
-                    {{ users.length - 1 }}
-
-                  </span>
-
-                  <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
-                    
-                  <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
-
-                  <a v-show="released && url" class="bg-red-600 text-white px-1 rounded-md" :href="url">Buy Now</a>
-
-                  <!-- <LikeButton :is-liked="users.includes(state.user.id)" @like-button-clicked="()=> onLikeButtonClicked( id )" /> -->
-
-                </div>
-
-              </li>
-
-            </ul>
-
-            <p v-else class="text-2xl text-center">No result found...</p>
-
-          </div>
+          <p v-else class="text-2xl text-center">
+            
+            No result found...
+          
+          </p>
 
         </div>
 
       </div>
 
     </div>
+
+    <Pagination 
+      
+      :current="currentPage" 
+      
+      :total="totalPages" 
+      
+      @change-page="( page ) => fetchPage( page )" />
 
   </main>
 

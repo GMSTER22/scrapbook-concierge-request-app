@@ -7,13 +7,25 @@
 
   import Modal from '../components/modal.vue';
 
+  import Spinner from '../components/spinner.vue';
+
+  import Pagination from '../components/pagination.vue';
+
   import LikeButton from '../components/buttons/likeButton.vue';
 
   import { formatDate, fetchRequests } from "../utils/utils";
 
-  import { state, onLikeButtonClicked } from '../store/state';
+  import { state, openModal, currentModalComponent, setCurrentModalComponent, MODAL_COMPONENTS, onLikeButtonClicked } from '../store/state';
 
-  // onMounted( () => state.value.user );
+  const REQUESTS_PER_PAGE = 15;
+
+  const isLoadingRequests = ref( true );
+
+  const requests = ref( null );
+
+  const currentPage = ref( 1 );
+
+  const totalPages = ref( 1 );
 
   const searchRequestValue = ref( '' );
   
@@ -21,7 +33,7 @@
 
   const filteredRequests = computed( () => {
 
-    return state.requests.sort( ( a, b ) => {
+    return requests.value.sort( ( a, b ) => {
 
       switch ( sortRequestValue.value ) {
 
@@ -50,17 +62,67 @@
 
   } );
 
-  console.log( filteredRequests.value );
+  const options = {
 
-  // onBeforeMount( async () => {
+    method: "GET",
 
-  //   if ( state.requests ) return;
+    credentials: 'include'
 
-  //   const fetchedRequests = await fetchRequests();
+  }
+
+  const onMakeRequestButtonClick = () => {
+
+    if ( currentModalComponent.component !== MODAL_COMPONENTS.MAKE_REQUEST ) setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST );
+
+    openModal();
+
+  }
+
+  const fetchPage = async ( page ) => {
+
+    console.log( page );
+
+    if ( page === currentPage.value ) return;
+
+    isLoadingRequests.value = true;
+
+    const response = await fetch( `http://localhost:3000/requests?page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
+
+    if ( response.ok ) {
+
+      const data = await response.json();
+
+      requests.value = data.requests;
+
+      currentPage.value = data.page;
+
+      totalPages.value = data.total;
+
+    }
       
-  //   state.requests = fetchedRequests;
+    isLoadingRequests.value = false;
 
-  // } );
+  }
+
+  onBeforeMount( async () => {
+
+    const response = await fetch( `http://localhost:3000/requests?page=1&limit=${REQUESTS_PER_PAGE}`, options );
+
+    if ( response.ok ) {
+
+      const data = await response.json();
+
+      requests.value = data.requests;
+
+      currentPage.value = data.page;
+
+      totalPages.value = data.total;
+
+    }
+      
+    isLoadingRequests.value = false;
+    
+  } )
 
 </script>
 
@@ -68,107 +130,138 @@
 
   <Header />
 
-  <main class="py-14 px-5 sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0 min-h-[calc(100vh-60px)]">
+  <!-- <main class="min-h-[calc(100vh-60px)] grid-rows-[1fr_auto] py-14 px-5 sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0"> -->
+  <main class="min-h-[calc(100vh-60px)] py-14 sm:py-28 lg:px-0">
 
-    <!-- <h1 class="text-3xl sm:text-4xl font-bold text-center mb-20">
-      
-      Requests
-    
-    </h1> -->
+    <div class="max-w-3xl mx-auto mb-14">
 
-    <div class="max-w-3xl mx-auto">
+      <div v-if="isLoadingRequests">
 
-      <p class="text-center" v-if="! state.requests.length">No requests have been made</p>
+        <Spinner />
+
+      </div>
 
       <div v-else>
 
-        <div class="justify-between flex mb-20">
+        <div v-if="! requests.length" class="text-center">
+        
+          <p class="mb-8 text-2xl">
 
-          <form class="w-1/2" action="">
+            No requests made
 
-            <label for="search"></label>
+          </p>
 
-            <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue">
+          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
+              
+            Make A Request
+
+          </button>
+        
+        </div>
+
+        <div v-else>
+
+          <form class="justify-between flex mb-20">
+
+            <fieldset class="w-1/2">
+
+              <label for="search"></label>
+
+              <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue">
+
+            </fieldset>
+
+            <fieldset class="flex flex-col">
+
+              <label for="sort">
+                
+                <span class="sr-only">Sort By</span>
+              
+              </label>
+
+              <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue">
+
+                <option value="" disabled>Sort by</option>
+
+                <!-- <option value="release">Released</option> -->
+                
+                <option value="date-asc">Date Asc</option>
+
+                <option value="date-desc">Date Desc</option>
+                
+                <option value="likes-asc">Likes Asc</option>
+
+                <option value="likes-desc">Likes Desc</option>
+
+              </select>
+
+            </fieldset>
 
           </form>
 
-          <fieldset class="flex flex-col">
+          <ul v-if="filteredRequests.length">
 
-            <label for="sort">
+            <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }) in filteredRequests" :key="id">
               
-              <span class="sr-only">Sort By</span>
-            
-            </label>
-
-            <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue">
-
-              <option value="" disabled>Sort by</option>
-
-              <!-- <option value="release">Released</option> -->
+              <span class="text-left sm:text-right text-xs text-neutral-600">
+                
+                {{ formatDate( createdAt ) }}
               
-              <option value="date-asc">Date Asc</option>
+              </span>
 
-              <option value="date-desc">Date Desc</option>
-              
-              <option value="likes-asc">Likes Asc</option>
+              <span class="px-5 mb-3 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:mb-0 sm:text-base sm:text-left">
 
-              <option value="likes-desc">Likes Desc</option>
-
-            </select>
-
-          </fieldset>
-
-        </div>
-
-        <ul v-if="filteredRequests.length">
-
-          <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }) in filteredRequests" :key="id">
-            
-            <span class="text-left sm:text-right text-xs text-neutral-600">
-              
-              {{ formatDate( createdAt ) }}
-            
-            </span>
-
-            <span class="px-5 mb-3 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:mb-0 sm:text-base sm:text-left">
-
-              {{ title }}
-
-            </span>
-
-            <div class="flex gap-x-1 items-center justify-self-end">
-
-              <span>
-
-                {{ users.length - 1 }}
+                {{ title }}
 
               </span>
 
-              <LikeButton 
-                
-                :id="id" 
-                
-                :is-liked="users.includes( state.user?.id )" 
-                
-                :likes="users.length - 1" 
-                
-                :is-disabled="users[0] === state.user?.id" 
-                
-                @like-button-clicked="() => onLikeButtonClicked( id )" 
-                
-              />
+              <div class="flex gap-x-1 items-center justify-self-end">
 
-            </div>
+                <span>
 
-          </li>
+                  {{ users.length - 1 }}
 
-        </ul>
+                </span>
 
-        <p v-else class="text-2xl text-center">No result found...</p>
+                <LikeButton 
+                  
+                  :id="id" 
+                  
+                  :is-liked="users.includes( state.user?.id )" 
+                  
+                  :likes="users.length - 1" 
+                  
+                  :is-disabled="users[0] === state.user?.id" 
+                  
+                  @like-button-clicked="() => onLikeButtonClicked( id )" 
+                  
+                />
+
+              </div>
+
+            </li>
+
+          </ul>
+
+          <p v-else class="text-2xl text-center">
+            
+            No result found...
+          
+          </p>
+
+        </div>
 
       </div>
 
     </div>
+
+    <Pagination 
+    
+      :current="currentPage" 
+      
+      :total="totalPages" 
+      
+      @change-page="( page ) => fetchPage( page )" />
 
   </main>
 
