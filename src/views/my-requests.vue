@@ -261,6 +261,8 @@
     </div>
 
     <Pagination 
+
+      v-if="userRequests.length"
       
       :current="currentPage" 
       
