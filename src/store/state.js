@@ -45,7 +45,9 @@ export const state = reactive( {
 
 // functions interacting with state
 
-export const onLikeButtonClicked = async ( id ) => {
+export const onLikeButtonClicked = async ( request ) => {
+
+  const { id } = request;
 
   const options = {
 
@@ -73,49 +75,27 @@ export const onLikeButtonClicked = async ( id ) => {
 
       console.log( result );
 
-      const fetchedRequests = await fetchRequests();
-
-      if ( fetchedRequests )  state.requests = fetchRequests;
-
-      // const requestIndex = state.requests.findIndex( request => request._id === id );
-
-      // const request = state.requests[ requestIndex ];
-
-      // if ( requestIndex === -1 ) return;
-
-      // if ( request.users.includes( state.user.id ) ) request.users = request.users.filter( userId => userId !== state.user.id );
-
-      // else request.users.push( state.user.id );
-
     }
     
   } catch ( error ) {
     
     console.log( error );
 
-  }
-    
-  // const request = state.requests.find( request => request._id === id );
-
-  // if ( request.liked ) request.votes -= 1;
-  
-  // else request.votes += 1;
-
-  // request.liked = ! request.liked;
+  };
 
 }
 
-export const onUpdateButtonClicked = id => {
+export const onUpdateButtonClicked = request => {
 
-  setCurrentModalComponent( MODAL_COMPONENTS.UPDATE_REQUEST, id );
+  setCurrentModalComponent( MODAL_COMPONENTS.UPDATE_REQUEST, request );
 
   openModal();
 
 }
 
-export const onDeleteButtonClicked = id => {
+export const onDeleteButtonClicked = request => {
 
-  setCurrentModalComponent( MODAL_COMPONENTS.DELETE_REQUEST, id );
+  setCurrentModalComponent( MODAL_COMPONENTS.DELETE_REQUEST, request );
 
   openModal();
 
@@ -141,11 +121,11 @@ export const closeModal = () => {
 
 }
 
-export const setCurrentModalComponent = ( component, id = null ) => {
+export const setCurrentModalComponent = ( component, request = null ) => {
 
   currentModalComponent.component = component;
 
-  currentModalComponent.id = id;
+  currentModalComponent.request = request;
 
 }
 

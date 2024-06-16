@@ -5,7 +5,7 @@
 
   const props = defineProps( {
 
-    release: Boolean,
+    released: Boolean,
 
     disable: Boolean
   
@@ -29,11 +29,9 @@
     
     @click="emitNotifyButtonClicked" 
     
-    :release="release" 
-    
     :disabled="disable">
 
-    <MinusCircleIcon v-if="release" class="h-7 w-7 fill-red-700" />
+    <MinusCircleIcon v-if="released" class="h-7 w-7 fill-red-700" />
 
     <PlusCircleIcon v-else class="h-7 w-7 fill-green-700" />
 

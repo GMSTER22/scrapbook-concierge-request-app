@@ -21,7 +21,7 @@
 
   import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
 
-  const REQUESTS_PER_PAGE = 15;
+  const REQUESTS_PER_PAGE = 20;
 
   const isLoadingUserRequests = ref( true );
 
@@ -132,11 +132,57 @@
 
   <Header />
 
-  <main class="min-h-[calc(100vh-60px)] py-14 px-5 sm:py-28 lg:px-0">
+  <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto">
 
-      <div v-if="isLoadingUserRequests">
+      <div>
+
+        <div class="mb-5 text-right">
+
+          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
+            
+            Make A Request
+
+          </button>
+
+        </div>
+
+        <form class="flex justify-between mb-20">
+
+          <fieldset class="w-1/2">
+
+            <label for="search"></label>
+
+            <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue" :disabled="isLoadingUserRequests">
+
+          </fieldset>
+
+          <fieldset class="flex flex-col">
+
+            <label for="sort"><span class="sr-only">Sort By</span></label>
+
+            <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue" :disabled="isLoadingUserRequests">
+
+              <option value="" disabled>Sort by</option>
+
+              <option value="date-asc">Date Asc</option>
+
+              <option value="date-desc">Date Desc</option>
+              
+              <option value="likes-asc">Likes Asc</option>
+
+              <option value="likes-desc">Likes Desc</option>
+
+            </select>
+
+          </fieldset>
+
+        </form>
+
+      </div>
+
+      <div v-if="isLoadingUserRequests" class="mb-7">
 
         <Spinner />
 
@@ -152,63 +198,24 @@
 
           </p>
 
-          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
+          <!-- <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
               
             Make A Request
 
-          </button>
+          </button> -->
         
         </div>
 
         <div v-else>
 
-          <div class="my-5 text-right">
-
-            <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
-              
-              Make A Request
-
-            </button>
-
-          </div>
-
-          <form class="flex justify-between mb-20">
-
-            <fieldset class="w-1/2">
-
-              <label for="search"></label>
-
-              <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue">
-
-            </fieldset>
-
-            <fieldset class="flex flex-col">
-
-              <label for="sort"><span class="sr-only">Sort By</span></label>
-
-              <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue">
-
-                <option value="" disabled>Sort by</option>
-
-                <option value="date-asc">Date Asc</option>
-
-                <option value="date-desc">Date Desc</option>
-                
-                <option value="likes-asc">Likes Asc</option>
-
-                <option value="likes-desc">Likes Desc</option>
-
-              </select>
-
-            </fieldset>
-
-          </form>
-
           <ul v-if="filteredRequests.length">
 
-            <li class="relative grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users, released, url }) in filteredRequests" :key="id">
+            <li class="relative grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="request in filteredRequests" :key="request._id">
+            <!-- ({ _id: id, createdAt, title, users, released, url }) -->
 
-              <span v-show="released && url" class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
+              <span v-show="request.released && request.url" 
+              
+                class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
 
                 released
 
@@ -216,13 +223,13 @@
               
               <span class="text-left sm:text-right text-xs text-neutral-600">
                 
-                {{ formatDate( createdAt ) }}
+                {{ formatDate( request.createdAt ) }}
               
               </span>
 
               <span class="px-5 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:text-base sm:text-left">
 
-                {{ title }}
+                {{ request.title }}
 
               </span>
 
@@ -230,15 +237,33 @@
 
                 <span class="px-3">
 
-                  {{ users.length - 1 }}
+                  {{ request.users.length - 1 }}
 
                 </span>
 
-                <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( id )" />
+                <UpdateButton 
+                
+                  v-if="! request.released" 
                   
-                <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( id )" />
+                  @update-button-clicked="()=> onUpdateButtonClicked( request )" />
+                  
+                <DeleteButton 
+                
+                  v-if="! request.released" 
+                  
+                  @delete-button-clicked="()=> onDeleteButtonClicked( request )" />
 
-                <a v-show="released && url" class="bg-red-600 text-white px-1 rounded-md" :href="url">Buy Now</a>
+                <a v-show="request.released && request.url" 
+                
+                  class="bg-green-700 text-white px-2 rounded-md" 
+
+                  target="_blank"
+                  
+                  :href="request.url">
+                  
+                  Buy Now
+                
+                </a>
 
                 <!-- <LikeButton :is-liked="users.includes(state.user.id)" @like-button-clicked="()=> onLikeButtonClicked( id )" /> -->
 
@@ -262,7 +287,9 @@
 
     <Pagination 
 
-      v-if="userRequests.length"
+      v-if="userRequests?.length" 
+      
+      :disabled="isLoadingUserRequests"
       
       :current="currentPage" 
       

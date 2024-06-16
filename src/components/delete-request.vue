@@ -13,7 +13,7 @@
 
   const router = useRouter();
 
-  const request = state.requests.find( request => request._id === currentModalComponent.id );
+  const request = currentModalComponent.request;
 
   const requestValue = ref( request.title );
 
@@ -39,11 +39,9 @@
 
     try {
 
-      let response = await fetch( `http://localhost:3000/requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
+      let response = await fetch( `http://localhost:3000/requests/${ currentModalComponent.request.id }/users/${ state.user.id }`, options );
 
       if ( response.ok ) {
-
-        // state.requests = state.requests.filter( request => request._id !== currentModalComponent.id );
 
         const fetchedRequests = await fetchRequests();
 
@@ -67,7 +65,7 @@
       
     } catch (error) {
       
-      console.log( error, 'BOOM YAKAKA' );
+      console.log( error );
       
     }
 
@@ -77,7 +75,7 @@
 
 <template>
 
-  <form class="relative w-full max-w-sm px-5 py-8 border shadow rounded bg-white" action="">
+  <form class="relative w-full max-w-sm px-5 py-8 border shadow rounded bg-white">
 
     <button class="absolute top-2 right-2 p-1 rounded-full bg-red-700" type="button" @click="closeModal">
 

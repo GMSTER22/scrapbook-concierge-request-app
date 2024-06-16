@@ -13,7 +13,7 @@
 
   const router = useRouter();
 
-  const request = state.requests.find( request => request._id === currentModalComponent.id );
+  const request = currentModalComponent.request;
 
   const requestTitle = ref( request.title );
 
@@ -21,7 +21,7 @@
 
   const requestReleased = ref( request.released ? 'true' : 'false' );
 
-  const showUrlField = computed( () =>  requestReleased.value === 'true' && isAdmin );
+  const isUrlField = computed( () =>  requestReleased.value === 'true' && isAdmin );
 
   const numberOfCharactersLeft = computed( () => {
 
@@ -115,11 +115,11 @@
       
       <Transition>
 
-        <div v-show="showUrlField" class="mb-4">
+        <div v-show="isUrlField" class="mb-4">
 
           <label class="block mb-1" for="url">URL</label>
 
-          <input class="w-full rounded" type="text" name="url" id="url" v-model="requestURL">
+          <input class="w-full rounded" type="text" name="url" id="url" v-model="requestURL" :required="isAdmin && requestReleased">
 
         </div>
 
@@ -182,7 +182,7 @@
   .v-enter-active, 
   .v-leave-active {
 
-    transition: opacity 0.1s ease;
+    transition: all 0.3s ease;
 
   }
 
@@ -190,6 +190,8 @@
   .v-leave-to {
 
     opacity: 0;
+
+    transform: translateX( -200px );
 
   }
 

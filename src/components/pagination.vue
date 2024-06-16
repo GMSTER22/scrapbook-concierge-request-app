@@ -9,7 +9,9 @@
 
     current: Number,
 
-    total: Number
+    total: Number,
+
+    disabled: Boolean
 
   } );
 
@@ -95,7 +97,9 @@
     
       :aria-selected="props.current === firstButton" 
 
-      :hidden="props.total < props.current"
+      :hidden="props.total < props.current" 
+      
+      :disabled="props.disabled"
       
       class="flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border" 
       
@@ -113,7 +117,7 @@
     
       :aria-selected="props.current === secondButton" 
       
-      :disabled="typeof secondButton == 'string'" 
+      :disabled="typeof secondButton == 'string' || props.disabled" 
       
       :aria-hidden="props.total < 2"
       
@@ -133,7 +137,9 @@
     
       :aria-selected="props.current === thirdButton" 
       
-      :aria-hidden="props.total < 3"
+      :aria-hidden="props.total < 3" 
+      
+      :disabled="props.disabled"
       
       class="px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border aria-selected:bg-gray-100 aria-hidden:hidden" 
       
@@ -153,6 +159,8 @@
       
       :aria-hidden="props.total < 4" 
       
+      :disabled="props.disabled"
+      
       class="px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border aria-selected:bg-gray-100 aria-hidden:hidden" 
       
       type="button" 
@@ -169,7 +177,9 @@
     
       :aria-selected="props.current === fifthButton" 
 
-      :aria-hidden="props.total < 5"
+      :aria-hidden="props.total < 5" 
+      
+      :disabled="props.disabled"
       
       class="px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border aria-selected:bg-gray-100 aria-hidden:hidden" 
       
@@ -187,7 +197,7 @@
     
       :aria-selected="props.current === sixthButton" 
       
-      :disabled="typeof sixthButton == 'string'" 
+      :disabled="typeof sixthButton == 'string' || props.disabled" 
       
       :aria-hidden="props.total < 6"
       
@@ -205,7 +215,9 @@
     
       :aria-selected="props.current === seventhButton" 
       
-      :aria-hidden="props.total <= 6"
+      :aria-hidden="props.total <= 6" 
+      
+      :disabled="props.disabled"
       
       class="flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border aria-hidden:hidden" 
       

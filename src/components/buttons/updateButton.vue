@@ -5,7 +5,7 @@
 
   // const props = defineProps( {
 
-  //   id: Number
+  //   disabled: Boolean
   
   // } );
 

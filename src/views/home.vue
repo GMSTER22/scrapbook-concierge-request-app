@@ -86,7 +86,7 @@
 
     isLoadingRequests.value = true;
 
-    const response = await fetch( `http://localhost:3000/requests?page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
+    const response = await fetch( `http://localhost:3000/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=false`, options );
 
     if ( response.ok ) {
 
@@ -106,7 +106,7 @@
 
   onBeforeMount( async () => {
 
-    const response = await fetch( `http://localhost:3000/requests?page=1&limit=${REQUESTS_PER_PAGE}`, options );
+    const response = await fetch( `http://localhost:3000/requests?page=1&limit=${REQUESTS_PER_PAGE}&released=false`, options );
 
     if ( response.ok ) {
 
@@ -131,11 +131,49 @@
   <Header />
 
   <!-- <main class="min-h-[calc(100vh-60px)] grid-rows-[1fr_auto] py-14 px-5 sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0"> -->
-  <main class="min-h-[calc(100vh-60px)] py-14 sm:py-28 lg:px-0">
+  <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">
 
-      <div v-if="isLoadingRequests">
+      <form class="justify-between flex mb-20">
+
+        <fieldset class="w-1/2">
+
+          <label for="search"></label>
+
+          <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue" :disabled="isLoadingRequests">
+
+        </fieldset>
+
+        <fieldset class="flex flex-col">
+
+          <label for="sort">
+            
+            <span class="sr-only">Sort By</span>
+          
+          </label>
+
+          <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue" :disabled="isLoadingRequests">
+
+            <option value="" disabled>Sort by</option>
+
+            <!-- <option value="release">Released</option> -->
+            
+            <option value="date-asc">Date Asc</option>
+
+            <option value="date-desc">Date Desc</option>
+            
+            <option value="likes-asc">Likes Asc</option>
+
+            <option value="likes-desc">Likes Desc</option>
+
+          </select>
+
+        </fieldset>
+
+      </form>
+
+      <div v-if="isLoadingRequests" class="mb-7">
 
         <Spinner />
 
@@ -161,57 +199,20 @@
 
         <div v-else>
 
-          <form class="justify-between flex mb-20">
-
-            <fieldset class="w-1/2">
-
-              <label for="search"></label>
-
-              <input class="w-full border-0 border-b-2 focus:border-b-purple-800 focus:ring-transparent" type="search" name="search" id="search" placeholder="search request..." v-model="searchRequestValue">
-
-            </fieldset>
-
-            <fieldset class="flex flex-col">
-
-              <label for="sort">
-                
-                <span class="sr-only">Sort By</span>
-              
-              </label>
-
-              <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue">
-
-                <option value="" disabled>Sort by</option>
-
-                <!-- <option value="release">Released</option> -->
-                
-                <option value="date-asc">Date Asc</option>
-
-                <option value="date-desc">Date Desc</option>
-                
-                <option value="likes-asc">Likes Asc</option>
-
-                <option value="likes-desc">Likes Desc</option>
-
-              </select>
-
-            </fieldset>
-
-          </form>
-
           <ul v-if="filteredRequests.length">
 
-            <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="({ _id: id, createdAt, title, users }) in filteredRequests" :key="id">
+            <li class="grid gap-x-3 gap-y-4 mb-10 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="request in filteredRequests" :key="request._id">
+            <!-- ({ _id: id, createdAt, title, users }) -->
               
               <span class="text-left sm:text-right text-xs text-neutral-600">
                 
-                {{ formatDate( createdAt ) }}
+                {{ formatDate( request.createdAt ) }}
               
               </span>
 
               <span class="px-5 mb-3 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:mb-0 sm:text-base sm:text-left">
 
-                {{ title }}
+                {{ request.title }}
 
               </span>
 
@@ -219,21 +220,21 @@
 
                 <span>
 
-                  {{ users.length - 1 }}
+                  {{ request.users.length - 1 }}
 
                 </span>
 
                 <LikeButton 
                   
-                  :id="id" 
+                  :id="request._id" 
                   
-                  :is-liked="users.includes( state.user?.id )" 
+                  :is-liked="request.users.includes( state.user?.id )" 
                   
-                  :likes="users.length - 1" 
+                  :likes="request.users.length - 1" 
                   
-                  :is-disabled="users[0] === state.user?.id" 
+                  :is-disabled="request.users[0] === state.user?.id" 
                   
-                  @like-button-clicked="() => onLikeButtonClicked( id )" 
+                  @like-button-clicked="() => onLikeButtonClicked( request )" 
                   
                 />
 
@@ -257,7 +258,9 @@
 
     <Pagination 
 
-      v-if="requests.length"
+      v-if="requests?.length" 
+      
+      :disabled="isLoadingRequests"
     
       :current="currentPage" 
       

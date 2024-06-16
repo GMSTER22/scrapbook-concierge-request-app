@@ -9,7 +9,7 @@
 
   import { state, closeModal, isAuthenticated } from '../store/state';
 
-  import { fetchRequests } from '../utils/utils';
+  // import { fetchRequests } from '../utils/utils';
 
   const router = useRouter();
   
@@ -66,9 +66,9 @@
 
         let data = await response.text();
 
-        const fetchedRequests =  await fetchRequests();
+        // const fetchedRequests =  await fetchRequests();
 
-        if ( fetchedRequests ) state.requests = fetchedRequests;
+        // if ( fetchedRequests ) state.requests = fetchedRequests;
 
         // console.log( 'request creation result ===>', createdRequest );
 
