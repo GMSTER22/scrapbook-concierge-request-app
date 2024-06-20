@@ -1,11 +1,10 @@
 {
   "name": "scrapbook-concierge-request-app",
   "version": "1.0.0",
-  "description": "Scrapbook Concierge Application allowing customers to submit their request of kit, vote for kits, and communicate their wants with the company",
-  "main": "index.js",
+  "description": "Scrapbook Concierge Application allowing customers to submit their requests for kit creation, vote for kits to communicate their wants to the company",
   "scripts": {
     "start": "rimraf dist .parcel-cache & parcel serve src/index.html",
-    "build": "rimraf dist .parcel-cache && parcel build src/index.html"
+    "build": "rimraf dist .parcel-cache & parcel build src/index.html"
   },
   "author": "Souleymane Gael Nongnogo",
   "license": "ISC",
