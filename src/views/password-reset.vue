@@ -61,13 +61,7 @@
 
     }
 
-    // route.
-
-    // const url = new URL( window.location );
-
-    // console.log( url );
-
-    const response = await fetch( 'http://localhost:3000/password-reset', options );
+    const response = await fetch( `${process.env.SERVER_URL}/password-reset`, options );
 
     let result = await response.text();
 

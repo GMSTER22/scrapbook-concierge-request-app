@@ -5,7 +5,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import { isAuthenticated, isAdmin, state } from './store/state';
 
-import { fetchRequests } from './utils/utils';
+// import { fetchRequests } from './utils/utils';
 
 import App from './app.vue';
 
@@ -20,6 +20,8 @@ import MyRequests from './views/my-requests.vue';
 import ReleasedRequests from './views/released-requests.vue';
 
 import Admin from './views/admin.vue';
+
+import Subscription from './views/subscription.vue';
 
 import PasswordForgot from './views/password-forgot.vue';
 
@@ -133,6 +135,22 @@ const routes = [
 
     }
 
+  }, {
+
+    path: '/subscription',
+
+    name: 'subscription',
+
+    component: Subscription,
+
+    // beforeEnter: ( to, from, next ) => {
+
+    //   if ( ! isAuthenticated() ) next( { name: 'login' } );
+
+    //   else next();
+
+    // }
+
   }
 
 ]
@@ -147,19 +165,19 @@ const router = createRouter( {
 
 } );
 
-router.beforeEach( async ( to, from, next ) => {
+// router.beforeEach( async ( to, from, next ) => {
 
-  if ( ! state.requests && isAuthenticated() ) {
+//   if ( ! state.requests && isAuthenticated() ) {
 
-    const fetchedRequests = await fetchRequests();
+//     const fetchedRequests = await fetchRequests();
 
-    if ( fetchRequests ) state.requests = fetchedRequests;
+//     if ( fetchRequests ) state.requests = fetchedRequests;
     
-  }
+//   }
 
-  next();
+//   next();
 
-} );
+// } );
 
 const app = createApp( App );
 

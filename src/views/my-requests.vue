@@ -88,7 +88,7 @@
 
     isLoadingUserRequests.value = true;
 
-    const response = await fetch( `http://localhost:3000/requests/users/${ state.user.id }?page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests?id=${ state.user.id }&page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
 
     if ( response.ok ) {
 
@@ -108,7 +108,7 @@
 
   onBeforeMount( async () => {
 
-    const response = await fetch( `http://localhost:3000/requests/users/${ state.user.id }?page=1&limit=${REQUESTS_PER_PAGE}`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests?id=${ state.user.id }&page=1&limit=${REQUESTS_PER_PAGE}`, options );
 
     if ( response.ok ) {
 
@@ -245,17 +245,21 @@
                 
                   v-if="! request.released" 
                   
-                  @update-button-clicked="()=> onUpdateButtonClicked( request )" />
+                  @update-button-clicked="()=> onUpdateButtonClicked( request )" 
+                  
+                />
                   
                 <DeleteButton 
                 
                   v-if="! request.released" 
                   
-                  @delete-button-clicked="()=> onDeleteButtonClicked( request )" />
+                  @delete-button-clicked="()=> onDeleteButtonClicked( request )" 
+                  
+                />
 
                 <a v-show="request.released && request.url" 
                 
-                  class="bg-green-700 text-white px-2 rounded-md" 
+                  class="px-2 py-1 text-sm text-center bg-green-700 text-white rounded-md hover:scale-105 transition-all" 
 
                   target="_blank"
                   

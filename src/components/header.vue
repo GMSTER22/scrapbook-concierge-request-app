@@ -7,23 +7,27 @@
 
   import { Bars3Icon } from '@heroicons/vue/24/solid';
 
-  import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, isAdmin } from '../store/state';
+  import { state, isAdmin } from '../store/state';
 
-  import { useRouter } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
 
   const router = useRouter();
+
+  const route = useRoute();
+
+  console.log(route.path, route.fullPath, route.name)
 
   const isNavOpen = ref( false );
 
   const onMenuButtonClick = () => isNavOpen.value = ! isNavOpen.value;
 
-  const onMakeRequestButtonClick = () => {
+  // const onMakeRequestButtonClick = () => {
 
-    if ( currentModalComponent.component !== MODAL_COMPONENTS.MAKE_REQUEST ) setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST );
+  //   if ( currentModalComponent.component !== MODAL_COMPONENTS.MAKE_REQUEST ) setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST );
 
-    openModal();
+  //   openModal();
 
-  }
+  // }
 
   const onLogoutButtonClick = async () => {
 
@@ -40,8 +44,6 @@
       //   // 'Accept': 'application/json',
 
       //   // 'Cache': 'no-cache'
-
-      //   // 'Access-Control-Allow-Origin': 'http://localhost:3000'
         
       // },
 
@@ -49,7 +51,7 @@
 
     }
 
-    const response = await fetch( 'http://localhost:3000/logout', options );
+    const response = await fetch( `${process.env.SERVER_URL}/logout`, options );
 
     if ( response.ok ) router.push( { name: 'login' } );
 
@@ -69,42 +71,49 @@
 
       </div>
 
-      <nav :class="['absolute top-[60px] left-0 flex flex-col items-center gap-x-8 gap-y-5 w-full h-0 z-10 text-ellipsis overflow-hidden text-purple-900 bg-neutral-200 font-semibold md:relative md:top-auto md:left-auto md:flex-row md:w-auto md:h-auto md:bg-transparent transition-[height_padding] duration-300', { 'h-[212px] py-5': isNavOpen }]" aria-labelledby="menu-button">
+      <div v-if="route.name !== 'subscription'">
 
-        <router-link to="/my-requests">My requests</router-link>
+        <nav 
+        
+          :class="['absolute top-[60px] left-0 flex flex-col items-center gap-x-8 gap-y-5 w-full h-0 z-10 text-ellipsis overflow-hidden text-purple-900 bg-neutral-200 font-semibold md:relative md:top-auto md:left-auto md:flex-row md:w-auto md:h-auto md:bg-transparent transition-[height_padding] duration-300', { 'h-[212px] py-5': isNavOpen }]" 
+          
+          aria-labelledby="menu-button">
 
-        <router-link to="/released-requests">Released Requests</router-link>
+          <router-link to="/my-requests">My requests</router-link>
 
-        <router-link v-show="isAdmin" to="/admin">Admin</router-link>
+          <router-link to="/released-requests">Released Requests</router-link>
 
-        <!-- <div>
+          <router-link v-show="isAdmin" to="/admin">Admin</router-link>
 
-          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">Make request</button>
-          <button type="button" class="" @click="onMakeRequestButtonClick">Make request</button>
+          <div v-show="state.user?.username">
 
-          <div :aria-hidden="! state.open">
+            <!-- Hi, {{ state.user?.username ?? 'scrapbooker' }} -->
 
-            <Modal />
+            <button type="button" @click="onLogoutButtonClick">Logout</button>
 
           </div>
 
-        </div> -->
+        </nav>
 
-        <div v-show="state.user?.username">
+        <button 
+        
+          class="md:hidden" 
+          
+          type="button" 
+          
+          id="menu-button" 
+          
+          aria-label="Menu" 
+          
+          :aria-expanded="isNavOpen" 
+          
+          @click="onMenuButtonClick">
 
-          <!-- Hi, {{ state.user?.username ?? 'scrapbooker' }} -->
+          <Bars3Icon class="h-6 w-6" />
 
-          <button type="button" @click="onLogoutButtonClick">Logout</button>
+        </button>
 
-        </div>
-
-      </nav>
-
-      <button class="md:hidden" type="button" id="menu-button" aria-label="Menu" :aria-expanded="isNavOpen" @click="onMenuButtonClick">
-
-        <Bars3Icon class="h-6 w-6" />
-
-      </button>
+      </div>
 
     </div>
 

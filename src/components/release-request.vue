@@ -47,7 +47,7 @@
 
       console.log( requestIds );
 
-      let response = await fetch( 'http://localhost:3000/notifications/notify-users', options );
+      let response = await fetch( `${process.env.SERVER_URL}/notifications/notify-users`, options );
 
       if ( response.ok ) {
 

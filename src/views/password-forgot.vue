@@ -33,17 +33,13 @@
 
     }
 
-    const response = await fetch( 'http://localhost:3000/password-reset', options );
+    const response = await fetch( `${process.env.SERVER_URL}/password-reset`, options );
 
     if ( response.ok ) {
 
       const data = await response.text();
 
       alert( `Email was sent to ${ email.value }` )
-
-      // console.log( data, 'data' );
-
-      // router.push( { name: 'password-reset'} );
 
     }
 

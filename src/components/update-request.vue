@@ -73,7 +73,7 @@
 
       }
 
-      let response = await fetch( `http://localhost:3000/requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
+      let response = await fetch( `${process.env.SERVER_URL}/requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
 
       if ( response.ok ) {
 

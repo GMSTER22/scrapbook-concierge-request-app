@@ -12,12 +12,8 @@
   const email = ref( '' );
 
   const password = ref( '' );
-  
-  // const validateEmail = computed( () => )
 
-  const passwordCompute = computed( () => password );
-
-  const submitForm = event => {
+  const submitForm = async ( event ) => {
 
     event.preventDefault();
 
@@ -31,8 +27,6 @@
 
     } );
 
-    console.log( userInfo );
-
     const options = {
 
       method: 'POST',
@@ -43,27 +37,25 @@
 
         'Content-Type': 'application/json',
 
-        // 'Access-Control-Allow-Origin': 'http://localhost:3000',
-
         // 'Host': 'http://127.0.0.1:3000'
 
       } 
 
     }
 
-    // fetch( 'http://localhost:3000/requests' )
+    const response = await fetch( `${process.env.SERVER_URL}/signup/password`, options );
 
-    fetch( 'http://localhost:3000/signup/password', options )
+    if ( response.ok ) {
 
-      .then( res => {
+      router.push( { name: 'login' } );
 
-        if ( res.ok ) router.push( { name: 'login' } );
+    } else {
 
-      } )
+      const data = response.json();
 
-      .then( data => console.log( data ) )
+      console.log( data )
 
-      .catch( error => alert( error.message ) )
+    }
 
   }
 
@@ -82,8 +74,6 @@
         <button type="button" class="border border-neutral-300 px-4 py-2 rounded">Sign up with Google</button>
 
         <button type="button" class="border border-neutral-300 px-4 py-2 rounded">Sign up with Facebook</button>
-
-        <button type="button" class="border border-neutral-300 px-4 py-2 rounded">{{ passwordCompute }}</button>
 
       </div>
 

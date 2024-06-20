@@ -92,7 +92,7 @@
 
     isLoadingRequests.value = true;
 
-    const response = await fetch( `http://localhost:3000/requests?page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
 
     if ( response.ok ) {
 
@@ -112,7 +112,7 @@
 
   onBeforeMount( async () => {
 
-    const response = await fetch( `http://localhost:3000/requests?page=1&limit=${REQUESTS_PER_PAGE}`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests?page=1&limit=${REQUESTS_PER_PAGE}`, options );
 
     if ( response.ok ) {
 
@@ -136,9 +136,25 @@
 
   <Header />
 
-  <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
+  <main class="relative min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
 
     <div class="max-w-4xl mx-auto">
+
+      <div class="mb-5 text-right">
+
+        <button 
+        
+          class="px-4 py-2 rounded-md bg-purple-900 text-white" 
+          
+          type="button" 
+          
+          @click="onReleaseButtonClicked">
+          
+          Email Requesters
+        
+        </button>
+
+      </div>
 
       <form class="flex justify-between mb-20">
 
@@ -258,18 +274,6 @@
         </div>
         
       </div>
-
-      <button 
-      
-        class="absolute bottom-5 right-5 px-4 py-2 rounded-md bg-purple-700 text-white" 
-        
-        type="button" 
-        
-        @click="onReleaseButtonClicked">
-        
-        Email Requesters
-      
-      </button>
       
     </div>
 

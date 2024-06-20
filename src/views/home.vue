@@ -17,7 +17,7 @@
 
   import { state, openModal, currentModalComponent, setCurrentModalComponent, MODAL_COMPONENTS, onLikeButtonClicked } from '../store/state';
 
-  const REQUESTS_PER_PAGE = 15;
+  const REQUESTS_PER_PAGE = 20;
 
   const isLoadingRequests = ref( true );
 
@@ -86,7 +86,7 @@
 
     isLoadingRequests.value = true;
 
-    const response = await fetch( `http://localhost:3000/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=false`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=false`, options );
 
     if ( response.ok ) {
 
@@ -106,7 +106,7 @@
 
   onBeforeMount( async () => {
 
-    const response = await fetch( `http://localhost:3000/requests?page=1&limit=${REQUESTS_PER_PAGE}&released=false`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests?page=1&limit=${REQUESTS_PER_PAGE}&released=false`, options );
 
     if ( response.ok ) {
 

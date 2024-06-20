@@ -29,62 +29,13 @@
 
   };
 
-  const passwordCompute = computed( () => password );
-
-  const emailCompute = computed( () => email );
-
-  console.log(document.cookie, 'cookies')
-
-  // 'Johndoe@22'
-  // 'johndoe@gmail.com'
-
-  // const authenticateWithGoogle = async () => {
-
-  //   const options = {
-
-  //     method: 'GET',
-
-  //     headers: {
-
-  //       'Content-Type': 'application/json',
-
-  //       'Host': 'http://127.0.0.1:3000',
-
-  //       'Accept': 'application/json',
-
-  //       'Cache': 'no-cache'
-
-  //       'Access-Control-Allow-Origin': 'http://localhost:3000'
-
-  //     },
-
-  //     credentials: 'include'
-
-  //   }
-
-  //   const response = await fetch( 'http://localhost:3000/auth/google', options );
-
-  //   console.log(response, 'RESPONSE');
-
-  //   if ( response.ok ) {
-
-  //     const result = await response.json();
-
-  //     console.log( result, 'RESULT' );
-    
-  //     state.user = result;
-      
-  //     router.push( { name: 'home'} );
-
-  //   }
-
-  // }
+  console.log(document.cookie, 'cookies');
 
   const submitForm = async ( event ) => {
 
     event.preventDefault();
 
-    // updateFormFieldsErrorMessages();
+    updateFormFieldsErrorMessages();
 
     const userInfo = {
 
@@ -106,13 +57,7 @@
 
         'Content-Type': 'application/json',
 
-        // 'Host': 'http://127.0.0.1:3000',
-
         // 'Accept': 'application/json',
-
-        // 'Cache': 'no-cache'
-
-        // 'Access-Control-Allow-Origin': 'http://localhost:3000'
         
       },
 
@@ -122,9 +67,7 @@
 
     try {
       
-      const response = await fetch( 'http://localhost:3000/login', options );
-
-      console.log(response, 'RESPONSE');
+      const response = await fetch( `${process.env.SERVER_URL}/login`, options );
   
       if ( response.ok ) {
 
@@ -143,8 +86,6 @@
       alert( error.message );
       
     }
-
-    console.log( 'OVER' );
 
   }
 
@@ -179,8 +120,6 @@
           <SocialMediaAuthButton callToAction="Continue With Facebook" />
 
         </form>
-
-        <p class="border border-neutral-300 px-4 py-2 rounded">{{ passwordCompute }} {{ emailCompute }}</p>
 
       </div>
 

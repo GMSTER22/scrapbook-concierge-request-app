@@ -65,7 +65,7 @@ export const onLikeButtonClicked = async ( request ) => {
 
   try {
 
-    const response = await fetch( `http://localhost:3000/user-requests/${ id }/users/${ state.user.id }`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/user-requests/${ id }/users/${ state.user.id }`, options );
 
     if ( response.ok ) {
 

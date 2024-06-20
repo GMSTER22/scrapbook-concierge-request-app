@@ -32,8 +32,6 @@ export async function fetchRequests() {
         // 'Host': 'http://127.0.0.1:3000',
 
         // 'Cache': 'no-cache'
-
-        // 'Access-Control-Allow-Origin': 'http://localhost:3000'
         
       },
 
@@ -41,7 +39,7 @@ export async function fetchRequests() {
 
     }
 
-    const response = await fetch( 'http://localhost:3000/requests', options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests`, options );
 
     console.log( response, 'response' );
 

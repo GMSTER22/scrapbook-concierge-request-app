@@ -84,7 +84,7 @@
 
     isLoadingReleasedRequests.value = true;
 
-    const response = await fetch( `http://localhost:3000/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=true`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=true`, options );
 
     if ( response.ok ) {
 
@@ -104,7 +104,7 @@
 
   onBeforeMount( async () => {
 
-    const response = await fetch( `http://localhost:3000/requests?page=1&limit=${REQUESTS_PER_PAGE}&released=true`, options );
+    const response = await fetch( `${process.env.SERVER_URL}/requests?page=1&limit=${REQUESTS_PER_PAGE}&released=true`, options );
 
     if ( response.ok ) {
 
