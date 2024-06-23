@@ -66,14 +66,6 @@
 
         let data = await response.text();
 
-        // const fetchedRequests =  await fetchRequests();
-
-        // if ( fetchedRequests ) state.requests = fetchedRequests;
-
-        // console.log( 'request creation result ===>', createdRequest );
-
-        // state.requests.push( createdRequest );
-
         closeModal();
 
 

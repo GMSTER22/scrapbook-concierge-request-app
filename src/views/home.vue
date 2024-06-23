@@ -129,8 +129,7 @@
 <template>
 
   <Header />
-
-  <!-- <main class="min-h-[calc(100vh-60px)] grid-rows-[1fr_auto] py-14 px-5 sm:py-28 sm:min-h-[calc(100vh-72px)] lg:px-0"> -->
+  
   <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">

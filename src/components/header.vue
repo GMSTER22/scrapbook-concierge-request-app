@@ -3,8 +3,6 @@
 
   import { ref } from 'vue';
 
-  import Modal from './modal.vue';
-
   import { Bars3Icon } from '@heroicons/vue/24/solid';
 
   import { state, isAdmin } from '../store/state';
@@ -15,19 +13,9 @@
 
   const route = useRoute();
 
-  console.log(route.path, route.fullPath, route.name)
-
   const isNavOpen = ref( false );
 
   const onMenuButtonClick = () => isNavOpen.value = ! isNavOpen.value;
-
-  // const onMakeRequestButtonClick = () => {
-
-  //   if ( currentModalComponent.component !== MODAL_COMPONENTS.MAKE_REQUEST ) setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST );
-
-  //   openModal();
-
-  // }
 
   const onLogoutButtonClick = async () => {
 
@@ -86,8 +74,6 @@
           <router-link v-show="isAdmin" to="/admin">Admin</router-link>
 
           <div v-show="state.user?.username">
-
-            <!-- Hi, {{ state.user?.username ?? 'scrapbooker' }} -->
 
             <button type="button" @click="onLogoutButtonClick">Logout</button>
 

@@ -1,11 +1,15 @@
 
 <script setup>
 
+  import { ref } from 'vue';
+
   import { useRouter } from 'vue-router';
 
-  import { computed, ref } from 'vue';
+  import SocialMediaAuthButton from '../components/buttons/socialMediaAuthButton.vue';
 
   const router = useRouter();
+
+  const emailValidationRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   const username = ref( '' );
   
@@ -13,9 +17,35 @@
 
   const password = ref( '' );
 
+  const isUsernameMessage = ref( false );
+
+  const isEmailMessage = ref( false );
+
+  const isPasswordMessage = ref( false );
+
+  function onUsernameFocusout() {
+
+    isUsernameMessage.value = ! username.value.length;
+
+  }
+
+  function onEmailFocusout() {
+
+    isEmailMessage.value = ! email.value.length || ! emailValidationRegex.test( email.value );
+
+  }
+
+  function onPasswordFocusout() {
+
+    isPasswordMessage.value = password.value.length < 6;
+
+  }
+
   const submitForm = async ( event ) => {
 
     event.preventDefault();
+
+    if ( isUsernameMessage.value || isEmailMessage.value || isPasswordMessage.value ) return;
 
     const userInfo = JSON.stringify( {
 
@@ -35,9 +65,7 @@
 
       headers: {
 
-        'Content-Type': 'application/json',
-
-        // 'Host': 'http://127.0.0.1:3000'
+        'Content-Type': 'application/json'
 
       } 
 
@@ -71,9 +99,25 @@
 
       <div class="flex flex-col gap-3">
 
-        <button type="button" class="border border-neutral-300 px-4 py-2 rounded">Sign up with Google</button>
+        <form 
 
-        <button type="button" class="border border-neutral-300 px-4 py-2 rounded">Sign up with Facebook</button>
+          action="https://scrapbook-concierge-request-app-backend.onrender.com/auth/google`" 
+          
+          method="GET">
+
+          <SocialMediaAuthButton callToAction="Continue With Google" />
+
+        </form>
+
+        <form 
+
+          action="https://scrapbook-concierge-request-app-backend.onrender.com/auth/facebook`" 
+          
+          method="GET">
+
+          <SocialMediaAuthButton callToAction="Continue With Facebook" />
+
+        </form>
 
       </div>
 
@@ -95,7 +139,9 @@
 
             <label class="font-medium mb-1" for="username">Username</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="text" name="username" id="username" v-model="username" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="text" name="username" id="username" v-model="username" @focusout="onUsernameFocusout">
+
+            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isUsernameMessage">Please enter a username</span>
 
           </fieldset>
 
@@ -103,7 +149,9 @@
 
             <label class="font-medium mb-1" for="email">Email</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" @focusout="onEmailFocusout">
+
+            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isEmailMessage" @focusout="onEmailFocusout">Please enter a valid email</span>
 
           </fieldset>
 
@@ -111,7 +159,9 @@
 
             <label class="font-medium mb-1" for="password">Password</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" @focusout="onPasswordFocusout">
+
+            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isPasswordMessage">Your password must be at least 6 characters long.</span>
 
           </fieldset>
 

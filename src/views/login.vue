@@ -11,31 +11,35 @@
 
   const router = useRouter();
 
+  const emailValidationRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
   const email = ref( '' );
   
   const password = ref( '' );
+
+  const isCredentialsMessage = ref( false );
 
   const isEmailMessage = ref( false );
 
   const isPasswordMessage = ref( false );
 
-  const updateFormFieldsErrorMessages = () => {
+  function onEmailFocusout() {
 
-    isEmailMessage.value = email.value === '';
+    isEmailMessage.value = ! email.value.length || ! emailValidationRegex.test( email.value );
 
-    isPasswordMessage.value = password.value === '';
+  }
 
-    console.log(email.value === '')
+  function onPasswordFocusout() {
 
-  };
+    isPasswordMessage.value = password.value.length < 6;
 
-  console.log(document.cookie, 'cookies');
+  }
 
   const submitForm = async ( event ) => {
 
     event.preventDefault();
 
-    updateFormFieldsErrorMessages();
+    if ( isEmailMessage.value || isPasswordMessage.value ) return;
 
     const userInfo = {
 
@@ -44,8 +48,6 @@
       password: password.value
 
     };
-
-    console.log( userInfo );
 
     const options = {
 
@@ -57,7 +59,7 @@
 
         'Content-Type': 'application/json',
 
-        // 'Accept': 'application/json',
+        'Accept': 'application/json'
         
       },
 
@@ -72,14 +74,16 @@
       if ( response.ok ) {
 
         const result = await response.json();
-
-        console.log( result, 'RESULT' );
       
         state.user = result;
         
         router.push( { name: 'home'} );
 
-      }
+      } else {
+
+        isCredentialsMessage.value = true;
+
+      } 
       
     } catch ( error ) {
 
@@ -103,7 +107,7 @@
 
         <form 
         
-          action="http://localhost:3000/auth/google" 
+          action="https://scrapbook-concierge-request-app-backend.onrender.com/auth/google`" 
           
           method="GET">
 
@@ -113,13 +117,21 @@
 
         <form 
         
-          action="http://localhost:3000/auth/facebook" 
+          action="https://scrapbook-concierge-request-app-backend.onrender.com/auth/facebook`" 
           
           method="GET">
 
           <SocialMediaAuthButton callToAction="Continue With Facebook" />
 
         </form>
+
+      </div>
+
+      <div v-if="isCredentialsMessage" class="mt-4 py-4 text-center border border-red-600 bg-red-200">
+
+        <div class="text-sm font-bold mb-1">Wrong Credentials</div>
+
+        <div class="text-xs">Invalid username or password</div>
 
       </div>
 
@@ -135,15 +147,15 @@
 
       <div>
 
-        <form class="mb-4">
+        <form class="mb-4" action="http://localhost:3000/login">
 
           <fieldset class="flex flex-col mb-4">
 
             <label class="font-medium mb-1" for="email">Email</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" @focusout="onEmailFocusout">
 
-            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isEmailMessage">Please enter your email</span>
+            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isEmailMessage">Please enter a valid email</span>
 
           </fieldset>
 
@@ -151,7 +163,7 @@
 
             <label class="font-medium mb-1" for="password">Password</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" required>
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" @focusout="onPasswordFocusout">
 
             <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isPasswordMessage">Please enter your password</span>
 
