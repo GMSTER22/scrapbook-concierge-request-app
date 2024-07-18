@@ -5,9 +5,9 @@
 
   import { useRouter } from 'vue-router';
 
-  import { state, currentModalComponent, closeModal, isAuthenticated } from '../store/state';
+  import { state, currentModalComponent, closeModal, isAuthenticated, logUserOut } from '../store/state';
 
-  import { fetchRequests } from '../utils/utils';
+  import { getToken } from '../utils/utils';
   
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
@@ -23,11 +23,13 @@
 
     headers: {
 
+      'Authorization': `Bearer ${ getToken( 'token' ) }`,
+
       'Content-Type': 'application/json'
       
     },
 
-    credentials: 'include'
+    // credentials: 'include'
 
   }
 
@@ -39,19 +41,21 @@
 
     try {
 
-      let response = await fetch( `${process.env.SERVER_URL}/requests/${ currentModalComponent.request.id }/users/${ state.user.id }`, options );
+      let response = await fetch( `${process.env.SERVER_URL}/requests/${ currentModalComponent.request._id }/users/${ state.user.id }`, options );
 
       if ( response.ok ) {
 
-        const fetchedRequests = await fetchRequests();
-
-        if ( fetchedRequests ) state.requests = fetchedRequests;
+        currentModalComponent.callbackFunction();
 
         closeModal();
 
-      }
-      
-      if ( response.status === 403 ) {
+      } else if ( response.status === 401 ) {
+
+        logUserOut();
+
+        router.push( { name: 'login' } );
+
+      } else if ( response.status === 403 ) {
 
         const responseText = await response.text();
 

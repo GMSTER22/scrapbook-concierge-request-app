@@ -1,7 +1,9 @@
 
 <script setup>
 
-  import { ref, computed, onBeforeMount, onMounted } from 'vue';
+  import { ref, computed, onBeforeMount, watch } from 'vue';
+
+  import { useRouter } from 'vue-router';
 
   import Header from '../components/header.vue';
 
@@ -13,9 +15,11 @@
 
   import LikeButton from '../components/buttons/likeButton.vue';
 
-  import { formatDate, fetchRequests } from "../utils/utils";
+  import { formatDate, getToken } from "../utils/utils";
 
-  import { state, openModal, currentModalComponent, setCurrentModalComponent, MODAL_COMPONENTS, onLikeButtonClicked } from '../store/state';
+  import { state, onMakeRequestButtonClick, onLikeButtonClicked, logUserOut } from '../store/state';
+
+  const router = useRouter();
 
   const REQUESTS_PER_PAGE = 20;
 
@@ -23,40 +27,19 @@
 
   const requests = ref( null );
 
-  const currentPage = ref( 1 );
+  const currentPage = ref( 0 );
 
   const totalPages = ref( 1 );
 
   const searchRequestValue = ref( '' );
   
-  const sortRequestValue = ref( '' );
-
+  const sortRequestValue = ref( 'usersLength-desc' );
+  
   const filteredRequests = computed( () => {
 
-    return requests.value.sort( ( a, b ) => {
-
-      switch ( sortRequestValue.value ) {
-
-        case 'date-asc':
-          return new Date( a.createdAt ).valueOf() - new Date( b.createdAt ).valueOf();
-
-        case 'date-desc':
-          return new Date( b.createdAt ).valueOf() - new Date( a.createdAt ).valueOf();
-
-        case 'likes-asc':
-          return a.users.length - b.users.length;
-
-        case 'likes-desc':
-          return b.users.length - a.users.length;
-      
-        default:
-          return 0;
-
-      }
-      
-    } )
+    return requests.value
     
-    .filter( request => request.title.toLocaleLowerCase()
+      ?.filter( request => request.title.toLocaleLowerCase()
     
       .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
 
@@ -66,77 +49,71 @@
 
     method: "GET",
 
-    credentials: 'include'
+    headers: {
 
-  }
-
-  const onMakeRequestButtonClick = () => {
-
-    if ( currentModalComponent.component !== MODAL_COMPONENTS.MAKE_REQUEST ) setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST );
-
-    openModal();
-
-  }
-
-  const fetchPage = async ( page ) => {
-
-    console.log( page );
-
-    if ( page === currentPage.value ) return;
-
-    isLoadingRequests.value = true;
-
-    const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=false`, options );
-
-    if ( response.ok ) {
-
-      const data = await response.json();
-
-      requests.value = data.requests;
-
-      currentPage.value = data.page;
-
-      totalPages.value = data.total;
+      'Authorization': `Bearer ${ getToken( 'token' ) }`,
 
     }
-      
-    isLoadingRequests.value = false;
 
   }
 
-  onBeforeMount( async () => {
+  const fetchPage = async ( page=currentPage.value ) => {
 
-    const response = await fetch( `${process.env.SERVER_URL}/requests?page=1&limit=${REQUESTS_PER_PAGE}&released=false`, options );
+    try {
 
-    if ( response.ok ) {
+      const sortingValues = sortRequestValue.value.split( '-' );
+      
+      // if ( page === currentPage.value ) return;
+  
+      isLoadingRequests.value = true;
+  
+      const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=false&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
+  
+      if ( response.ok ) {
+  
+        const data = await response.json();
+  
+        requests.value = data.requests;
+  
+        currentPage.value = data.page;
+  
+        totalPages.value = data.total;
+  
+      } else if ( response.status === 401 ) {
 
-      const data = await response.json();
+        logUserOut();
 
-      requests.value = data.requests;
+        router.push( { name: 'login' } );
 
-      currentPage.value = data.page;
+      }
 
-      totalPages.value = data.total;
+      isLoadingRequests.value = false;
+
+    } catch ( error ) {
+      
+      console.error( error );
 
     }
-      
-    isLoadingRequests.value = false;
-    
-  } )
+
+  }
+
+  onBeforeMount( () => fetchPage( 1 ) );
+
+  watch( sortRequestValue, fetchPage );
 
 </script>
 
 <template>
 
   <Header />
-  
+
   <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">
 
-      <form class="justify-between flex mb-20">
+      <form class="flex flex-col-reverse justify-between gap-5 mb-20 sm:flex-row">
 
-        <fieldset class="w-1/2">
+        <fieldset class="sm:w-1/2">
 
           <label for="search"></label>
 
@@ -144,7 +121,7 @@
 
         </fieldset>
 
-        <fieldset class="flex flex-col">
+        <fieldset class="self-end">
 
           <label for="sort">
             
@@ -158,13 +135,13 @@
 
             <!-- <option value="release">Released</option> -->
             
-            <option value="date-asc">Date Asc</option>
+            <option value="createdAt-asc">Date Asc</option>
 
-            <option value="date-desc">Date Desc</option>
+            <option value="createdAt-desc">Date Desc</option>
             
-            <option value="likes-asc">Likes Asc</option>
+            <option value="usersLength-asc">Likes Asc</option>
 
-            <option value="likes-desc">Likes Desc</option>
+            <option value="usersLength-desc">Likes Desc</option>
 
           </select>
 
@@ -180,7 +157,7 @@
 
       <div v-else>
 
-        <div v-if="! requests.length" class="text-center">
+        <div v-if="! requests?.length" class="text-center">
         
           <p class="mb-8 text-2xl">
 
@@ -188,7 +165,7 @@
 
           </p>
 
-          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
+          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="() => onMakeRequestButtonClick( () => fetchPage( currentPage ) )">
               
             Make A Request
 
@@ -233,7 +210,7 @@
                   
                   :is-disabled="request.users[0] === state.user?.id" 
                   
-                  @like-button-clicked="() => onLikeButtonClicked( request )" 
+                  @like-button-clicked="() => onLikeButtonClicked( request, () => fetchPage( currentPage ) )"
                   
                 />
 

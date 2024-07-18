@@ -1,11 +1,9 @@
 
-import { createApp, ref } from 'vue';
+import { createApp } from 'vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { isAuthenticated, isAdmin, state } from './store/state';
-
-// import { fetchRequests } from './utils/utils';
+import { isAuthenticated, isAdmin } from './store/state';
 
 import App from './app.vue';
 
@@ -42,8 +40,6 @@ const routes = [
     component: Home,
 
     beforeEnter: ( to, from, next ) => {
-
-      console.log(isAuthenticated(), 'Auth value in HOME');
 
       if ( ! isAuthenticated() ) next( { name: 'login' } );
 
@@ -125,8 +121,6 @@ const routes = [
 
     beforeEnter: ( to, from, next ) => {
 
-      // console.log( isAdmin.value, typeof isAdmin.value, 'isAdmin' );
-
       if ( ! isAuthenticated() ) return next( { name: 'login' } );
       
       if ( ! isAdmin.value ) return next( { name: 'home' } );
@@ -164,20 +158,6 @@ const router = createRouter( {
   routes
 
 } );
-
-// router.beforeEach( async ( to, from, next ) => {
-
-//   if ( ! state.requests && isAuthenticated() ) {
-
-//     const fetchedRequests = await fetchRequests();
-
-//     if ( fetchRequests ) state.requests = fetchedRequests;
-    
-//   }
-
-//   next();
-
-// } );
 
 const app = createApp( App );
 

@@ -1,11 +1,13 @@
 
 <script setup>
 
-  import { ref } from 'vue';
+  // import { ref } from 'vue';
 
   import { useRouter } from 'vue-router';
 
-  import { state, currentModalComponent, closeModal, isAdmin, isAuthenticated } from '../store/state';
+  import { state, closeModal, isAdmin, logUserOut } from '../store/state';
+
+  import { getToken } from '../utils/utils';
   
   import { XMarkIcon, MinusCircleIcon } from '@heroicons/vue/24/solid';
 
@@ -15,15 +17,13 @@
 
     const index = state.requestsReleaseList.findIndex( request => request.id === id );
 
-    console.log( state.requestsReleaseList, id, index, 'before' );
-
     if ( index !== -1 ) state.requestsReleaseList.splice( index, 1 );
 
   }
 
   const onEmailRequestersButtonClick = async () => {
 
-    if ( ! isAuthenticated() || ! isAdmin ) return router.push( { name: 'login' } );
+    if ( ! isAdmin ) return router.push( { name: 'home' } );
 
     try {
 
@@ -37,25 +37,31 @@
 
         headers: {
 
+          'Authorization': `Bearer ${ getToken( 'token' ) }`,
+
           'Content-Type': 'application/json',
           
-        },
-
-        credentials: 'include'
+        }
 
       }
 
-      console.log( requestIds );
+      // console.log( requestIds );
 
-      let response = await fetch( `${process.env.SERVER_URL}/notifications/notify-users`, options );
+      let response = await fetch( `${process.env.SERVER_URL}/notifications`, options );
 
       if ( response.ok ) {
 
-        // state.requests.find( request => request._id === currentModalComponent.id ).released = ! request.released;
+        // state.requests.find( request => request._id === currentModalComponent.request._id ).released = ! request.released;
 
-        alert( 'Email requesters successful' );
+        // alert( 'Email requesters successful' );
 
         closeModal();
+
+      } else if ( response.status === 401 ) {
+
+        logUserOut();
+
+        router.push( { name: 'login' } );
 
       }
       
@@ -81,9 +87,9 @@
 
     <div>
 
-      <h2 class="mb-8 text-xl text-center font-bold">
+      <h2 class="max-w-[200px] mx-auto mb-8 text-xl text-center font-bold">
         
-        Requests List
+        Requests
       
       </h2>
 
@@ -133,24 +139,10 @@
       
       </div>
 
-      <p v-else class="text-center">No released Requests</p>
+      <p v-else class="text-center">Add Requests</p>
 
     </div>
 
   </div>
-
-  <!-- <div class="bg-white">
-
-    <h1>Email List</h1>
-
-    <ul v-if="state.requestsReleaseList.length">
-
-      <li v-for="item in state.requestsReleaseList">{{ item }}</li>
-
-    </ul>
-
-    <p v-else>No released Requests</p>
-
-  </div> -->
 
 </template>

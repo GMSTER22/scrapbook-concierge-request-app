@@ -7,6 +7,8 @@
 
   // import { state } from 'vue';
 
+  import { getToken } from '../utils/utils';
+
   import Header from '../components/header.vue';
 
   const route = useRoute();
@@ -33,11 +35,13 @@
 
         'Content-Type': 'application/json',
 
+        // 'Authorization': `Bearer ${ getToken( 'token' ) }`,
+
       }
   
     }
 
-    console.log( route.query.email, emailOptInValue.value, "here" ); 
+    // console.log( route.query.email, emailOptInValue.value, "here" ); 
 
     // ?email=${ route.query.email }&email_optin=${ emailOptInValue }
     // console.log( emailOptInValue.value );

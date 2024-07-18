@@ -1,25 +1,21 @@
 
 <script setup>
 
-  import { ref, computed, onBeforeMount } from 'vue'; 
+  import { ref, computed, onBeforeMount, watch } from 'vue'; 
+
+  import { useRouter } from 'vue-router';
 
   import Header from '../components/header.vue';
-
-  // import Modal from '../components/modal.vue';
-
-  // import LikeButton from '../components/buttons/likeButton.vue';
-
-  // import UpdateButton from '../components/buttons/updateButton.vue';
-  
-  // import DeleteButton from '../components/buttons/deleteButton.vue';
 
   import Pagination from '../components/pagination.vue';
 
   import Spinner from '../components/spinner.vue';
 
-  import { formatDate, fetchRequests } from '../utils/utils';
+  import { formatDate, getToken } from '../utils/utils';
 
-  // import { state } from '../store/state';
+  import { logUserOut } from '../store/state';
+
+  const router = useRouter();
 
   const REQUESTS_PER_PAGE = 20;
 
@@ -27,42 +23,19 @@
 
   const releasedRequests = ref( null );
 
-  const currentPage = ref( 1 );
+  const currentPage = ref( 0 );
 
   const totalPages = ref( 1 );
 
   const searchRequestValue = ref( '' );
   
-  const sortRequestValue = ref( '' );
-  
-  // const releasedRequests = computed( () => state.requests.filter( ( { released, url } ) => released ) );
+  const sortRequestValue = ref( 'releaseDate-asc' );
 
   const filteredRequests = computed( () => {
 
-    return releasedRequests.value?.sort( ( a, b ) => {
-
-      switch ( sortRequestValue.value ) {
-
-        case 'released-date-asc':
-          return new Date( a.releaseDate ).valueOf() - new Date( b.releaseDate ).valueOf();
-
-        case 'released-date-desc':
-          return new Date( b.releaseDate ).valueOf() - new Date( a.releaseDate ).valueOf();
-
-        case 'likes-asc':
-          return a.users.length - b.users.length;
-
-        case 'likes-desc':
-          return b.users.length - a.users.length;
-      
-        default:
-          return 0;
-
-      }
-      
-    } )
+    return releasedRequests.value
     
-    .filter( request => request.title.toLocaleLowerCase()
+      ?.filter( request => request.title.toLocaleLowerCase()
       
       .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
 
@@ -72,55 +45,57 @@
 
     method: "GET",
 
-    credentials: 'include'
+    headers: {
+
+      'Authorization': `Bearer ${ getToken( 'token' ) }`,
+
+    }
 
   }
 
   const fetchPage = async ( page ) => {
 
-    console.log( page );
+    try {
 
-    if ( page === currentPage.value ) return;
+      const sortingValues = sortRequestValue.value.split( '-' );
+      
+      // if ( page === currentPage.value ) return;
+  
+      isLoadingReleasedRequests.value = true;
+  
+      const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=true&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
+  
+      if ( response.ok ) {
+  
+        const data = await response.json();
+  
+        releasedRequests.value = data.requests;
+  
+        currentPage.value = data.page;
+  
+        totalPages.value = data.total;
+  
+      } else if ( response.status === 401 ) {
+  
+        logUserOut();
 
-    isLoadingReleasedRequests.value = true;
+        router.push( { name: 'login' } );
+  
+      }
+        
+      isLoadingReleasedRequests.value = false;
 
-    const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=true`, options );
-
-    if ( response.ok ) {
-
-      const data = await response.json();
-
-      releasedRequests.value = data.requests;
-
-      currentPage.value = data.page;
-
-      totalPages.value = data.total;
+    } catch ( error ) {
+      
+      console.log( error );
 
     }
-      
-    isLoadingReleasedRequests.value = false;
 
   }
 
-  onBeforeMount( async () => {
+  onBeforeMount( () => fetchPage( 1 ) );
 
-    const response = await fetch( `${process.env.SERVER_URL}/requests?page=1&limit=${REQUESTS_PER_PAGE}&released=true`, options );
-
-    if ( response.ok ) {
-
-      const data = await response.json();
-
-      releasedRequests.value = data.requests;
-
-      currentPage.value = data.page;
-
-      totalPages.value = data.total;
-
-    }
-      
-    isLoadingReleasedRequests.value = false;
-
-  } )
+  watch( sortRequestValue, fetchPage );
 
 </script>
 
@@ -130,11 +105,11 @@
 
   <main class="min-h-[calc(100vh-60px)] py-14 px-5 sm:py-28 lg:px-0">
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto mb-14">
 
-      <form class="flex justify-between mb-20">
+      <form class="flex flex-col-reverse justify-between gap-5 mb-20 sm:flex-row">
   
-        <fieldset class="w-1/2">
+        <fieldset class="sm:w-1/2">
 
           <label for="search"></label>
 
@@ -142,7 +117,7 @@
 
         </fieldset>
 
-        <fieldset class="flex flex-col">
+        <fieldset class="self-end">
 
           <label for="sort"><span class="sr-only">Sort By</span></label>
 
@@ -150,13 +125,13 @@
 
             <option value="" disabled>Sort by</option>
 
-            <option value="released-date-asc">Released Date Asc</option>
+            <option value="releaseDate-asc">Released Date Asc</option>
 
-            <option value="released-date-desc">Released Date Desc</option>
+            <option value="releaseDate-desc">Released Date Desc</option>
             
-            <option value="likes-asc">Likes Asc</option>
+            <!-- <option value="usersLength-asc">Likes Asc</option>
 
-            <option value="likes-desc">Likes Desc</option>
+            <option value="usersLength-desc">Likes Desc</option> -->
 
           </select>
 
@@ -172,7 +147,7 @@
 
       <div v-else>
 
-        <div v-if="! releasedRequests.length" class="text-center">
+        <div v-if="! releasedRequests?.length" class="text-center">
         
           <p class="mb-8 text-2xl">
 

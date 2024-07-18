@@ -1,7 +1,5 @@
 
-import { ref, computed, reactive, markRaw } from "vue";
-
-import { fetchRequests } from "../utils/utils";
+import { computed, reactive, markRaw } from "vue";
 
 import MakeRequest from '../components/make-request.vue';
 
@@ -10,6 +8,8 @@ import UpdateRequest from '../components/update-request.vue';
 import DeleteRequest from '../components/delete-request.vue';
 
 import ReleaseRequest from '../components/release-request.vue';
+
+import { decodeJWT, getToken, removeToken } from "../utils/utils";
 
 export const MODAL_COMPONENTS = {
 
@@ -25,7 +25,9 @@ export const MODAL_COMPONENTS = {
 
 export const currentModalComponent = markRaw( {
 
-  id: null,
+  request: null,
+
+  callbackFunction: () => null,
 
   component: MODAL_COMPONENTS.MAKE_REQUEST
 
@@ -43,23 +45,21 @@ export const state = reactive( {
 
 } );
 
-// functions interacting with state
+export const onLikeButtonClicked = async ( request, callbackFn ) => {
 
-export const onLikeButtonClicked = async ( request ) => {
+  const { _id: id } = request;
 
-  const { id } = request;
+  // console.log( request, 'request' );
 
   const options = {
 
     method: 'PATCH',
 
-    // headers: {
+    headers: {
 
-    //   'Content-Type': 'application/json'
-      
-    // },
+      'Authorization': `Bearer ${ getToken( 'token' ) }`,
 
-    credentials: 'include'
+    }
 
   }
 
@@ -68,6 +68,8 @@ export const onLikeButtonClicked = async ( request ) => {
     const response = await fetch( `${process.env.SERVER_URL}/user-requests/${ id }/users/${ state.user.id }`, options );
 
     if ( response.ok ) {
+
+      callbackFn();
 
       console.log( response, 'successfully added/removed user request' );
       
@@ -85,17 +87,25 @@ export const onLikeButtonClicked = async ( request ) => {
 
 }
 
-export const onUpdateButtonClicked = request => {
-
-  setCurrentModalComponent( MODAL_COMPONENTS.UPDATE_REQUEST, request );
+export const onMakeRequestButtonClick = ( callbackFn ) => {
+    
+  setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST, null, callbackFn );
 
   openModal();
 
 }
 
-export const onDeleteButtonClicked = request => {
+export const onUpdateButtonClicked = ( request, callbackFn ) => {
 
-  setCurrentModalComponent( MODAL_COMPONENTS.DELETE_REQUEST, request );
+  setCurrentModalComponent( MODAL_COMPONENTS.UPDATE_REQUEST, request, callbackFn );
+
+  openModal();
+
+}
+
+export const onDeleteButtonClicked = ( request, callbackFn ) => {
+
+  setCurrentModalComponent( MODAL_COMPONENTS.DELETE_REQUEST, request, callbackFn );
 
   openModal();
 
@@ -121,49 +131,66 @@ export const closeModal = () => {
 
 }
 
-export const setCurrentModalComponent = ( component, request = null ) => {
+export const setCurrentModalComponent = ( component, request=null, callbackFn ) => {
 
   currentModalComponent.component = component;
 
   currentModalComponent.request = request;
 
-}
+  currentModalComponent.callbackFunction = callbackFn;
 
-function getCookie( name ) {
-
-  const cookies = document.cookie.split(';');
-
-  for ( let i = 0; i < cookies.length; i++ ) {
-
-    const cookie = cookies[i].trim();
-
-    if (cookie.startsWith(name + '=')) {
-
-      return cookie.substring(name.length + 1);
-
-    }
-
-  }
-  
-  return null;
 }
 
 export const isAuthenticated = () => {
 
-  const encodedCookieValue = getCookie( 'scr-user' );
+  if ( state.user ) return true;
 
-  if ( ! encodedCookieValue ) return false;
+  try {
+    
+    const token = getToken( 'token' );
 
-  const decodedCookieValue = decodeURIComponent( encodedCookieValue );
+    const decodedToken = decodeJWT( token );
 
-  const parsedData = JSON.parse( decodedCookieValue );
+    if ( ! token || ! decodedToken ) return false;
 
-  console.log(parsedData, "user data")
+    state.user = decodedToken.payload;
 
-  state.user = parsedData;
+    return true;
 
-  return true;
+  } catch ( error ) {
+    
+    console.warn( error );
+    
+    return false;
+
+  }
 
 };
 
-export const isAdmin = computed( () => state.user?.admin );
+// export const isAuthenticated = () => {
+
+//   const encodedCookieValue = getToken( 'scr-user' );
+
+//   if ( ! encodedCookieValue ) return false;
+
+//   const decodedCookieValue = decodeURIComponent( encodedCookieValue );
+
+//   const parsedData = JSON.parse( decodedCookieValue );
+
+//   console.log(parsedData, "user data")
+
+//   state.user = parsedData;
+
+//   return true;
+
+// };
+
+export const isAdmin = computed( () => state.user?.admin ?? false );
+
+export const logUserOut = () => {
+
+  state.user = null;
+  
+  removeToken( 'token' );
+
+}

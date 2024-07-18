@@ -1,7 +1,9 @@
 
 <script setup>
 
-  import { ref, computed, onBeforeMount } from 'vue';
+  import { ref, computed, onBeforeMount, watch } from 'vue';
+
+  import { useRouter } from 'vue-router';
 
   import Header from '../components/header.vue';
 
@@ -15,50 +17,33 @@
 
   import Pagination from '../components/pagination.vue';
   
-  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onReleaseButtonClicked } from '../store/state';
+  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onReleaseButtonClicked, logUserOut } from '../store/state';
 
-  import { formatDate } from '../utils/utils';
+  import { formatDate, getToken } from '../utils/utils';
+
+  const router = useRouter();
 
   const REQUESTS_PER_PAGE = 20;
+
+  const showReleased = ref( false );
 
   const isLoadingRequests = ref( true );
 
   const requests = ref( null );
 
-  const currentPage = ref( 1 );
+  const currentPage = ref( 0 );
 
   const totalPages = ref( 1 );
 
   const searchRequestValue = ref( '' );
   
-  const sortRequestValue = ref( '' );
+  const sortRequestValue = ref( 'usersLength-desc' );
 
   const filteredRequests = computed( () => {
 
-    return requests.value.sort( ( a, b ) => {
-
-      switch ( sortRequestValue.value ) {
-
-        case 'date-asc':
-          return new Date( a.createdAt ).valueOf() - new Date( b.createdAt ).valueOf();
-
-        case 'date-desc':
-          return new Date( b.createdAt ).valueOf() - new Date( a.createdAt ).valueOf();
-
-        case 'likes-asc':
-          return a.users.length - b.users.length;
-
-        case 'likes-desc':
-          return b.users.length - a.users.length;
-      
-        default:
-          return 0;
-
-      }
-      
-    } )
+    return requests.value
     
-      .filter( request => request.title.toLocaleLowerCase()
+      ?.filter( request => request.title.toLocaleLowerCase()
     
       .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
 
@@ -80,55 +65,57 @@
 
     method: "GET",
 
-    credentials: 'include'
+    headers: {
+
+      'Authorization': `Bearer ${ getToken( 'token' ) }`
+
+    }
 
   }
 
   const fetchPage = async ( page ) => {
 
-    // console.log( page );
+    try {
 
-    if ( page === currentPage.value ) return;
+      const sortingValues = sortRequestValue.value.split( '-' );
+  
+      isLoadingRequests.value = true;
+  
+      const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=${showReleased.value}&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
+  
+      if ( response.ok ) {
+  
+        const data = await response.json();
+  
+        requests.value = data.requests;
+  
+        currentPage.value = data.page;
+  
+        totalPages.value = data.total;
+  
+      } else if ( response.status === 401 ) {
 
-    isLoadingRequests.value = true;
+        logUserOut();
 
-    const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
+        router.push( { name: 'login' } );
 
-    if ( response.ok ) {
+      }
 
-      const data = await response.json();
+      isLoadingRequests.value = false;
+      
+    } catch ( error ) {
 
-      requests.value = data.requests;
-
-      currentPage.value = data.page;
-
-      totalPages.value = data.total;
+      console.error( error );
 
     }
-      
-    isLoadingRequests.value = false;
 
   }
 
-  onBeforeMount( async () => {
+  onBeforeMount( () => fetchPage( 1 ) );
 
-    const response = await fetch( `${process.env.SERVER_URL}/requests?page=1&limit=${REQUESTS_PER_PAGE}`, options );
+  watch( sortRequestValue, fetchPage );
 
-    if ( response.ok ) {
-
-      const data = await response.json();
-
-      requests.value = data.requests;
-
-      currentPage.value = data.page;
-
-      totalPages.value = data.total;
-
-    }
-      
-    isLoadingRequests.value = false;
-
-  } )
+  watch( showReleased, fetchPage );
 
 </script>
 
@@ -138,9 +125,9 @@
 
   <main class="relative min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
 
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto mb-14">
 
-      <div class="mb-5 text-right">
+      <div class="sticky top-10 z-10 mb-5 text-right">
 
         <button 
         
@@ -156,9 +143,9 @@
 
       </div>
 
-      <form class="flex justify-between mb-20">
+      <form class="flex flex-col-reverse justify-between gap-5 mb-20 sm:flex-row">
 
-        <fieldset class="w-1/2">
+        <fieldset class="sm:self-end sm:w-1/2">
 
           <label for="search"></label>
 
@@ -166,25 +153,43 @@
 
         </fieldset>
 
-        <fieldset class="flex flex-col">
+        <div class="self-end">
 
-          <label for="sort"><span class="sr-only">Sort By</span></label>
+          <fieldset class="mb-5 flex justify-between">
 
-          <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue" :disabled="isLoadingRequests">
+            <label for="released" class="select-none hover:cursor-pointer"><strong>{{ showReleased ? 'Hide' : 'Show' }}</strong> released</label>
 
-            <option value="" disabled>Sort by</option>
+            <div class="relative grid grid-cols-1 w-16 p-1 bg-gray-300 rounded-full has-[:checked]:bg-purple-900 transition-colors">
+              
+              <input id="released" class="w-full peer row-start-1 col-start-1 ring-0 border-0 opacity-0 focus:ring-0" type="checkbox" v-model="showReleased">
+              
+              <span class="pointer-events-none row-start-1 col-start-1 w-5 h-5 rounded-full bg-white peer-checked:translate-x-9 transition-transform"></span>
 
-            <option value="date-asc">Date Asc</option>
+            </div>
 
-            <option value="date-desc">Date Desc</option>
-            
-            <option value="likes-asc">Likes Asc</option>
+          </fieldset>
 
-            <option value="likes-desc">Likes Desc</option>
+          <fieldset>
 
-          </select>
+            <label for="sort"><span class="sr-only">Sort By</span></label>
 
-        </fieldset>
+            <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue" :disabled="isLoadingRequests">
+
+              <option value="" disabled>Sort by</option>
+              
+              <option value="usersLength-asc">Likes Asc</option>
+
+              <option value="usersLength-desc">Likes Desc</option>
+
+              <option value="releaseDate-asc">Released Date Asc</option>
+
+              <option value="releaseDate-desc">Released Date Desc</option>
+
+            </select>
+
+          </fieldset>
+
+        </div>
 
       </form>
 
@@ -219,9 +224,9 @@
 
               </span>
 
-              <span class="text-left text-xs text-neutral-600 sm:text-right">
+              <span class="text-left text-xs text-neutral-600 sm:text-center">
                 
-                {{ formatDate( request.createdAt ) }}
+                {{ formatDate( request.releaseDate ) ?? 'NA' }}
               
               </span>
 
@@ -239,9 +244,9 @@
 
               <div class="flex gap-x-2 justify-self-end">
 
-                <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( request )" />
+                <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( request, () => fetchPage( currentPage ) )" />
 
-                <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( request )" />
+                <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( request, () => fetchPage( currentPage ) )" />
 
                 <NotifyButton 
                 
@@ -250,14 +255,6 @@
                   @notify-button-clicked="() => toggleIdFromRequestList( request._id, request.title )" 
                   
                 />
-
-                <!-- <NotifyButton :release="requestsReleaseListIds.includes( id )"
-
-                  :disable="! released || ! url"
-                  
-                  @notify-button-clicked="() => toggleIdFromRequestList( id, title )" 
-                  
-                /> -->
 
               </div>
               

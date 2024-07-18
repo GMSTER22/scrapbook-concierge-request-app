@@ -3,11 +3,12 @@
 
   import { ref } from 'vue';
 
+  import { useRoute, useRouter } from 'vue-router';
+
   import { Bars3Icon } from '@heroicons/vue/24/solid';
 
   import { state, isAdmin } from '../store/state';
-
-  import { useRoute, useRouter } from 'vue-router';
+import { logUserOut } from '../store/state';
 
   const router = useRouter();
 
@@ -19,29 +20,25 @@
 
   const onLogoutButtonClick = async () => {
 
-    const options = {
+    // const options = {
 
-      method: 'GET',
+    //   method: 'GET',
 
-      // headers: {
+    //   headers: {
 
-      //   'Content-Type': 'application/json',
-
-      //   // 'Host': 'http://127.0.0.1:3000',
-
-      //   // 'Accept': 'application/json',
-
-      //   // 'Cache': 'no-cache'
+    //     'Authorization': `Bearer ${getToken}`,
         
-      // },
+    //   }
 
-      credentials: 'include'
+    // }
 
-    }
+    // const response = await fetch( `${process.env.SERVER_URL}/logout`, options );
 
-    const response = await fetch( `${process.env.SERVER_URL}/logout`, options );
+    // if ( response.ok ) router.push( { name: 'login' } );
 
-    if ( response.ok ) router.push( { name: 'login' } );
+    logUserOut();
+
+    router.push( { name: 'login' } );
 
   }
 

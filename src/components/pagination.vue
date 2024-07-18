@@ -81,11 +81,11 @@
 
   const seventhButton = ref( props.total );
 
-  function onPageButtonClick( event ) {
+  // function onPageButtonClick( event ) {
 
 
 
-  }
+  // }
 
 </script>
 
@@ -99,7 +99,7 @@
 
       :hidden="props.total < props.current" 
       
-      :disabled="props.disabled"
+      :disabled="props.disabled || props.current === firstButton"
       
       class="flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border" 
       
@@ -117,7 +117,7 @@
     
       :aria-selected="props.current === secondButton" 
       
-      :disabled="typeof secondButton == 'string' || props.disabled" 
+      :disabled="typeof secondButton == 'string' || props.disabled || props.current === secondButton" 
       
       :aria-hidden="props.total < 2"
       
@@ -139,7 +139,7 @@
       
       :aria-hidden="props.total < 3" 
       
-      :disabled="props.disabled"
+      :disabled="props.disabled || props.current === thirdButton"
       
       class="px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border aria-selected:bg-gray-100 aria-hidden:hidden" 
       
@@ -159,7 +159,7 @@
       
       :aria-hidden="props.total < 4" 
       
-      :disabled="props.disabled"
+      :disabled="props.disabled || props.current === fourthButton"
       
       class="px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border aria-selected:bg-gray-100 aria-hidden:hidden" 
       
@@ -179,7 +179,7 @@
 
       :aria-hidden="props.total < 5" 
       
-      :disabled="props.disabled"
+      :disabled="props.disabled || props.current === fifthButton"
       
       class="px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border aria-selected:bg-gray-100 aria-hidden:hidden" 
       
@@ -197,7 +197,7 @@
     
       :aria-selected="props.current === sixthButton" 
       
-      :disabled="typeof sixthButton == 'string' || props.disabled" 
+      :disabled="typeof sixthButton == 'string' || props.disabled || props.current === sixthButton" 
       
       :aria-hidden="props.total < 6"
       
@@ -217,7 +217,7 @@
       
       :aria-hidden="props.total <= 6" 
       
-      :disabled="props.disabled"
+      :disabled="props.disabled || props.current === seventhButton"
       
       class="flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 aria-selected:border aria-hidden:hidden" 
       

@@ -5,9 +5,9 @@
 
   import { useRouter } from 'vue-router';
 
-  import { state, isAdmin, currentModalComponent, closeModal, isAuthenticated } from '../store/state';
+  import { state, isAdmin, currentModalComponent, closeModal, isAuthenticated, logUserOut } from '../store/state';
 
-  import { fetchRequests } from '../utils/utils';
+  import { getToken } from '../utils/utils';
   
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
@@ -21,7 +21,7 @@
 
   const requestReleased = ref( request.released ? 'true' : 'false' );
 
-  const isUrlField = computed( () =>  requestReleased.value === 'true' && isAdmin );
+  const isUrlField = computed( () => requestReleased.value === 'true' && isAdmin );
 
   const numberOfCharactersLeft = computed( () => {
 
@@ -39,7 +39,9 @@
 
     event.preventDefault();
 
-    if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
+    console.log( 'after event cancellation' );
+
+    // if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
 
     try {
 
@@ -53,7 +55,7 @@
       
       } );
 
-      console.log( data, 'BEFORE SUBMIT' );
+      // console.log( data, 'BEFORE SUBMIT' );
 
       const options = {
 
@@ -63,25 +65,29 @@
 
         headers: {
 
+          'Authorization': `Bearer ${ getToken( 'token' ) }`,
+
           'Content-Type': 'application/json',
 
           // 'Accept': 'application/json'
           
         },
 
-        credentials: 'include'
-
       }
 
-      let response = await fetch( `${process.env.SERVER_URL}/requests/${ currentModalComponent.id }/users/${ state.user.id }`, options );
+      let response = await fetch( `${process.env.SERVER_URL}/requests/${ currentModalComponent.request._id }/users/${ state.user.id }`, options );
 
       if ( response.ok ) {
 
-        const fetchedRequests = await fetchRequests();
-
-        state.requests = fetchedRequests;
+        currentModalComponent.callbackFunction();
 
         closeModal();
+
+      } else if ( response.status === 401 ) {
+
+        logUserOut();
+
+        router.push( { name: 'login' } );
 
       }
       
@@ -115,7 +121,7 @@
       
       <Transition>
 
-        <div v-show="isUrlField" class="mb-4">
+        <div v-if="isUrlField" class="mb-4">
 
           <label class="block mb-1" for="url">URL</label>
 

@@ -1,13 +1,11 @@
 
 <script setup>
 
-  import { ref, computed, onBeforeMount } from 'vue'; 
+  import { ref, computed, onBeforeMount, watch } from 'vue'; 
+
+  import { useRouter } from 'vue-router';
 
   import Header from '../components/header.vue';
-
-  import Modal from '../components/modal.vue';
-
-  import LikeButton from '../components/buttons/likeButton.vue';
 
   import Pagination from '../components/pagination.vue';
 
@@ -17,9 +15,11 @@
   
   import DeleteButton from '../components/buttons/deleteButton.vue';
 
-  import { formatDate, fetchRequests } from '../utils/utils';
+  import { formatDate, getToken } from '../utils/utils';
 
-  import { state, openModal, currentModalComponent, MODAL_COMPONENTS, setCurrentModalComponent, onUpdateButtonClicked, onDeleteButtonClicked } from '../store/state';
+  import { state, onMakeRequestButtonClick, onUpdateButtonClicked, onDeleteButtonClicked, logUserOut } from '../store/state';
+
+  const router = useRouter();
 
   const REQUESTS_PER_PAGE = 20;
 
@@ -27,40 +27,19 @@
 
   const userRequests = ref( null );
 
-  const currentPage = ref( 1 );
+  const currentPage = ref( 0 );
 
   const totalPages = ref( 1 );
   
   const searchRequestValue = ref( '' );
   
-  const sortRequestValue = ref( '' );
+  const sortRequestValue = ref( 'createdAt-asc' );
 
   const filteredRequests = computed( () => {
 
-    return userRequests.value?.sort( ( a, b ) => {
-
-      switch ( sortRequestValue.value ) {
-
-        case 'date-asc':
-          return new Date( a.createdAt ).valueOf() - new Date( b.createdAt ).valueOf();
-
-        case 'date-desc':
-          return new Date( b.createdAt ).valueOf() - new Date( a.createdAt ).valueOf();
-
-        case 'likes-asc':
-          return a.users.length - b.users.length;
-
-        case 'likes-desc':
-          return b.users.length - a.users.length;
-      
-        default:
-          return 0;
-
-      }
-      
-    } )
+    return userRequests.value
     
-    .filter( request => request.title.toLocaleLowerCase()
+      ?.filter( request => request.title.toLocaleLowerCase()
       
       .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
 
@@ -70,61 +49,65 @@
 
     method: "GET",
 
-    credentials: 'include'
+    headers: {
 
-  }
-
-  const onMakeRequestButtonClick = () => {
-
-    if ( currentModalComponent.component !== MODAL_COMPONENTS.MAKE_REQUEST ) setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST );
-
-    openModal();
-
-  }
-
-  const fetchPage = async ( page ) => {
-
-    if ( page === currentPage.value ) return;
-
-    isLoadingUserRequests.value = true;
-
-    const response = await fetch( `${process.env.SERVER_URL}/requests?id=${ state.user.id }&page=${page}&limit=${REQUESTS_PER_PAGE}`, options );
-
-    if ( response.ok ) {
-
-      const data = await response.json();
-
-      userRequests.value = data.requests;
-
-      currentPage.value = data.page;
-
-      totalPages.value = data.total;
+      'Authorization': `Bearer ${ getToken( 'token' ) }`,
 
     }
-      
-    isLoadingUserRequests.value = false;
 
   }
 
-  onBeforeMount( async () => {
+  const fetchPage = async ( page=currentPage.value ) => {
 
-    const response = await fetch( `${process.env.SERVER_URL}/requests?id=${ state.user.id }&page=1&limit=${REQUESTS_PER_PAGE}`, options );
+    try {
 
-    if ( response.ok ) {
+      const sortingValues = sortRequestValue.value.split( '-' );
+      
+      // if ( page === currentPage.value ) return;
+  
+      isLoadingUserRequests.value = true;
+  
+      const response = await fetch( `${process.env.SERVER_URL}/requests?id=${ state.user.id }&page=${page}&limit=${REQUESTS_PER_PAGE}&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
+  
+      if ( response.ok ) {
+  
+        const data = await response.json();
+  
+        userRequests.value = data.requests;
+  
+        currentPage.value = data.page;
+  
+        totalPages.value = data.total;
+  
+      } else if ( response.status === 401 ) {
+  
+        logUserOut();
 
-      const data = await response.json();
+        router.push( { name: 'login' } );
+  
+      }
+        
+      isLoadingUserRequests.value = false;
 
-      userRequests.value = data.requests;
-
-      currentPage.value = data.page;
-
-      totalPages.value = data.total;
+    } catch ( error ) {
+      
+      console.error( error );
 
     }
-      
-    isLoadingUserRequests.value = false;
 
-  } )
+  }
+
+  // const onMakeRequestButtonClick = () => {
+
+  //   setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST, null, () => fetchPage( currentPage.value ) );
+
+  //   openModal();
+
+  // }
+
+  onBeforeMount( () => fetchPage( 1 ) );
+
+  watch( sortRequestValue, fetchPage );
 
 </script>
 
@@ -134,13 +117,13 @@
 
   <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto mb-14">
 
       <div>
 
         <div class="mb-5 text-right">
 
-          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="onMakeRequestButtonClick">
+          <button type="button" class="px-4 py-2 rounded font-semibold bg-purple-900 text-white" @click="() => onMakeRequestButtonClick( () => fetchPage( currentPage ) )">
             
             Make A Request
 
@@ -148,9 +131,9 @@
 
         </div>
 
-        <form class="flex justify-between mb-20">
+        <form class="flex flex-col-reverse justify-between gap-5 mb-20 sm:flex-row">
 
-          <fieldset class="w-1/2">
+          <fieldset class="sm:w-1/2">
 
             <label for="search"></label>
 
@@ -158,7 +141,7 @@
 
           </fieldset>
 
-          <fieldset class="flex flex-col">
+          <fieldset class="self-end">
 
             <label for="sort"><span class="sr-only">Sort By</span></label>
 
@@ -166,13 +149,13 @@
 
               <option value="" disabled>Sort by</option>
 
-              <option value="date-asc">Date Asc</option>
+              <option value="createdAt-asc">Date Asc</option>
 
-              <option value="date-desc">Date Desc</option>
+              <option value="createdAt-desc">Date Desc</option>
               
-              <option value="likes-asc">Likes Asc</option>
+              <option value="usersLength-asc">Likes Asc</option>
 
-              <option value="likes-desc">Likes Desc</option>
+              <option value="usersLength-desc">Likes Desc</option>
 
             </select>
 
@@ -245,7 +228,7 @@
                 
                   v-if="! request.released" 
                   
-                  @update-button-clicked="()=> onUpdateButtonClicked( request )" 
+                  @update-button-clicked="() => onUpdateButtonClicked( request, () => fetchPage( currentPage ) )" 
                   
                 />
                   
@@ -253,7 +236,7 @@
                 
                   v-if="! request.released" 
                   
-                  @delete-button-clicked="()=> onDeleteButtonClicked( request )" 
+                  @delete-button-clicked="() => onDeleteButtonClicked( request, () => fetchPage( currentPage ) )" 
                   
                 />
 

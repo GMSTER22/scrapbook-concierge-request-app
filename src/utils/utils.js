@@ -11,54 +11,32 @@ export function formatDate( dateString ) {
 
   }
 
-  return new Date( dateString ).toLocaleDateString( 'en-US', options );
+  return dateString ? new Date( dateString ).toLocaleDateString( 'en-US', options ) : null;
 
 }
 
-export async function fetchRequests() {
+export function getToken( name='token' ) {
 
-  try {
-    
-    const options = {
+  return localStorage.getItem( name );
 
-      method: 'GET',
+}
 
-      headers: {
+export function removeToken( name='token' ) {
 
-        // 'Content-Type': 'application/json',
+  localStorage.removeItem( name );
 
-        'Accept': 'application/json',
-        
-        // 'Host': 'http://127.0.0.1:3000',
+}
 
-        // 'Cache': 'no-cache'
-        
-      },
+export function decodeJWT( token ) {
 
-      credentials: 'include'
+  const tokenParts = token.split( '.' );
 
-    }
+  if ( tokenParts.length !== 3 ) throw new Error( 'Invalid token format' );
 
-    const response = await fetch( `${process.env.SERVER_URL}/requests`, options );
+  const header = JSON.parse( atob( tokenParts[ 0 ] ) );
 
-    console.log( response, 'response' );
+  const payload = JSON.parse( atob( tokenParts[ 1 ] ) );
 
-    if ( response.ok ) {
-
-      const requests = await response.json();
-
-      return requests;
-
-    } else {
-
-      return null;
-
-    }
-
-  } catch ( error ) {
-    
-    console.log( error );
-
-  }
+  return { header, payload };
 
 }

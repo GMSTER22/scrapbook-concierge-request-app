@@ -1,15 +1,21 @@
 
 <script setup>
 
-  import { useRouter } from 'vue-router';
+  import { computed, ref, onBeforeMount } from 'vue';
 
-  import { computed, ref } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
 
   import { state } from '../store/state';
 
+  import { decodeJWT } from '../utils/utils';
+
   import SocialMediaAuthButton from '../components/buttons/socialMediaAuthButton.vue';
 
+  const SERVER_URL = process.env.SERVER_URL;
+
   const router = useRouter();
+
+  const { query } = useRoute();
 
   const emailValidationRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -63,23 +69,33 @@
         
       },
 
-      credentials: 'include'
+      // credentials: 'include'
 
     }
 
     try {
       
       const response = await fetch( `${process.env.SERVER_URL}/login`, options );
+
+      console.log( response );
   
       if ( response.ok ) {
 
         const result = await response.json();
+
+        localStorage.setItem( 'token', result );
+        
+        const decodedToken = decodeJWT( result );
       
-        state.user = result;
+        state.user = decodedToken.payload;
         
         router.push( { name: 'home'} );
 
       } else {
+
+        const result = await response.text();
+
+        console.log( result );
 
         isCredentialsMessage.value = true;
 
@@ -87,11 +103,27 @@
       
     } catch ( error ) {
 
-      alert( error.message );
+      console.error( `An error occurred during login: ${ error.message }` );
       
     }
 
   }
+
+  onBeforeMount( () => {
+
+    const token = query?.token;
+
+    if ( ! token ) return;
+
+    localStorage.setItem( 'token', token );
+        
+    const decodedToken = decodeJWT( token );
+  
+    state.user = decodedToken.payload;
+    
+    router.push( { name: 'home'} );
+
+  } )
 
 </script>
 
@@ -107,7 +139,7 @@
 
         <form 
         
-          action="https://scrapbook-concierge-request-app-backend.onrender.com/auth/google`" 
+          :action="`${SERVER_URL}/auth/google`" 
           
           method="GET">
 
@@ -117,7 +149,7 @@
 
         <form 
         
-          action="https://scrapbook-concierge-request-app-backend.onrender.com/auth/facebook`" 
+          :action="`${SERVER_URL}/auth/facebook`" 
           
           method="GET">
 
