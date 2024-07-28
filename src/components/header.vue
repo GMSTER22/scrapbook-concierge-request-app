@@ -1,20 +1,25 @@
 
 <script setup>
 
-  import { ref } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
 
   import { useRoute, useRouter } from 'vue-router';
 
   import { Bars3Icon } from '@heroicons/vue/24/solid';
 
   import { state, isAdmin } from '../store/state';
-import { logUserOut } from '../store/state';
+
+  import { logUserOut } from '../store/state';
 
   const router = useRouter();
 
   const route = useRoute();
 
+  const navHTMLElement = ref( null );
+
   const isNavOpen = ref( false );
+  
+  let navClientHeight = isAdmin && isNavOpen.value ? 'h-[212px]' : 'h-[152px]'; 
 
   const onMenuButtonClick = () => isNavOpen.value = ! isNavOpen.value;
 
@@ -42,6 +47,20 @@ import { logUserOut } from '../store/state';
 
   }
 
+  // onMounted( () => {
+
+  //   Array.from( navHTMLElement.value.children ).forEach( n => {
+
+  //     console.log( n.clientHeight );
+
+  //     navClientHeight += n.clientHeight;
+
+  //   } );
+
+  //   console.log( navClientHeight );
+
+  // } );
+
 </script>
 
 <template>
@@ -59,10 +78,14 @@ import { logUserOut } from '../store/state';
       <div v-if="route.name !== 'subscription'">
 
         <nav 
+
+          ref="navHTMLElement"
         
-          :class="['absolute top-[60px] left-0 flex flex-col items-center gap-x-8 gap-y-5 w-full h-0 z-10 text-ellipsis overflow-hidden text-purple-900 bg-neutral-200 font-semibold md:relative md:top-auto md:left-auto md:flex-row md:w-auto md:h-auto md:bg-transparent transition-[height_padding] duration-300', { 'h-[212px] py-5': isNavOpen }]" 
+          :class="['absolute top-[70px] left-0 flex flex-col items-center gap-x-8 gap-y-5 w-full h-0 z-50 text-ellipsis overflow-hidden text-purple-900 bg-neutral-200 font-semibold md:relative md:top-auto md:left-auto md:flex-row md:w-auto md:h-auto md:bg-transparent transition-[height_padding] duration-300', { [ isAdmin ? 'h-[196px] py-5' : 'h-[152px] py-5' ]: isNavOpen } ]" 
           
-          aria-labelledby="menu-button">
+          aria-labelledby="menu-button"
+          
+        >
 
           <router-link to="/my-requests">My requests</router-link>
 
@@ -92,7 +115,7 @@ import { logUserOut } from '../store/state';
           
           @click="onMenuButtonClick">
 
-          <Bars3Icon class="h-6 w-6" />
+          <Bars3Icon class="h-8 w-8" />
 
         </button>
 

@@ -1,17 +1,19 @@
 
 <script setup>
 
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
 
   import { useRouter } from 'vue-router';
 
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
-  import { state, closeModal, isAuthenticated, currentModalComponent } from '../store/state';
+  import { state, closeModal, isAuthenticated, currentModalComponent, pushAlert } from '../store/state';
 
   import { getToken } from '../utils/utils';
 
   const router = useRouter();
+
+  const textAreaElement = ref( null ); 
   
   const requestValue = ref( null );
 
@@ -36,8 +38,6 @@
     
     try {
 
-      console.log( requestValue.value );
-
       const data = JSON.stringify( { title: requestValue.value } );
 
       const options = {
@@ -60,11 +60,11 @@
 
       let response = await fetch( `${process.env.SERVER_URL}/requests/${ state.user.id }`, options );
 
+      let result = await response.json();
+      
       if ( response.ok ) {
 
-        let data = await response.text();
-
-        console.log( currentModalComponent.callbackFunction );
+        pushAlert( 'success', result.message );
 
         currentModalComponent.callbackFunction();
 
@@ -72,19 +72,29 @@
 
       } else if ( response.status === 401 ) {
 
+        pushAlert( 'failure', 'You\'re not logged in.' );
+
         logUserOut();
 
         router.push( { name: 'login' } );
+
+      } else {
+
+        pushAlert( 'failure', result.message );
 
       }
       
     } catch ( error ) {
       
-      console.log( error );
+      console.warn( error );
+
+      pushAlert( 'failure', 'An Error occurred while making a request. Try again later.' );
       
     }
 
   }
+
+  onMounted( () => textAreaElement.value.focus() );
 
 </script>
 
@@ -106,7 +116,23 @@
 
         <label for="request"></label>
 
-        <textarea class="w-full rounded" name="request" id="request" maxlength="100" v-model="requestValue" placeholder="Enter Title"></textarea>        
+        <textarea 
+        
+          ref="textAreaElement" 
+          
+          class="w-full rounded" 
+          
+          name="request" 
+          
+          id="request" 
+          
+          maxlength="100" 
+          
+          v-model="requestValue" 
+          
+          placeholder="Enter Title">
+        
+        </textarea>        
 
       </div>
 

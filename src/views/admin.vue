@@ -17,7 +17,7 @@
 
   import Pagination from '../components/pagination.vue';
   
-  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onReleaseButtonClicked, logUserOut } from '../store/state';
+  import { state, onUpdateButtonClicked, onDeleteButtonClicked, onReleaseButtonClicked, pushAlert, logUserOut } from '../store/state';
 
   import { formatDate, getToken } from '../utils/utils';
 
@@ -29,7 +29,7 @@
 
   const isLoadingRequests = ref( true );
 
-  const requests = ref( null );
+  // const requests = ref( null );
 
   const currentPage = ref( 0 );
 
@@ -41,7 +41,7 @@
 
   const filteredRequests = computed( () => {
 
-    return requests.value
+    return state.requests
     
       ?.filter( request => request.title.toLocaleLowerCase()
     
@@ -82,12 +82,12 @@
       isLoadingRequests.value = true;
   
       const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=${showReleased.value}&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
-  
+      
+      const data = await response.json();
+      
       if ( response.ok ) {
   
-        const data = await response.json();
-  
-        requests.value = data.requests;
+        state.requests = data.requests;
   
         currentPage.value = data.page;
   
@@ -95,9 +95,15 @@
   
       } else if ( response.status === 401 ) {
 
+        pushAlert( 'failure', 'You\'re not logged in.' );
+
         logUserOut();
 
         router.push( { name: 'login' } );
+
+      } else {
+
+        pushAlert( 'failure', data?.message );
 
       }
 
@@ -106,6 +112,8 @@
     } catch ( error ) {
 
       console.error( error );
+
+      pushAlert( 'failure', 'An Error occurred while retrieving the requests. Try again later.' );
 
     }
 
@@ -123,7 +131,7 @@
 
   <Header />
 
-  <main class="relative min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
+  <main class="relative min-h-[calc(100vh-70px)] px-5 py-14 sm:min-h-[calc(100vh-60px)] sm:py-28 lg:px-0">
 
     <div class="max-w-4xl mx-auto mb-14">
 
@@ -201,7 +209,7 @@
 
       <div v-else>
 
-        <div v-if="! requests.length" class="text-center">
+        <div v-if="! state.requests.length" class="text-center">
         
           <p class="mb-8 text-2xl">
 
@@ -244,9 +252,17 @@
 
               <div class="flex gap-x-2 justify-self-end">
 
-                <UpdateButton @update-button-clicked="()=> onUpdateButtonClicked( request, () => fetchPage( currentPage ) )" />
+                <UpdateButton 
+                
+                  :is-disabled="! state.user?.admin" 
+                  
+                  @update-button-clicked="() => onUpdateButtonClicked( request, () => fetchPage( currentPage ) )" />
 
-                <DeleteButton @delete-button-clicked="()=> onDeleteButtonClicked( request, () => fetchPage( currentPage ) )" />
+                <DeleteButton 
+                
+                :is-disabled="! state.user?.admin"  
+                
+                @delete-button-clicked="() => onDeleteButtonClicked( request, () => fetchPage( currentPage ) )" />
 
                 <NotifyButton 
                 
@@ -276,7 +292,7 @@
 
     <Pagination 
 
-      v-if="requests?.length" 
+      v-if="state.requests?.length" 
       
       :disabled="isLoadingRequests"
     

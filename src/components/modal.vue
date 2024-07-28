@@ -1,8 +1,6 @@
 
 <script setup>
 
-  import { onBeforeMount, onBeforeUnmount, onMounted, onUnmounted } from 'vue';
-
   import { state, closeModal, currentModalComponent, setCurrentModalComponent, MODAL_COMPONENTS } from '../store/state';
 
   const onModalBackgroundClicked = event => {
@@ -18,6 +16,8 @@
   <Teleport to="body">
 
     <div 
+    
+      role="dialog"
 
       id="backdrop"
       
@@ -32,11 +32,5 @@
     </div>
 
   </Teleport>
-
-  <!-- <dialog class="::">
-
-
-
-  </dialog> -->
 
 </template>

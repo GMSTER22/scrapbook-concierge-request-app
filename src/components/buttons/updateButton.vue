@@ -3,11 +3,11 @@
 
   import { PencilIcon } from '@heroicons/vue/24/solid';
 
-  // const props = defineProps( {
+  const props = defineProps( {
 
-  //   disabled: Boolean
+    isDisabled: Boolean
   
-  // } );
+  } );
 
   const emits = defineEmits( [ 'updateButtonClicked' ] );
 
@@ -17,9 +17,19 @@
 
 <template>
 
-  <button class="px-[2px] py-[2px] hover:pointer hover:scale-110 focus:scale-110 transition-transform duration-150 border border-black rounded" type="button" aria-label="update request" @click="emitUpdateButtonClicked">
+  <button 
+  
+    class="group px-[2px] py-[2px] hover:pointer hover:scale-110 focus:scale-110 transition-transform duration-150 border border-green-800 rounded disabled:opacity-50 disabled:scale-100" 
+    
+    type="button" 
+    
+    aria-label="update request" 
 
-    <PencilIcon class="h-5 w-5 fill-black" />
+    :disabled="isDisabled" 
+    
+    @click="emitUpdateButtonClicked">
+
+    <PencilIcon class="h-8 w-8 fill-green-800" />
 
   </button>
 

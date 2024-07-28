@@ -5,6 +5,8 @@
 
   import Modal from './components/modal.vue';
 
+  import Alerts from './components/alerts.vue';
+
 </script>
 
 <template>
@@ -14,6 +16,8 @@
     <Modal />
     
   </div>
+
+  <Alerts />
 
   <router-view></router-view>
   

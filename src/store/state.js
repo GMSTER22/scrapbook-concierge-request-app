@@ -1,5 +1,7 @@
 
-import { computed, reactive, markRaw } from "vue";
+import { ref, computed, reactive, markRaw } from "vue";
+
+import { v4 as uuidv4 } from 'uuid';
 
 import MakeRequest from '../components/make-request.vue';
 
@@ -41,47 +43,87 @@ export const state = reactive( {
   
   requests: null,
 
-  requestsReleaseList: []
+  requestsReleaseList: [],
+
+  alerts: []
 
 } );
 
-export const onLikeButtonClicked = async ( request, callbackFn ) => {
+export const pushAlert = ( type, message, expiration=3000 ) => {
 
-  const { _id: id } = request;
+  const alertId = uuidv4();
 
-  // console.log( request, 'request' );
+  state.alerts.push( {
 
-  const options = {
+    id: alertId, 
+    
+    type, 
+    
+    message
 
-    method: 'PATCH',
+  } );
 
-    headers: {
+  setTimeout( () => {
+    
+    state.alerts = state.alerts.filter( alert => alert.id !== alertId );
 
-      'Authorization': `Bearer ${ getToken( 'token' ) }`,
+  }, expiration );
 
-    }
+}
 
-  }
+export const onLikeButtonClicked = async ( request, fetchPageCallbackFn, logUserOutAndRedirectHomeFn ) => {
 
   try {
+  
+    const options = {
+      
+      method: 'PATCH',
+      
+      headers: {
+        
+        'Authorization': `Bearer ${ getToken( 'token' ) }`,
+        
+      }
+      
+    }
+    
+    const { _id: id } = request;
 
     const response = await fetch( `${process.env.SERVER_URL}/user-requests/${ id }/users/${ state.user.id }`, options );
 
+    const result = await response.json();
+    
     if ( response.ok ) {
 
-      callbackFn();
+      const isLiked = request.users.includes( state.user.id );
 
-      console.log( response, 'successfully added/removed user request' );
-      
-      const result = await response.text();
+      if ( isLiked ) request.users = request.users.filter( userId => userId !== state.user.id );
 
-      console.log( result );
+      else request.users.push( state.user.id );
+
+    } else if ( response.status === 401 ) {
+
+      pushAlert( 'failure', 'You\'re not logged in' );
+
+      logUserOutAndRedirectHomeFn();
+
+    } else if ( response.status === 404 ) {
+
+      // alert( result.message );
+
+      pushAlert( 'failure', result.message );
+
+      setTimeout( () => fetchPageCallbackFn(), 2000 );
+
+    } else {
+
+      pushAlert( 'failure', result.message );
 
     }
     
   } catch ( error ) {
     
-    console.log( error );
+    console.error( error );
 
   };
 
@@ -159,31 +201,13 @@ export const isAuthenticated = () => {
 
   } catch ( error ) {
     
-    console.warn( error );
+    // console.warn( error );
     
     return false;
 
   }
 
 };
-
-// export const isAuthenticated = () => {
-
-//   const encodedCookieValue = getToken( 'scr-user' );
-
-//   if ( ! encodedCookieValue ) return false;
-
-//   const decodedCookieValue = decodeURIComponent( encodedCookieValue );
-
-//   const parsedData = JSON.parse( decodedCookieValue );
-
-//   console.log(parsedData, "user data")
-
-//   state.user = parsedData;
-
-//   return true;
-
-// };
 
 export const isAdmin = computed( () => state.user?.admin ?? false );
 

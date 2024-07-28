@@ -1,11 +1,9 @@
 
 <script setup>
 
-  // import { ref } from 'vue';
-
   import { useRouter } from 'vue-router';
 
-  import { state, closeModal, isAdmin, logUserOut } from '../store/state';
+  import { state, closeModal, isAdmin, logUserOut, pushAlert } from '../store/state';
 
   import { getToken } from '../utils/utils';
   
@@ -45,29 +43,35 @@
 
       }
 
-      // console.log( requestIds );
-
       let response = await fetch( `${process.env.SERVER_URL}/notifications`, options );
+
+      let result = await response.json();
 
       if ( response.ok ) {
 
-        // state.requests.find( request => request._id === currentModalComponent.request._id ).released = ! request.released;
-
-        // alert( 'Email requesters successful' );
+        pushAlert( 'success', result.message );
 
         closeModal();
 
       } else if ( response.status === 401 ) {
 
+        pushAlert( 'failure', 'You\'re not logged in.' );
+
         logUserOut();
 
         router.push( { name: 'login' } );
 
+      } else {
+
+        pushAlert( 'failure', result.message );
+
       }
       
-    } catch (error) {
+    } catch ( error ) {
       
-      console.log( error );
+      console.warn( error );
+
+      pushAlert( 'failure', 'An Error occurred while emailing users. Try again later.' );
       
     }
 

@@ -5,7 +5,7 @@
 
   import { useRoute } from 'vue-router';
 
-  // import { state } from 'vue';
+  import { pushAlert } from '../store/state';
 
   import { getToken } from '../utils/utils';
 
@@ -19,44 +19,53 @@
     
     event.preventDefault();
 
-    const options = {
-  
-      method: "PATCH",
+    try {
 
-      body: JSON.stringify( {
+      const options = {
+    
+        method: "PATCH",
 
-        email: route.query.email,
+        body: JSON.stringify( {
 
-        emailOptIn: emailOptInValue.value
+          email: route.query.email,
 
-      } ),
+          emailOptIn: emailOptInValue.value
 
-      headers: {
+        } ),
 
-        'Content-Type': 'application/json',
+        headers: {
 
-        // 'Authorization': `Bearer ${ getToken( 'token' ) }`,
+          'Content-Type': 'application/json',
 
+          // 'Authorization': `Bearer ${ getToken( 'token' ) }`,
+
+        }
+    
       }
-  
-    }
 
-    // console.log( route.query.email, emailOptInValue.value, "here" ); 
-
-    // ?email=${ route.query.email }&email_optin=${ emailOptInValue }
-    // console.log( emailOptInValue.value );
-
-    const response = await fetch( `${process.env.SERVER_URL}/notifications/subscriptions`, options );
-
-    if ( response.ok ) {
+      const response = await fetch( `${process.env.SERVER_URL}/notifications/subscriptions`, options );
 
       const data = response.json();
 
-      console.log( data.emailOptIn );
+      if ( response.ok ) {
 
-      if ( data.emailOptIn ) alert( data.emailOptIn );
+        console.log( data.emailOptIn );
 
-      else alert( data.emailOptIn );
+        if ( data.emailOptIn ) pushAlert( 'success', 'Successfully opt in email notifications.' );
+
+        else pushAlert( 'success', 'Successfully opt out of email notifications.' );
+
+      } else {
+
+        pushAlert( 'failure', data.message );
+
+      }
+
+    } catch ( error ) {
+
+      console.warn( error );
+
+      pushAlert( 'failure', 'An Error occurred while changing email subscription status. Try again later.' );
 
     }
 
@@ -68,7 +77,7 @@
 
   <Header />
 
-  <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-20 lg:px-0">
+  <main class="min-h-[calc(100vh-70px)] px-5 py-14 sm:min-h-[calc(100vh-60px)] sm:py-20 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">
 

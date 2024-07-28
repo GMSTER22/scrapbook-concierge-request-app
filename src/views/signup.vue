@@ -7,6 +7,8 @@
 
   import SocialMediaAuthButton from '../components/buttons/socialMediaAuthButton.vue';
 
+  import { pushAlert } from '../store/state';
+
   const router = useRouter();
 
   const emailValidationRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -45,43 +47,57 @@
 
     event.preventDefault();
 
-    if ( isUsernameMessage.value || isEmailMessage.value || isPasswordMessage.value ) return;
+    try {
 
-    const userInfo = JSON.stringify( {
+      if ( isUsernameMessage.value || isEmailMessage.value || isPasswordMessage.value ) return;
 
-      username: username.value,
+      const userInfo = JSON.stringify( {
 
-      email: email.value,
+        username: username.value,
+
+        email: email.value,
+        
+        password: password.value
+
+      } );
+
+      const options = {
+
+        method: 'POST',
+
+        body: userInfo,
+
+        headers: {
+
+          'Content-Type': 'application/json'
+
+        } 
+
+      }
+
+      const response = await fetch( `${process.env.SERVER_URL}/signup/password`, options );
+
+      const result = response.json();
+
+      if ( response.ok ) {
+
+        pushAlert( 'success', result.message );
+
+        router.push( { name: 'login' } );
+
+      } else {
+
+        pushAlert( 'failure', result.message );
+
+      }
+
+    } catch ( error ) {
+
+      console.warn( error );
       
-      password: password.value
+      // pushAlert( 'failure', result.message );
 
-    } );
-
-    const options = {
-
-      method: 'POST',
-
-      body: userInfo,
-
-      headers: {
-
-        'Content-Type': 'application/json'
-
-      } 
-
-    }
-
-    const response = await fetch( `${process.env.SERVER_URL}/signup/password`, options );
-
-    if ( response.ok ) {
-
-      router.push( { name: 'login' } );
-
-    } else {
-
-      const data = response.json();
-
-      console.log( data )
+      pushAlert( 'failure', 'An Error occurred while Signing up. Try again later.' );
 
     }
 

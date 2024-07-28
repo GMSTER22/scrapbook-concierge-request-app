@@ -25,7 +25,7 @@
 
   const isLoadingRequests = ref( true );
 
-  const requests = ref( null );
+  // const requests = ref( null );
 
   const currentPage = ref( 0 );
 
@@ -37,13 +37,21 @@
   
   const filteredRequests = computed( () => {
 
-    return requests.value
+    return state.requests
     
       ?.filter( request => request.title.toLocaleLowerCase()
     
       .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
 
   } );
+
+  const logUserOutAndRedirectHome = () => {
+
+    logUserOut();
+
+    router.push( { name: 'login' } );
+
+  }
 
   const options = {
 
@@ -69,11 +77,11 @@
   
       const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=false&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
   
+      const data = await response.json();
+      
       if ( response.ok ) {
   
-        const data = await response.json();
-  
-        requests.value = data.requests;
+        state.requests = data.requests;
   
         currentPage.value = data.page;
   
@@ -81,9 +89,13 @@
   
       } else if ( response.status === 401 ) {
 
-        logUserOut();
+        pushAlert( 'failure', 'You\'re not logged in.' );
 
-        router.push( { name: 'login' } );
+        logUserOutAndRedirectHome();
+
+      } else {
+
+        pushAlert( 'failure', data?.message );
 
       }
 
@@ -92,6 +104,8 @@
     } catch ( error ) {
       
       console.error( error );
+
+      pushAlert( 'failure', 'An Error occurred while retrieving the requests. Try again later.' );
 
     }
 
@@ -107,7 +121,7 @@
 
   <Header />
 
-  <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
+  <main class="min-h-[calc(100vh-70px)] px-5 py-14 sm:min-h-[calc(100vh-60px)] sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">
 
@@ -157,7 +171,7 @@
 
       <div v-else>
 
-        <div v-if="! requests?.length" class="text-center">
+        <div v-if="! state.requests?.length" class="text-center">
         
           <p class="mb-8 text-2xl">
 
@@ -210,7 +224,7 @@
                   
                   :is-disabled="request.users[0] === state.user?.id" 
                   
-                  @like-button-clicked="() => onLikeButtonClicked( request, () => fetchPage( currentPage ) )"
+                  @like-button-clicked="() => onLikeButtonClicked( request, () => fetchPage( currentPage ), logUserOutAndRedirectHome )"
                   
                 />
 
@@ -234,7 +248,7 @@
 
     <Pagination 
 
-      v-if="requests?.length" 
+      v-if="state.requests?.length" 
       
       :disabled="isLoadingRequests"
     

@@ -1,7 +1,7 @@
 
 <script setup>
 
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
 
   import { useRouter } from 'vue-router';
 
@@ -12,6 +12,8 @@
   import { XMarkIcon } from '@heroicons/vue/24/solid';
 
   const router = useRouter();
+
+  const textAreaElement = ref( null );
 
   const request = currentModalComponent.request;
 
@@ -39,8 +41,6 @@
 
     event.preventDefault();
 
-    console.log( 'after event cancellation' );
-
     // if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
 
     try {
@@ -55,8 +55,6 @@
       
       } );
 
-      // console.log( data, 'BEFORE SUBMIT' );
-
       const options = {
 
         method: 'PATCH',
@@ -68,8 +66,6 @@
           'Authorization': `Bearer ${ getToken( 'token' ) }`,
 
           'Content-Type': 'application/json',
-
-          // 'Accept': 'application/json'
           
         },
 
@@ -77,7 +73,11 @@
 
       let response = await fetch( `${process.env.SERVER_URL}/requests/${ currentModalComponent.request._id }/users/${ state.user.id }`, options );
 
+      let result = await response.json();
+
       if ( response.ok ) {
+
+        pushAlert( 'success', result.message );
 
         currentModalComponent.callbackFunction();
 
@@ -85,19 +85,35 @@
 
       } else if ( response.status === 401 ) {
 
+        pushAlert( 'failure', 'You\'re not logged in.' );
+
         logUserOut();
 
         router.push( { name: 'login' } );
 
+      } else if ( response.status === 404 ) {
+
+        pushAlert( 'failure', result.message );
+
+        setTimeout( () => currentModalComponent.callbackFunction(), 0 );
+
+      } else {
+
+        pushAlert( 'failure', result.message );
+
       }
       
-    } catch (error) {
+    } catch ( error ) {
       
-      console.log( error );
+      console.warn( error );
+
+      pushAlert( 'failure', 'An Error occurred while updating the request. Try again later.' );
       
     }
 
   }
+
+  onMounted( () => textAreaElement.value.focus() );
 
 </script>
 
@@ -137,7 +153,21 @@
 
           <label class="block mb-1" for="request">Title</label>
 
-          <textarea class="w-full rounded font-medium" name="request" id="request" maxlength="100" v-model="requestTitle"></textarea>        
+          <textarea 
+          
+            ref="textAreaElement" 
+            
+            class="w-full rounded font-medium" 
+            
+            name="request" 
+            
+            id="request" 
+            
+            maxlength="100" 
+            
+            v-model="requestTitle">
+          
+          </textarea>        
 
         </div>
 

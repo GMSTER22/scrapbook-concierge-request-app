@@ -13,7 +13,7 @@
 
   import { formatDate, getToken } from '../utils/utils';
 
-  import { logUserOut } from '../store/state';
+  import { logUserOut, state } from '../store/state';
 
   const router = useRouter();
 
@@ -21,7 +21,7 @@
 
   const isLoadingReleasedRequests = ref( true );
 
-  const releasedRequests = ref( null );
+  // const releasedRequests = ref( null );
 
   const currentPage = ref( 0 );
 
@@ -33,7 +33,7 @@
 
   const filteredRequests = computed( () => {
 
-    return releasedRequests.value
+    return state.requests
     
       ?.filter( request => request.title.toLocaleLowerCase()
       
@@ -65,29 +65,37 @@
   
       const response = await fetch( `${process.env.SERVER_URL}/requests?page=${page}&limit=${REQUESTS_PER_PAGE}&released=true&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
   
+      const data = await response.json();
+      
       if ( response.ok ) {
   
-        const data = await response.json();
-  
-        releasedRequests.value = data.requests;
+        state.requests = data.requests;
   
         currentPage.value = data.page;
   
         totalPages.value = data.total;
   
       } else if ( response.status === 401 ) {
+
+        pushAlert( 'failure', 'You\'re not logged in.' );
   
         logUserOut();
 
         router.push( { name: 'login' } );
   
+      } else {
+
+        pushAlert( 'failure', result.message );
+
       }
         
       isLoadingReleasedRequests.value = false;
 
     } catch ( error ) {
       
-      console.log( error );
+      console.warn( error );
+
+      pushAlert( 'failure', 'An Error occurred while retrieving the requests. Try again later.' );
 
     }
 
@@ -103,7 +111,7 @@
 
   <Header />
 
-  <main class="min-h-[calc(100vh-60px)] py-14 px-5 sm:py-28 lg:px-0">
+  <main class="min-h-[calc(100vh-70px)] py-14 px-5 sm:min-h-[calc(100vh-60px)] sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">
 
@@ -147,7 +155,7 @@
 
       <div v-else>
 
-        <div v-if="! releasedRequests?.length" class="text-center">
+        <div v-if="! state.requests?.length" class="text-center">
         
           <p class="mb-8 text-2xl">
 
@@ -206,7 +214,7 @@
 
     <Pagination 
 
-      v-if="releasedRequests?.length"
+      v-if="state.requests?.length"
     
       :current="currentPage" 
       

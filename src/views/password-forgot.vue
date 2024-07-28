@@ -5,6 +5,8 @@
 
   import { useRouter } from 'vue-router';
 
+  import { pushAlert } from '../store/state';
+
   const router = useRouter();
 
   // const queries = route.query;
@@ -19,27 +21,45 @@
 
     event.preventDefault();
 
-    const options ={
+    try {
 
-      method: 'POST',
+      const options ={
 
-      body: JSON.stringify( { email: email.value } ),
+        method: 'POST',
 
-      headers: {
+        body: JSON.stringify( { email: email.value } ),
 
-        'Content-Type': 'application/json'
+        headers: {
+
+          'Content-Type': 'application/json'
+
+        }
 
       }
 
-    }
+      const response = await fetch( `${process.env.SERVER_URL}/password-reset`, options );
 
-    const response = await fetch( `${process.env.SERVER_URL}/password-reset`, options );
+      const result = await response.json();
+      
+      if ( response.ok ) {
 
-    if ( response.ok ) {
+        pushAlert( 'success', result.message );
 
-      const data = await response.text();
+      } else if ( response.status === 400 ) {
 
-      alert( `Email was sent to ${ email.value }` )
+        pushAlert( 'failure', result.message );
+
+      } else {
+        
+        pushAlert( 'failure', result.message );
+
+      }
+
+    } catch ( error ) {
+
+      console.error( error );
+      
+      pushAlert( 'failure', 'An Error occurred while sending recovery email. Try again later.' );
 
     }
 

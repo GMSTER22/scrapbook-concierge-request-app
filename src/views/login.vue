@@ -5,7 +5,7 @@
 
   import { useRoute, useRouter } from 'vue-router';
 
-  import { state } from '../store/state';
+  import { state, pushAlert } from '../store/state';
 
   import { decodeJWT } from '../utils/utils';
 
@@ -29,13 +29,13 @@
 
   const isPasswordMessage = ref( false );
 
-  function onEmailFocusout() {
+  function onEmailFocusOut() {
 
     isEmailMessage.value = ! email.value.length || ! emailValidationRegex.test( email.value );
 
   }
 
-  function onPasswordFocusout() {
+  function onPasswordFocusOut() {
 
     isPasswordMessage.value = password.value.length < 6;
 
@@ -77,33 +77,37 @@
       
       const response = await fetch( `${process.env.SERVER_URL}/login`, options );
 
-      console.log( response );
+      const result = await response.json();
+
+      console.log( response, 'response' )
   
       if ( response.ok ) {
 
-        const result = await response.json();
-
-        localStorage.setItem( 'token', result );
+        localStorage.setItem( 'token', result.token );
         
-        const decodedToken = decodeJWT( result );
+        const decodedToken = decodeJWT( result.token );
       
         state.user = decodedToken.payload;
         
         router.push( { name: 'home'} );
 
-      } else {
+      } else if ( response.status === 400 ) {
 
-        const result = await response.text();
-
-        console.log( result );
+        // pushAlert( 'failure', result.message );
 
         isCredentialsMessage.value = true;
+
+      } else {
+
+        pushAlert( 'failure', result.message );
 
       } 
       
     } catch ( error ) {
 
       console.error( `An error occurred during login: ${ error.message }` );
+
+      pushAlert( 'failure', 'An Error occurred during login. Try again later.' );
       
     }
 
@@ -179,13 +183,13 @@
 
       <div>
 
-        <form class="mb-4" action="http://localhost:3000/login">
+        <form class="mb-4">
 
           <fieldset class="flex flex-col mb-4">
 
             <label class="font-medium mb-1" for="email">Email</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" @focusout="onEmailFocusout">
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="email" name="email" id="email" v-model="email" @focusout="onEmailFocusOut">
 
             <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isEmailMessage">Please enter a valid email</span>
 
@@ -195,9 +199,9 @@
 
             <label class="font-medium mb-1" for="password">Password</label>
 
-            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" @focusout="onPasswordFocusout">
+            <input class="rounded ring-transparent focus:border-transparent focus:ring-2 focus:ring-purple-800" type="password" name="password" id="password" v-model="password" @focusout="onPasswordFocusOut">
 
-            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isPasswordMessage">Please enter your password</span>
+            <span class="pt-[2px] text-red-500 text-xs opacity-100 aria-hidden:opacity-0 transition-opacity duration-300" :aria-hidden="!isPasswordMessage">Password should be at least 6 Characters long.</span>
 
           </fieldset>
 

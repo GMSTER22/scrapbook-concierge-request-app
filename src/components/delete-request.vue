@@ -1,11 +1,11 @@
 
 <script setup>
 
-  import { ref, computed } from 'vue';
+  import { ref } from 'vue';
 
   import { useRouter } from 'vue-router';
 
-  import { state, currentModalComponent, closeModal, isAuthenticated, logUserOut } from '../store/state';
+  import { state, currentModalComponent, closeModal, isAuthenticated, logUserOut, pushAlert } from '../store/state';
 
   import { getToken } from '../utils/utils';
   
@@ -37,13 +37,17 @@
 
     event.preventDefault();
 
-    if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
+    // if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
 
     try {
 
       let response = await fetch( `${process.env.SERVER_URL}/requests/${ currentModalComponent.request._id }/users/${ state.user.id }`, options );
 
+      let result = await response.json();
+
       if ( response.ok ) {
+
+        pushAlert( 'success', result.message );
 
         currentModalComponent.callbackFunction();
 
@@ -51,25 +55,29 @@
 
       } else if ( response.status === 401 ) {
 
+        pushAlert( 'failure', 'You\'re not logged in.' );
+
         logUserOut();
 
         router.push( { name: 'login' } );
 
-      } else if ( response.status === 403 ) {
+      } else if ( response.status === 404 ) {
 
-        const responseText = await response.text();
+        pushAlert( 'failure', result.message );
 
-        await new Promise( ( resolve, reject ) => resolve( closeModal() ) );
+        setTimeout( () => currentModalComponent.callbackFunction(), 0 );
 
-        // closeModal();
+      } else {
 
-        alert( responseText );
+        pushAlert( 'failure', result.message );
 
       }
       
-    } catch (error) {
+    } catch ( error ) {
       
-      console.log( error );
+      console.warn( error );
+
+      pushAlert( 'failure', 'An Error occurred while deleting the request. Try again later.' );
       
     }
 

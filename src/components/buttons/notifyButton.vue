@@ -31,11 +31,9 @@
     
     :disabled="disable">
 
-    <MinusCircleIcon v-if="released" class="h-7 w-7 fill-red-700" />
+    <MinusCircleIcon v-if="released" class="h-8 w-8 fill-red-700" />
 
-    <PlusCircleIcon v-else class="h-7 w-7 fill-green-700" />
-
-    <!-- <PlusCircleIcon aria-label="Add Request to the Request List" class="h-7 w-7 fill-green-700" /> -->
+    <PlusCircleIcon v-else class="h-8 w-8 fill-green-700" />
 
   </button>
 

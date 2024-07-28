@@ -17,7 +17,7 @@
 
   import { formatDate, getToken } from '../utils/utils';
 
-  import { state, onMakeRequestButtonClick, onUpdateButtonClicked, onDeleteButtonClicked, logUserOut } from '../store/state';
+  import { state, onMakeRequestButtonClick, onUpdateButtonClicked, onDeleteButtonClicked, logUserOut, pushAlert } from '../store/state';
 
   const router = useRouter();
 
@@ -25,7 +25,7 @@
 
   const isLoadingUserRequests = ref( true );
 
-  const userRequests = ref( null );
+  // const userRequests = ref( null );
 
   const currentPage = ref( 0 );
 
@@ -37,7 +37,7 @@
 
   const filteredRequests = computed( () => {
 
-    return userRequests.value
+    return state.requests
     
       ?.filter( request => request.title.toLocaleLowerCase()
       
@@ -62,29 +62,33 @@
     try {
 
       const sortingValues = sortRequestValue.value.split( '-' );
-      
-      // if ( page === currentPage.value ) return;
   
       isLoadingUserRequests.value = true;
   
       const response = await fetch( `${process.env.SERVER_URL}/requests?id=${ state.user.id }&page=${page}&limit=${REQUESTS_PER_PAGE}&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
   
+      const data = await response.json();
+      
       if ( response.ok ) {
-  
-        const data = await response.json();
-  
-        userRequests.value = data.requests;
+
+        state.requests = data.requests;
   
         currentPage.value = data.page;
   
         totalPages.value = data.total;
   
       } else if ( response.status === 401 ) {
+
+        pushAlert( 'failure', 'You\'re not logged in.' );
   
         logUserOut();
 
         router.push( { name: 'login' } );
   
+      } else {
+
+        pushAlert( 'failure', data.message );
+
       }
         
       isLoadingUserRequests.value = false;
@@ -93,17 +97,11 @@
       
       console.error( error );
 
+      pushAlert( 'failure', 'An Error occurred while retrieving the requests. Try again later.' );
+
     }
 
   }
-
-  // const onMakeRequestButtonClick = () => {
-
-  //   setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST, null, () => fetchPage( currentPage.value ) );
-
-  //   openModal();
-
-  // }
 
   onBeforeMount( () => fetchPage( 1 ) );
 
@@ -115,7 +113,7 @@
 
   <Header />
 
-  <main class="min-h-[calc(100vh-60px)] px-5 py-14 sm:py-28 lg:px-0">
+  <main class="min-h-[calc(100vh-70px)] px-5 py-14 sm:min-h-[calc(100vh-60px)] sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">
 
@@ -173,7 +171,7 @@
 
       <div v-else>
 
-        <div v-if="! userRequests.length" class="text-center">
+        <div v-if="! state.requests.length" class="text-center">
         
           <p class="mb-8 text-2xl">
 
@@ -228,6 +226,8 @@
                 
                   v-if="! request.released" 
                   
+                  :is-disabled="! state.user.admin && request.users.length > 1" 
+                  
                   @update-button-clicked="() => onUpdateButtonClicked( request, () => fetchPage( currentPage ) )" 
                   
                 />
@@ -235,12 +235,14 @@
                 <DeleteButton 
                 
                   v-if="! request.released" 
+
+                  :is-disabled="! state.user.admin && request.users.length > 1" 
                   
                   @delete-button-clicked="() => onDeleteButtonClicked( request, () => fetchPage( currentPage ) )" 
                   
                 />
 
-                <a v-show="request.released && request.url" 
+                <a v-if="request.released && request.url" 
                 
                   class="px-2 py-1 text-sm text-center bg-green-700 text-white rounded-md hover:scale-105 transition-all" 
 
@@ -274,7 +276,7 @@
 
     <Pagination 
 
-      v-if="userRequests?.length" 
+      v-if="state.requests?.length" 
       
       :disabled="isLoadingUserRequests"
       
