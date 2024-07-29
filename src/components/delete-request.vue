@@ -47,9 +47,13 @@
 
       if ( response.ok ) {
 
+        const requestIndex = state.requests.findIndex( request => request._id === currentModalComponent.request._id );
+
+        if ( requestIndex !== -1 ) state.requests.splice( requestIndex, 1 );
+
         pushAlert( 'success', result.message );
 
-        currentModalComponent.callbackFunction();
+        // currentModalComponent.callbackFunction();
 
         closeModal();
 

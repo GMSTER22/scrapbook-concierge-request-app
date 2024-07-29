@@ -5,7 +5,7 @@
 
   import { useRouter } from 'vue-router';
 
-  import { state, isAdmin, currentModalComponent, closeModal, isAuthenticated, logUserOut } from '../store/state';
+  import { state, isAdmin, currentModalComponent, closeModal, isAuthenticated, logUserOut, pushAlert } from '../store/state';
 
   import { getToken } from '../utils/utils';
   
@@ -41,8 +41,6 @@
 
     event.preventDefault();
 
-    // if ( ! isAuthenticated() ) return router.push( { name: 'login' } );
-
     try {
 
       const data = JSON.stringify( { 
@@ -77,9 +75,11 @@
 
       if ( response.ok ) {
 
-        pushAlert( 'success', result.message );
+        const requestIndex = state.requests.findIndex( request => request._id === currentModalComponent.request._id );
 
-        currentModalComponent.callbackFunction();
+        if ( requestIndex !== -1 ) state.requests.splice( requestIndex, 1, result.request );
+        
+        pushAlert( 'success', result.message );
 
         closeModal();
 
@@ -164,10 +164,12 @@
             id="request" 
             
             maxlength="100" 
+
+            @focusout="onTitleTextAreaFocusOut"
             
-            v-model="requestTitle">
+            v-model="requestTitle" required>
           
-          </textarea>        
+          </textarea>
 
         </div>
 

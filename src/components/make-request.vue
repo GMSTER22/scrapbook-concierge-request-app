@@ -100,7 +100,7 @@
 
 <template>
 
-  <form class="relative w-full max-w-sm px-5 py-8 border shadow rounded bg-white">
+  <form class="relative w-full max-w-sm px-5 py-8 border shadow rounded bg-white" @submit="onRequestSubmit">
 
     <button class="absolute top-2 right-2 p-1 rounded-full bg-red-700" type="button" @click="closeModal">
 
@@ -130,7 +130,7 @@
           
           v-model="requestValue" 
           
-          placeholder="Enter Title">
+          placeholder="Enter Title" required>
         
         </textarea>        
 
@@ -144,7 +144,7 @@
 
     </fieldset>
 
-    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="button" @click="onRequestSubmit">
+    <button class="block px-4 py-2 mx-auto bg-purple-800 text-white rounded" type="submit">
 
       Submit Request
 
