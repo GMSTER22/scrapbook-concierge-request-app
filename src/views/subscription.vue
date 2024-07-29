@@ -45,7 +45,7 @@
 
       const response = await fetch( `${process.env.SERVER_URL}/notifications/subscriptions`, options );
 
-      const data = response.json();
+      const data = await response.json();
 
       if ( response.ok ) {
 

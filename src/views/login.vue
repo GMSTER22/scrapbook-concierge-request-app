@@ -45,7 +45,17 @@
 
     event.preventDefault();
 
+    onEmailFocusOut();
+
+    onPasswordFocusOut();
+
+    if ( isCredentialsMessage.value ) isCredentialsMessage.value = false;
+
     if ( isEmailMessage.value || isPasswordMessage.value ) return;
+
+    // if ( ! email.value || isEmailMessage.value ) return isEmailMessage.value = true;
+
+    // if ( ! password.value || isPasswordMessage.value ) return isPasswordMessage.value = true;
 
     const userInfo = {
 
@@ -78,8 +88,6 @@
       const response = await fetch( `${process.env.SERVER_URL}/login`, options );
 
       const result = await response.json();
-
-      console.log( response, 'response' )
   
       if ( response.ok ) {
 

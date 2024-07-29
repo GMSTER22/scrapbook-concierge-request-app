@@ -9,6 +9,8 @@
 
   import { pushAlert } from '../store/state';
 
+  const SERVER_URL = process.env.SERVER_URL;
+
   const router = useRouter();
 
   const emailValidationRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -49,6 +51,12 @@
 
     try {
 
+      onUsernameFocusout();
+
+      onEmailFocusout();
+
+      onPasswordFocusout();
+
       if ( isUsernameMessage.value || isEmailMessage.value || isPasswordMessage.value ) return;
 
       const userInfo = JSON.stringify( {
@@ -77,7 +85,9 @@
 
       const response = await fetch( `${process.env.SERVER_URL}/signup/password`, options );
 
-      const result = response.json();
+      const result = await response.json();
+
+      console.log( result, 'result' );
 
       if ( response.ok ) {
 
@@ -117,7 +127,7 @@
 
         <form 
 
-          action="https://scrapbook-concierge-request-app-backend.onrender.com/auth/google`" 
+          :action="`${SERVER_URL}/auth/google`" 
           
           method="GET">
 
@@ -127,7 +137,7 @@
 
         <form 
 
-          action="https://scrapbook-concierge-request-app-backend.onrender.com/auth/facebook`" 
+          :action="`${SERVER_URL}/auth/facebook`" 
           
           method="GET">
 
