@@ -7,7 +7,7 @@
 
   import Header from '../components/header.vue';
 
-  import Modal from '../components/modal.vue';
+  import Footer from '../components/footer.vue';
 
   import Spinner from '../components/spinner.vue';
 
@@ -17,7 +17,7 @@
 
   import { formatDate, getToken } from "../utils/utils";
 
-  import { state, onMakeRequestButtonClick, onLikeButtonClicked, logUserOut } from '../store/state';
+  import { state, onMakeRequestButtonClick, onLikeButtonClicked, logUserOut, pushAlert } from '../store/state';
 
   const router = useRouter();
 
@@ -259,5 +259,7 @@
       @change-page="( page ) => fetchPage( page )" />
 
   </main>
+
+  <Footer />
 
 </template>

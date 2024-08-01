@@ -1,7 +1,7 @@
 
 <script setup>
 
-  import { computed, ref, onBeforeMount } from 'vue';
+  import { computed, ref, onBeforeMount, onMounted } from 'vue';
 
   import { useRoute, useRouter } from 'vue-router';
 
@@ -135,7 +135,13 @@
     
     router.push( { name: 'home'} );
 
-  } )
+  } );
+
+  onMounted( () => {
+
+    if ( query.err ) pushAlert( 'failure', 'Wrong authentication method.' );
+
+  } );
 
 </script>
 

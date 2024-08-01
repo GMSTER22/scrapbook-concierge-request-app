@@ -13,7 +13,7 @@
 
   const route = useRoute();
 
-  const emailOptInValue = ref( route.query.email_opt_in ); 
+  const emailOptInValue = ref( route.query.emailOptIn ); 
   
   async function onFormSubmit( event ) {
     
@@ -49,9 +49,9 @@
 
       if ( response.ok ) {
 
-        console.log( data.emailOptIn );
+        // console.log( data );
 
-        if ( data.emailOptIn ) pushAlert( 'success', 'Successfully opt in email notifications.' );
+        if ( data.emailOptIn === 'true' ) pushAlert( 'success', 'Successfully opt in email notifications.' );
 
         else pushAlert( 'success', 'Successfully opt out of email notifications.' );
 
