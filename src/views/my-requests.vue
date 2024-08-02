@@ -15,6 +15,8 @@
   
   import DeleteButton from '../components/buttons/deleteButton.vue';
 
+  import Footer from '../components/footer.vue';
+
   import { formatDate, getToken } from '../utils/utils';
 
   import { state, onMakeRequestButtonClick, onUpdateButtonClicked, onDeleteButtonClicked, logUserOut, pushAlert } from '../store/state';
@@ -113,7 +115,7 @@
 
   <Header />
 
-  <main class="min-h-[calc(100vh-70px)] px-5 py-14 sm:min-h-[calc(100vh-60px)] sm:py-28 lg:px-0">
+  <main class="min-h-[calc(100vh-70px-96px)] px-5 py-14 sm:min-h-[calc(100vh-60px-96px)] sm:py-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">
 
@@ -287,5 +289,7 @@
       @change-page="( page ) => fetchPage( page )" />
 
   </main>
+  
+  <Footer />
 
 </template>

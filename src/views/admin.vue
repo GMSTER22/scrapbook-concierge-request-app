@@ -13,6 +13,8 @@
 
   import NotifyButton from '../components/buttons/notifyButton.vue';
 
+  import Footer from '../components/footer.vue';
+
   import Spinner from '../components/spinner.vue';
 
   import Pagination from '../components/pagination.vue';
@@ -303,5 +305,7 @@
       @change-page="( page ) => fetchPage( page )" />
 
   </main>
+
+  <Footer />
 
 </template>
