@@ -155,13 +155,17 @@
 
       <div class="flex flex-col gap-3">
 
-        <form 
+        <form
         
           :action="`${SERVER_URL}/auth/google`" 
           
           method="GET">
 
-          <SocialMediaAuthButton callToAction="Continue With Google" />
+          <SocialMediaAuthButton callToAction="Continue With Google" aria-label="Login with Google">
+
+            <img class="w-5 h-5" src="../assets/images/google.png" alt="Google icon">
+
+          </SocialMediaAuthButton>
 
         </form>
 
@@ -171,7 +175,11 @@
           
           method="GET">
 
-          <SocialMediaAuthButton callToAction="Continue With Facebook" />
+          <SocialMediaAuthButton callToAction="Continue With Facebook" aria-label="Login with Facebook">
+
+            <img class="w-6 h-6 rounded-full bg-[#3b5998]" src="../assets/images/facebook.png" alt="Facebook icon">
+
+          </SocialMediaAuthButton>
 
         </form>
 

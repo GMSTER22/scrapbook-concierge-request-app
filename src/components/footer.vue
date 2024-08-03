@@ -35,7 +35,7 @@
 
           </a>
 
-          <a class="block w-8 h-8 rounded-md bg-[#3f729b]" ref="https://www.instagram.com/scrapbookconcierge/?hl=en" target="_blank">
+          <a class="block w-8 h-8 rounded-md" href="https://www.instagram.com/scrapbookconcierge/?hl=en" target="_blank">
 
             <img src="../assets/images/instagram.png" alt="instagram icon">
 

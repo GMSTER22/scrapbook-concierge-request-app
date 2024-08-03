@@ -3,7 +3,9 @@
 
   const props = defineProps( {
 
-    callToAction: String
+    callToAction: String,
+
+    ariaLabel: String
 
   } );
 
@@ -15,9 +17,15 @@
     
     type="submit" 
     
-    class="w-full border border-neutral-300 px-4 py-2 rounded"
+    class="flex justify-center items-center gap-x-2 w-full border border-neutral-300 px-4 py-2 rounded" 
+
+    :aria-label="props.ariaLabel" 
+    
+    :title="props.ariaLabel"
     
   >
+
+    <slot />
   
     {{ callToAction }}
   
