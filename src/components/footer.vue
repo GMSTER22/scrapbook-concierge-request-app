@@ -23,7 +23,7 @@
 
         <div class="text-sm text-left">
   
-          <a href="support@scrapbookconciergerequests.com">Contact Us</a>
+          <a class="hover:underline" href="mailto:support@scrapbookconciergerequests.com">Contact Us</a>
   
         </div>
 
