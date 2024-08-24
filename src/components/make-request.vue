@@ -66,7 +66,9 @@
 
         pushAlert( 'success', result.message );
 
-        currentModalComponent.callbackFunction();
+        // currentModalComponent.callbackFunction();
+
+        state.requests.push( result.request );
 
         closeModal();
 

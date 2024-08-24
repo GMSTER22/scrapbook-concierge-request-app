@@ -43,6 +43,8 @@ export const state = reactive( {
   
   requests: null,
 
+  searchRequestResult: null,
+
   requestsReleaseList: [],
 
   alerts: []
@@ -71,7 +73,7 @@ export const pushAlert = ( type, message, expiration=3000 ) => {
 
 }
 
-export const onLikeButtonClicked = async ( request, fetchPageCallbackFn, logUserOutAndRedirectHomeFn ) => {
+export const onLikeButtonClicked = async ( requests, logUserOutAndRedirectHomeFn ) => {
 
   try {
   
@@ -87,19 +89,25 @@ export const onLikeButtonClicked = async ( request, fetchPageCallbackFn, logUser
       
     }
     
-    const { _id: id } = request;
+    const { _id: id } = requests[ 0 ];
 
     const response = await fetch( `${process.env.SERVER_URL}/user-requests/${ id }/users/${ state.user.id }`, options );
 
     const result = await response.json();
     
     if ( response.ok ) {
+      
+      requests.forEach( request => {
 
-      const isLiked = request.users.includes( state.user.id );
+        if ( ! request ) return;
+        
+        const isLiked = request.users.includes( state.user.id );
+  
+        if ( isLiked ) request.users = request.users.filter( userId => userId !== state.user.id );
+  
+        else request.users.push( state.user.id );
 
-      if ( isLiked ) request.users = request.users.filter( userId => userId !== state.user.id );
-
-      else request.users.push( state.user.id );
+      } );
 
     } else if ( response.status === 401 ) {
 
@@ -113,7 +121,7 @@ export const onLikeButtonClicked = async ( request, fetchPageCallbackFn, logUser
 
       pushAlert( 'failure', result.message );
 
-      setTimeout( () => fetchPageCallbackFn(), 2000 );
+      // setTimeout( () => fetchPageCallbackFn(), 2000 );
 
     } else {
 
@@ -129,25 +137,25 @@ export const onLikeButtonClicked = async ( request, fetchPageCallbackFn, logUser
 
 }
 
-export const onMakeRequestButtonClick = ( callbackFn ) => {
+export const onMakeRequestButtonClick = () => {
     
-  setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST, null, callbackFn );
+  setCurrentModalComponent( MODAL_COMPONENTS.MAKE_REQUEST, null );
 
   openModal();
 
 }
 
-export const onUpdateButtonClicked = ( request, callbackFn ) => {
+export const onUpdateButtonClicked = ( request ) => {
 
-  setCurrentModalComponent( MODAL_COMPONENTS.UPDATE_REQUEST, request, callbackFn );
+  setCurrentModalComponent( MODAL_COMPONENTS.UPDATE_REQUEST, request );
 
   openModal();
 
 }
 
-export const onDeleteButtonClicked = ( request, callbackFn ) => {
+export const onDeleteButtonClicked = ( request ) => {
 
-  setCurrentModalComponent( MODAL_COMPONENTS.DELETE_REQUEST, request, callbackFn );
+  setCurrentModalComponent( MODAL_COMPONENTS.DELETE_REQUEST, request );
 
   openModal();
 
@@ -200,8 +208,6 @@ export const isAuthenticated = () => {
     return true;
 
   } catch ( error ) {
-    
-    // console.warn( error );
     
     return false;
 

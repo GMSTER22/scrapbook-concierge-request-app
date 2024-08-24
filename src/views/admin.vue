@@ -1,17 +1,21 @@
 
 <script setup>
 
-  import { ref, computed, onBeforeMount, watch } from 'vue';
+  import { ref, computed, onMounted, onBeforeMount, onBeforeUnmount, watch } from 'vue';
 
   import { useRouter } from 'vue-router';
 
   import Header from '../components/header.vue';
+
+  import LikeButton from '../components/buttons/likeButton.vue';
 
   import UpdateButton from '../components/buttons/updateButton.vue';
   
   import DeleteButton from '../components/buttons/deleteButton.vue';
 
   import NotifyButton from '../components/buttons/notifyButton.vue';
+
+  import { ArrowLongUpIcon, ArrowLongDownIcon } from '@heroicons/vue/24/solid';
 
   import Footer from '../components/footer.vue';
 
@@ -23,33 +27,27 @@
 
   import { formatDate, getToken } from '../utils/utils';
 
+  const REQUESTS_PER_PAGE = 10;
+  
   const router = useRouter();
-
-  const REQUESTS_PER_PAGE = 20;
 
   const showReleased = ref( false );
 
-  const isLoadingRequests = ref( true );
+  const loadMoreElement = ref( null );
 
-  // const requests = ref( null );
+  const isLoadingRequests = ref( false );
 
   const currentPage = ref( 0 );
 
   const totalPages = ref( 1 );
 
+  const isLoadingSearchRequest = ref( false );
+
   const searchRequestValue = ref( '' );
   
   const sortRequestValue = ref( 'usersLength-desc' );
 
-  const filteredRequests = computed( () => {
-
-    return state.requests
-    
-      ?.filter( request => request.title.toLocaleLowerCase()
-    
-      .includes( searchRequestValue.value.toLocaleLowerCase() ) ? request : '' );
-
-  } );
+  let intersectionObserver;
 
   const requestsReleaseListIds = computed( () => state.requestsReleaseList.map( request => request.id ) );
 
@@ -75,6 +73,58 @@
 
   }
 
+  const fetchRequestsByTitle = async () => {
+
+    try {
+
+      const sortingValues = sortRequestValue.value.split( '-' );
+
+      isLoadingSearchRequest.value = true;
+
+      const response = await fetch( `${process.env.SERVER_URL}/requests/search?title=${ searchRequestValue.value }&sort_by=${sortingValues[0]}&order_by=${sortingValues[1]}`, options );
+
+      const data = await response.json();
+
+      if ( response.ok ) {
+
+        state.searchRequestResult = data.requests;
+
+      } else if ( response.status === 401 ) {
+
+        pushAlert( 'failure', 'You\'re not logged in.' );
+
+        logUserOutAndRedirectHome();
+
+      } else {
+
+        pushAlert( 'failure', data?.message );
+
+      }
+
+    } catch ( error ) {
+
+      console.error( error );
+
+      pushAlert( 'failure', 'An Error occurred while searching. Try again later.' );
+
+    } finally {
+
+      isLoadingSearchRequest.value = false;
+
+    }
+
+  }
+
+  const onFormSubmit = event => {
+
+    event.preventDefault();
+
+    if ( ! searchRequestValue.value ) return;
+
+    fetchRequestsByTitle();
+
+  }
+
   const fetchPage = async ( page ) => {
 
     try {
@@ -89,7 +139,9 @@
       
       if ( response.ok ) {
   
-        state.requests = data.requests;
+        if ( page > 1 ) state.requests.push( ...data.requests );
+        
+        else state.requests = data.requests;
   
         currentPage.value = data.page;
   
@@ -108,8 +160,6 @@
         pushAlert( 'failure', data?.message );
 
       }
-
-      isLoadingRequests.value = false;
       
     } catch ( error ) {
 
@@ -117,15 +167,77 @@
 
       pushAlert( 'failure', 'An Error occurred while retrieving the requests. Try again later.' );
 
+    } finally {
+
+      isLoadingRequests.value = false;
+
     }
 
   }
 
-  onBeforeMount( () => fetchPage( 1 ) );
+  const intersectionObserverCallback = ( entries, observer ) => {
 
-  watch( sortRequestValue, fetchPage );
+    entries.forEach( entry => {
 
-  watch( showReleased, fetchPage );
+      const nextPage = currentPage.value + 1;
+
+      if ( isLoadingRequests.value || nextPage > totalPages.value ) return;
+
+      if ( entry.isIntersecting ) fetchPage( nextPage );
+
+    } );
+
+  }
+
+  onBeforeMount( () => {
+
+    if ( !! state.searchRequestResult ) state.searchRequestResult = null;
+
+  } );
+
+  onMounted( () => {
+
+    intersectionObserver = new IntersectionObserver( intersectionObserverCallback, {
+
+      root: null,
+      
+      rootMargin: '0px',
+      
+      threshold: 0
+      
+    } );
+
+    intersectionObserver.observe( loadMoreElement.value );
+
+  } );
+
+  onBeforeUnmount( () => intersectionObserver.unobserve( loadMoreElement.value ) );
+
+  watch( sortRequestValue, () => {
+
+    currentPage.value = 0;
+
+    state.requests = null;
+
+    fetchPage();
+
+  } );
+
+  watch( showReleased, () => {
+
+    currentPage.value = 0;
+
+    state.requests = null;
+
+    fetchPage();
+
+  } );
+
+  watch( searchRequestValue, ( newValue, oldValue ) => {
+
+    if ( ! newValue ) state.searchRequestResult = null;
+
+  } );
 
 </script>
 
@@ -133,7 +245,7 @@
 
   <Header />
 
-  <main class="relative min-h-[calc(100vh-70px)] px-5 py-14 sm:min-h-[calc(100vh-60px)] sm:py-28 lg:px-0">
+  <main class="relative min-h-[calc(100vh-70px-104px)] px-5 pt-14 pb-4 sm:min-h-[calc(100vh-60px-104px)] sm:pt-28 lg:px-0">
 
     <div class="max-w-4xl mx-auto mb-14">
 
@@ -153,7 +265,7 @@
 
       </div>
 
-      <form class="flex flex-col-reverse justify-between gap-5 mb-20 sm:flex-row">
+      <form class="flex flex-col-reverse justify-between gap-5 mb-20 sm:flex-row" @submit="onFormSubmit">
 
         <fieldset class="sm:self-end sm:w-1/2">
 
@@ -171,7 +283,7 @@
 
             <div class="relative grid grid-cols-1 w-16 p-1 bg-gray-300 rounded-full has-[:checked]:bg-purple-900 transition-colors">
               
-              <input id="released" class="w-full peer row-start-1 col-start-1 ring-0 border-0 opacity-0 focus:ring-0" type="checkbox" v-model="showReleased">
+              <input id="released" class="w-full peer row-start-1 col-start-1 ring-0 border-0 opacity-0 focus:ring-0" type="checkbox" v-model="showReleased" :disabled="!! searchRequestValue">
               
               <span class="pointer-events-none row-start-1 col-start-1 w-5 h-5 rounded-full bg-white peer-checked:translate-x-9 transition-transform"></span>
 
@@ -183,11 +295,16 @@
 
             <label for="sort"><span class="sr-only">Sort By</span></label>
 
-            <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue" :disabled="isLoadingRequests">
+            <select class="rounded focus:ring-purple-800 focus:border-purple-800" name="sort" id="sort" v-model="sortRequestValue" :disabled="isLoadingRequests || !! searchRequestValue">
 
               <option value="" disabled>Sort by</option>
               
-              <option value="usersLength-asc">Likes Asc</option>
+              <option value="usersLength-asc">
+                
+                Likes Asc
+                <!-- Likes <ArrowLongUpIcon class="h-5 w-1 text-black"/> -->
+              
+              </option>
 
               <option value="usersLength-desc">Likes Desc</option>
 
@@ -203,29 +320,83 @@
 
       </form>
 
-      <div v-if="isLoadingRequests" class="mb-7">
+      <div v-if="currentPage > 0">
 
-        <Spinner />
-
-      </div>
-
-      <div v-else>
-
-        <div v-if="! state.requests.length" class="text-center">
+        <p v-if="isLoadingSearchRequest" class="text-center">
+          
+          Searching...
         
-          <p class="mb-8 text-2xl">
+        </p>
 
-            No requests made
+        <div v-else-if="state.searchRequestResult">
+
+          <ul v-if="!! state.searchRequestResult.length" class="space-y-10">
+
+            <li class="relative grid gap-x-3 gap-y-4 p-2 rounded shadow-[0_0_3px_rgb(0,0,0)] sm:grid-cols-[64px_1fr_auto] sm:items-center sm:bg-transparent odd:bg-purple-100 sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="request in state.searchRequestResult" :key="request._id">
+
+              <span v-show="request.released && request.url" 
+            
+                class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
+
+                released
+
+              </span>
+              
+              <span class="text-left sm:text-right text-xs text-neutral-600">
+                
+                {{ formatDate( request.createdAt ) }}
+              
+              </span>
+
+              <span class="px-5 mb-3 text-lg font-bold text-center sm:pr-20 sm:pl-0 sm:mb-0 sm:text-base sm:text-left">
+
+                {{ request.title }}
+
+              </span>
+
+              <div class="flex gap-x-2 justify-self-end">
+
+                <UpdateButton 
+
+                  :is-disabled="! state.user?.admin" 
+                  
+                  @update-button-clicked="() => onUpdateButtonClicked( request )" />
+
+                <DeleteButton 
+
+                  :is-disabled="! state.user?.admin" 
+                  
+                  @delete-button-clicked="() => onDeleteButtonClicked( request )" />
+
+              </div>
+
+            </li>
+
+          </ul>
+
+          <p v-else class="text-2xl text-center">
+            
+            No result found...
 
           </p>
-        
+
         </div>
 
         <div v-else>
 
-          <ul v-if="filteredRequests.length">
+          <div v-if="! state.requests?.length" class="text-center">
+          
+            <p class="mb-8 text-2xl">
 
-            <li class="relative grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 mb-10 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="request in filteredRequests" :key="request._id">
+              No requests made
+
+            </p>
+          
+          </div>
+
+          <ul v-else class="space-y-10">
+
+            <li class="relative grid grid-rows-3 grid-cols-1 justify-between items-center gap-y-2 p-2 rounded odd:bg-purple-100 sm:grid-rows-1 sm:grid-cols-[64px_1fr_auto_auto] sm:gap-x-5 shadow-[0_0_3px_rgb(0,0,0)] sm:shadow-[0_0_2px_rgb(0,0,0)]" v-for="request in state.requests" :key="request._id">
               <!-- ({ _id: id, createdAt, title, users, released, url }, index) -->
 
               <span v-show="request.released" class="absolute left-0 -top-5 px-3 py-[2px] text-xs font-medium rounded bg-green-500 empty:hidden">
@@ -258,17 +429,17 @@
                 
                   :is-disabled="! state.user?.admin" 
                   
-                  @update-button-clicked="() => onUpdateButtonClicked( request, () => fetchPage( currentPage ) )" />
+                  @update-button-clicked="() => onUpdateButtonClicked( request )" />
 
                 <DeleteButton 
                 
-                :is-disabled="! state.user?.admin"  
-                
-                @delete-button-clicked="() => onDeleteButtonClicked( request, () => fetchPage( currentPage ) )" />
+                  :is-disabled="! state.user?.admin" 
+                  
+                  @delete-button-clicked="() => onDeleteButtonClicked( request )" />
 
                 <NotifyButton 
                 
-                  :released="requestsReleaseListIds.includes( request._id )"
+                  :released="requestsReleaseListIds.includes( request._id )" 
                   
                   @notify-button-clicked="() => toggleIdFromRequestList( request._id, request.title )" 
                   
@@ -280,29 +451,35 @@
 
           </ul>
 
-          <p v-else class="text-2xl text-center">
-            
-            No result found...
-          
-          </p>
-
         </div>
         
       </div>
+
+      <div v-show="! searchRequestValue && currentPage !== totalPages && !! totalPages"  
+      
+        ref="loadMoreElement">
+
+        <div v-if="isLoadingRequests" class="mt-7">
+
+          <Spinner />
+
+        </div>
+
+        <button v-else 
+        
+          class="block mx-auto mt-5 px-4 py-2 rounded-md bg-green-700 text-white"
+        
+          @click="fetchPage( currentPage + 1 )" 
+          
+          type="submit">
+          
+          Load More
+        
+        </button>
+
+      </div>
       
     </div>
-
-    <Pagination 
-
-      v-if="state.requests?.length" 
-      
-      :disabled="isLoadingRequests"
-    
-      :current="currentPage" 
-      
-      :total="totalPages" 
-      
-      @change-page="( page ) => fetchPage( page )" />
 
   </main>
 

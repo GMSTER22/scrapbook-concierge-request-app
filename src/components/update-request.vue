@@ -75,9 +75,15 @@
 
       if ( response.ok ) {
 
-        const requestIndex = state.requests.findIndex( request => request._id === currentModalComponent.request._id );
+        [ state.requests, state.searchRequestResult ].forEach( requestList => {
 
-        if ( requestIndex !== -1 ) state.requests.splice( requestIndex, 1, result.request );
+          if ( ! requestList ) return;
+
+          const requestIndex = requestList?.findIndex( request => request._id === currentModalComponent.request._id );
+  
+          if ( requestIndex !== -1 ) requestList.splice( requestIndex, 1, result.request );
+
+        } );
         
         pushAlert( 'success', result.message );
 
@@ -95,7 +101,7 @@
 
         pushAlert( 'failure', result.message );
 
-        setTimeout( () => currentModalComponent.callbackFunction(), 0 );
+        // setTimeout( () => currentModalComponent.callbackFunction(), 0 );
 
       } else {
 

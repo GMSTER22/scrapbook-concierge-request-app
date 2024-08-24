@@ -117,7 +117,7 @@
 
 <template>
 
-  <main class="w-screen h-screen flex justify-center items-center">
+  <main class="w-screen h-screen flex justify-center items-center px-4">
 
     <div class="w-96 px-4 py-8 border rounded">
 

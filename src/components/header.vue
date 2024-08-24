@@ -1,7 +1,7 @@
 
 <script setup>
 
-  import { ref, computed, onMounted } from 'vue';
+  import { ref } from 'vue';
 
   import { useRoute, useRouter } from 'vue-router';
 
@@ -18,48 +18,18 @@
   const navHTMLElement = ref( null );
 
   const isNavOpen = ref( false );
-  
-  let navClientHeight = isAdmin && isNavOpen.value ? 'h-[212px]' : 'h-[152px]'; 
+
+  console.log( state.user );
 
   const onMenuButtonClick = () => isNavOpen.value = ! isNavOpen.value;
 
-  const onLogoutButtonClick = async () => {
-
-    // const options = {
-
-    //   method: 'GET',
-
-    //   headers: {
-
-    //     'Authorization': `Bearer ${getToken}`,
-        
-    //   }
-
-    // }
-
-    // const response = await fetch( `${process.env.SERVER_URL}/logout`, options );
-
-    // if ( response.ok ) router.push( { name: 'login' } );
+  const onLogoutButtonClick = () => {
 
     logUserOut();
 
-    router.push( { name: 'login' } );
+    router.push( { name: 'home' } );
 
   }
-
-  // onMounted( () => {
-
-  //   Array.from( navHTMLElement.value.children ).forEach( n => {
-
-  //     console.log( n.clientHeight );
-
-  //     navClientHeight += n.clientHeight;
-
-  //   } );
-
-  //   console.log( navClientHeight );
-
-  // } );
 
 </script>
 
@@ -81,21 +51,39 @@
 
           ref="navHTMLElement"
         
-          :class="['absolute top-[70px] left-0 flex flex-col items-center gap-x-8 gap-y-5 w-full h-0 z-50 text-ellipsis overflow-hidden text-purple-900 bg-neutral-200 font-semibold md:relative md:top-auto md:left-auto md:flex-row md:w-auto md:h-auto md:bg-transparent transition-[height_padding] duration-300', { [ isAdmin ? 'h-[196px] py-5' : 'h-[152px] py-5' ]: isNavOpen } ]" 
+          :class="['absolute top-[70px] left-0 flex flex-col items-center gap-x-6 gap-y-5 w-full h-0 z-50 text-ellipsis overflow-hidden text-purple-900 bg-neutral-200 font-semibold md:relative md:top-auto md:left-auto md:flex-row md:w-auto md:h-auto md:bg-transparent transition-[height_padding] duration-300', { [ isAdmin ? 'h-[240px] py-5' : 'h-[196px] py-5' ]: isNavOpen } ]" 
           
           aria-labelledby="menu-button"
           
         >
 
+          <router-link to="/requests">Requests</router-link>
+
           <router-link to="/my-requests">My requests</router-link>
 
           <router-link to="/released-requests">Released Requests</router-link>
 
-          <router-link v-show="isAdmin" to="/admin">Admin</router-link>
+          <router-link v-if="isAdmin" to="/admin">Admin</router-link>
 
-          <div v-show="state.user?.username">
+          <div>
 
-            <button type="button" @click="onLogoutButtonClick">Logout</button>
+            <button type="button"
+            
+              v-if="!! state.user"  
+              
+              @click="onLogoutButtonClick">
+              
+              Logout
+            
+            </button>
+
+            <router-link v-else 
+              
+              to="/login">
+              
+              Login
+            
+            </router-link>
 
           </div>
 

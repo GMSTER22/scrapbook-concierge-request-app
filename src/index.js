@@ -3,11 +3,13 @@ import { createApp } from 'vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { isAuthenticated, isAdmin } from './store/state';
+import { isAuthenticated, isAdmin, state } from './store/state';
 
 import App from './app.vue';
 
 import Home from './views/home.vue';
+
+import Requests from './views/requests.vue';
 
 import Login from './views/login.vue';
 
@@ -38,6 +40,22 @@ const routes = [
     name: 'home',
 
     component: Home,
+
+    beforeEnter: ( to, from, next ) => {
+
+      if ( ! state.user ) isAuthenticated();
+
+      next();
+
+    }
+
+  }, {
+
+    path: '/requests',
+
+    name: 'requests',
+
+    component: Requests,
 
     beforeEnter: ( to, from, next ) => {
 
@@ -135,15 +153,7 @@ const routes = [
 
     name: 'subscription',
 
-    component: Subscription,
-
-    // beforeEnter: ( to, from, next ) => {
-
-    //   if ( ! isAuthenticated() ) next( { name: 'login' } );
-
-    //   else next();
-
-    // }
+    component: Subscription
 
   }
 
