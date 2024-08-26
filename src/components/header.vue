@@ -19,8 +19,6 @@
 
   const isNavOpen = ref( false );
 
-  console.log( state.user );
-
   const onMenuButtonClick = () => isNavOpen.value = ! isNavOpen.value;
 
   const onLogoutButtonClick = () => {
