@@ -139,7 +139,7 @@
 
         </form>
 
-        <form 
+        <!-- <form 
 
           :action="`${SERVER_URL}/auth/facebook`" 
           
@@ -151,7 +151,7 @@
 
           </SocialMediaAuthButton>
 
-        </form>
+        </form> -->
 
       </div>
 
