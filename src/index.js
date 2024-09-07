@@ -23,6 +23,10 @@ import Admin from './views/admin.vue';
 
 import Subscription from './views/subscription.vue';
 
+import PrivacyPolicy from './views/privacy-policy.vue';
+
+import Terms from './views/terms.vue';
+
 import PasswordForgot from './views/password-forgot.vue';
 
 import PasswordReset from './views/password-reset.vue';
@@ -154,6 +158,22 @@ const routes = [
     name: 'subscription',
 
     component: Subscription
+
+  }, {
+
+    path: '/privacy-policy',
+
+    name: 'privacy-policy',
+
+    component: PrivacyPolicy
+
+  }, {
+
+    path: '/terms',
+
+    name: 'terms',
+
+    component: Terms
 
   }
 

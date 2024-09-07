@@ -215,7 +215,7 @@
 
   <Header />
 
-  <main class="min-h-[calc(100vh-70px-104px)] px-5 pt-14 pb-4 sm:min-h-[calc(100vh-60px-104px)] sm:pt-28 lg:px-0">
+  <main class="min-h-[calc(100vh-70px-144px)] px-5 pt-14 pb-4 sm:min-h-[calc(100vh-60px-144px)] sm:pt-28 lg:px-0">
 
     <div class="max-w-3xl mx-auto mb-14">
 

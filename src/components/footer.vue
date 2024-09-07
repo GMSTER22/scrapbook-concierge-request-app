@@ -1,6 +1,8 @@
 
 <script setup>
 
+  import { RouterLink } from 'vue-router';
+
   const SERVER_URL = process.env.SERVER_URL;
 
   const year = new Date().getFullYear();
@@ -19,7 +21,7 @@
       
       </p>
 
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between flex-wrap gap-4 items-center">
 
         <div class="text-sm text-left">
   
@@ -28,6 +30,14 @@
           <br>
 
           <a class="hover:underline" href="https://www.scrapbookconciergelayouts.com/">Scrapbook Concierge</a>
+
+          <br>
+
+          <router-link class="hover:underline" to="/privacy-policy">Privacy Policy</router-link>
+          
+          <br>
+          
+          <router-link class="hover:underline" to="/terms">Terms and conditions</router-link>
   
         </div>
 

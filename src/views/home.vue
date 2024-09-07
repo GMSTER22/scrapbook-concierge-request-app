@@ -44,17 +44,17 @@
 
     </div>
 
-    <div class="max-w-5xl mx-auto mb-14 px-4 space-y-10 sm:space-y-24 md:space-y-0 md:mb-28">
+    <div class="max-w-5xl mx-auto my-14 px-4 space-y-10 sm:space-y-24 md:mb-28">
 
       <div class="flex flex-col-reverse items-center md:flex-row">
 
-        <div class="basis-1/2">
+        <div class="basis-3/5">
 
           <img src="../assets/images/all-requests.png" alt="">
 
         </div>
 
-        <div class="max-w-md mx-auto basis-1/2 text-center py-8 text-purple-900 md:px-6 md:py-12">
+        <div class="basis-2/5 text-center py-8 text-purple-900 md:px-6 md:py-10 lg:px-12">
 
           <h2 class="mb-6 text-3xl font-bold lg:text-4xl">
             
@@ -74,13 +74,13 @@
 
       <div class="flex flex-col-reverse items-center md:flex-row-reverse">
 
-        <div class="basis-1/2">
+        <div class="basis-3/5">
 
           <img src="../assets/images/my-requests.png" alt="">
 
         </div>
 
-        <div class="max-w-md mx-auto basis-1/2 text-center py-8 text-purple-900 md:px-6 md:py-12">
+        <div class="basis-2/5 text-center py-8 text-purple-900 md:px-6 md:py-10 lg:px-12">
 
           <h2 class="mb-6 text-3xl font-bold lg:text-4xl">
             
@@ -100,13 +100,13 @@
 
       <div class="flex flex-col-reverse items-center md:flex-row">
 
-        <div class="basis-1/2">
+        <div class="basis-3/5">
 
           <img src="../assets/images/released-requests.png" alt="">
 
         </div>
 
-        <div class="max-w-md mx-auto basis-1/2 text-center py-8 text-purple-900 md:px-6 md:py-12">
+        <div class="basis-2/5 text-center py-8 text-purple-900 md:px-6 md:py-10 lg:px-12">
 
           <h2 class="mb-6 text-3xl font-bold lg:text-4xl">
             
