@@ -58,13 +58,13 @@
 
           <h2 class="mb-6 text-3xl font-bold lg:text-4xl">
             
-            Vote for Your Favorite Kits
+            Vote for Your Favorite Kit Requests
           
           </h2>
 
           <p>
 
-            Make your mark on our next collection by voting for the kits you love. Simply click the black heart button next to the kit title—watch it turn red as your vote is counted. Your vote helps us decide which kits to create next!
+            Make your mark on our next collection by voting for the kit requests you love. Simply click the black heart button next to the kit title—watch it turn red as your vote is counted. Your vote helps us decide which kits to create next!
 
           </p>
 
