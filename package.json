@@ -23,6 +23,7 @@
     "dotenv": "latest",
     "uuid": "^10.0.0",
     "vue": "latest",
+    "vue-gtag": "^2.0.1",
     "vue-router": "latest"
   }
 }

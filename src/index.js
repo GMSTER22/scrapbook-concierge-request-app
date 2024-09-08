@@ -31,6 +31,8 @@ import PasswordForgot from './views/password-forgot.vue';
 
 import PasswordReset from './views/password-reset.vue';
 
+import VueGtag from 'vue-gtag';
+
 window.__VUE_OPTIONS_API__ = false;
 
 window.__VUE_PROD_DEVTOOLS__ = true;
@@ -192,5 +194,27 @@ const router = createRouter( {
 const app = createApp( App );
 
 app.use( router );
+
+app.use( 
+  
+  VueGtag, 
+  
+  {
+
+    appName: 'Scrapbook Concierge Requests App',
+
+    pageTrackerScreenviewEnabled: true,
+
+    config: {
+      
+      id: process.env.GOOGLE_MEASUREMENT_ID
+    
+    }
+  
+  }, 
+  
+  router 
+
+);
 
 app.mount( '#app' );
