@@ -31,7 +31,7 @@ import PasswordForgot from './views/password-forgot.vue';
 
 import PasswordReset from './views/password-reset.vue';
 
-import VueGtag from 'vue-gtag';
+import VueGtagPlugin from 'vue-gtag';
 
 window.__VUE_OPTIONS_API__ = false;
 
@@ -197,7 +197,7 @@ app.use( router );
 
 app.use( 
   
-  VueGtag, 
+  VueGtagPlugin, 
   
   {
 
