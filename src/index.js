@@ -201,13 +201,13 @@ app.use(
   
   {
 
-    // appName: 'Scrapbook Concierge Requests App',
+    appName: 'Scrapbook Concierge Requests App',
 
-    // pageTrackerScreenviewEnabled: true,
+    pageTrackerScreenviewEnabled: true,
 
     config: {
       
-      id: process.env.GOOGLE_MEASUREMENT_ID
+      id: "G-2N7XV7V1N5"
     
     }
   
