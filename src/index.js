@@ -201,9 +201,9 @@ app.use(
   
   {
 
-    appName: 'Scrapbook Concierge Requests App',
+    // appName: 'Scrapbook Concierge Requests App',
 
-    pageTrackerScreenviewEnabled: true,
+    // pageTrackerScreenviewEnabled: true,
 
     config: {
       
