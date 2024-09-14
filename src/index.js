@@ -47,6 +47,8 @@ const routes = [
 
     component: Home,
 
+    meta: { title: 'Home' },
+
     beforeEnter: ( to, from, next ) => {
 
       if ( ! state.user ) isAuthenticated();
@@ -63,6 +65,8 @@ const routes = [
 
     component: Requests,
 
+    meta: { title: 'All Requests' },
+
     beforeEnter: ( to, from, next ) => {
 
       if ( ! isAuthenticated() ) next( { name: 'login' } );
@@ -77,7 +81,9 @@ const routes = [
 
     name: 'login',
 
-    component: Login
+    component: Login,
+
+    meta: { title: 'Login' },
 
   }, {
 
@@ -85,7 +91,9 @@ const routes = [
 
     name: 'signup',
 
-    component: Signup 
+    component: Signup,
+
+    meta: { title: 'Signup' },
 
   }, {
 
@@ -93,7 +101,9 @@ const routes = [
 
     name: 'password-forgot',
 
-    component: PasswordForgot
+    component: PasswordForgot,
+
+    meta: { title: 'Forgot Password' },
 
   }, {
 
@@ -101,7 +111,9 @@ const routes = [
 
     name: 'password-reset',
 
-    component: PasswordReset
+    component: PasswordReset,
+
+    meta: { title: 'Password Reset' },
 
   }, {
 
@@ -110,6 +122,8 @@ const routes = [
     name: 'my-requests',
 
     component: MyRequests,
+
+    meta: { title: 'My Requests' },
 
     beforeEnter: ( to, from, next ) => {
 
@@ -127,6 +141,8 @@ const routes = [
 
     component: ReleasedRequests,
 
+    meta: { title: 'Released Requests' },
+
     beforeEnter: ( to, from, next ) => {
 
       if ( ! isAuthenticated() ) next( { name: 'login' } );
@@ -142,6 +158,8 @@ const routes = [
     name: 'admin',
 
     component: Admin,
+
+    meta: { title: 'Admin' },
 
     beforeEnter: ( to, from, next ) => {
 
@@ -159,7 +177,9 @@ const routes = [
 
     name: 'subscription',
 
-    component: Subscription
+    component: Subscription,
+
+    meta: { title: 'Subscription' },
 
   }, {
 
@@ -167,7 +187,9 @@ const routes = [
 
     name: 'privacy-policy',
 
-    component: PrivacyPolicy
+    component: PrivacyPolicy,
+
+    meta: { title: 'Privacy Policy' },
 
   }, {
 
@@ -175,7 +197,9 @@ const routes = [
 
     name: 'terms',
 
-    component: Terms
+    component: Terms,
+
+    meta: { title: 'Terms and Conditions' },
 
   }
 
@@ -188,6 +212,12 @@ const router = createRouter( {
   history: createWebHistory(),
 
   routes
+
+} );
+
+router.beforeEach( ( to, from ) => {
+
+  document.title = `${ to.meta.title } | Scrapbook Concierge Requests App`;
 
 } );
 

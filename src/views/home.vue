@@ -21,7 +21,6 @@
 
   <Header />
 
-  <!-- <main class="min-h-[calc(100vh-70px-96px)] px-5 pt-14 pb-4 sm:min-h-[calc(100vh-60px-96px)] sm:pt-28 lg:px-0"> -->
   <main>
 
     <div class="mx-auto bg-[linear-gradient(90deg,rgba(0,0,0,0.8),rgba(0,0,0,0.8)),url('/src/assets/images/hero.jpg')] bg-center bg-cover">
@@ -50,7 +49,7 @@
 
         <div class="basis-3/5">
 
-          <img src="../assets/images/all-requests.png" alt="">
+          <img src="../assets/images/all-requests.png" alt="all requests page example">
 
         </div>
 
@@ -76,7 +75,7 @@
 
         <div class="basis-3/5">
 
-          <img src="../assets/images/my-requests.png" alt="">
+          <img src="../assets/images/my-requests.png" alt="user personal requests page example">
 
         </div>
 
@@ -102,7 +101,7 @@
 
         <div class="basis-3/5">
 
-          <img src="../assets/images/released-requests.png" alt="">
+          <img src="../assets/images/released-requests.png" alt="released requests page example">
 
         </div>
 

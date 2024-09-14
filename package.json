@@ -9,7 +9,9 @@
   "author": "Souleymane Gael Nongnogo",
   "license": "ISC",
   "devDependencies": {
+    "@parcel/packager-raw-url": "^2.7.0",
     "@parcel/transformer-vue": "latest",
+    "@parcel/transformer-webmanifest": "^2.7.0",
     "@tailwindcss/forms": "^0.5.5",
     "parcel": "latest",
     "path-browserify": "^1.0.1",
