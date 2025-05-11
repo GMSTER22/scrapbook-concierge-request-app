@@ -79,16 +79,16 @@ SERVER_URL=https://your-api-domain.com
 
 ## 📂 Project Structure
 
-  src/    
-  ├── assets/
-  |   └──  images/
-  ├── components/
-  |    └──  images/
-  ├── store/
-  ├── utils/
-  ├── views/
-  ├── app.vue
-  ├── index.css
-  ├── index.html
-  └── index.js
+    src/    
+    ├── assets/
+    |   └──  images/
+    ├── components/
+    |    └──  buttons/
+    ├── store/
+    ├── utils/
+    ├── views/
+    ├── app.vue
+    ├── index.css
+    ├── index.html
+    └── index.js
 
