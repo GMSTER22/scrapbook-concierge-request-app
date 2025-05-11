@@ -30,10 +30,9 @@ The Scrapbook Concierge Request App is a web application that enables customers 
 * **Bundler**: Parcel
 * **Routing**: Vue Router
 * **Icons**: Heroicons
-* **Other Tools**:
-    * uuid for unique IDs
-    * dotenv for environment variable support
-    * Google Analytics via vue-gtag
+* **Analytics**: Google Analytics via `vue-gtag`
+* `uuid` for unique IDs
+* `dotenv` for environment variable support
 
 
 ## 🚀 Getting Started
@@ -45,7 +44,7 @@ The Scrapbook Concierge Request App is a web application that enables customers 
 
 **Clone the repository**
 ```
-git clone [https://github.com/GMSTER22/scrapbook-concierge-request-app.git](https://github.com/GMSTER22/scrapbook-concierge-request-app.git)
+git clone https://github.com/GMSTER22/scrapbook-concierge-request-app.git
 cd scrapbook-concierge-request-app-client
 ```
 
