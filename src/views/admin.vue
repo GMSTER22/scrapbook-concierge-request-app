@@ -27,7 +27,7 @@
 
   import { formatDate, getToken } from '../utils/utils';
 
-  const REQUESTS_PER_PAGE = 10;
+  const REQUESTS_PER_PAGE = 100;
   
   const router = useRouter();
 
