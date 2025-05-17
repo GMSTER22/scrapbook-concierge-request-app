@@ -25,7 +25,7 @@
 
         <div class="text-sm text-left">
   
-          <a class="hover:underline" href="mailto:support@scrapbookconciergerequests.com">Contact Us</a>
+          <a class="hover:underline" href="mailto:scrapbookconcierge@gmail.com">Contact Us</a>
 
           <br>
 

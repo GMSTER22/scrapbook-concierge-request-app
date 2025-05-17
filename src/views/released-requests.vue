@@ -19,7 +19,7 @@
 
   import { state, onLikeButtonClicked, logUserOut, pushAlert } from '../store/state';
 
-  const REQUESTS_PER_PAGE = 20;
+  const REQUESTS_PER_PAGE = 100;
   
   const router = useRouter();
 
