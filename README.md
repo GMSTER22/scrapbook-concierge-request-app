@@ -92,3 +92,7 @@ SERVER_URL=https://your-api-domain.com
     ├── index.html
     └── index.js
 
+
+## 📄 License
+
+© 2025 Scrapbook Concierge. All rights reserved.
