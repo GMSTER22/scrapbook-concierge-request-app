@@ -1,17 +1,9 @@
 
 <script setup>
 
-  import { computed, ref } from 'vue';
-
-  import { useRouter } from 'vue-router';
+  import { ref } from 'vue';
 
   import { pushAlert } from '../store/state';
-
-  const router = useRouter();
-
-  // const queries = route.query;
-  
-  // console.log( queries );
 
   const email = ref( '' );
 
@@ -46,6 +38,10 @@
         pushAlert( 'success', result.message );
 
       } else if ( response.status === 400 ) {
+
+        pushAlert( 'failure', result.message );
+
+      } else if ( response.status === 429 ) {
 
         pushAlert( 'failure', result.message );
 

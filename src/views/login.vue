@@ -105,6 +105,10 @@
 
         isCredentialsMessage.value = true;
 
+      } else if ( response.status === 429 ) {
+
+        pushAlert( 'failure', result.message );
+
       } else {
 
         pushAlert( 'failure', result.message );

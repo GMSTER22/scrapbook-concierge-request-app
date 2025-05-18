@@ -77,26 +77,17 @@
 
       if ( response.ok ) {
 
-        // alert( result.message );
-        // setTimeout(() => router.push( { name: 'login' } ), 2000 );
-
         pushAlert( 'success', result.message );
 
         router.push( { name: 'login' } );
 
       } else if ( response.status === 400 ) {
 
-        // console.log( result.message );
-        
-        // alert( 'Token expired, resubmit a password reset request.' );
-
         pushAlert( 'failure', result.message );
 
         router.push( { name: 'password-forgot' } );
 
       } else {
-
-        // alert( result.message );
 
         pushAlert( 'failure', result.message );
 

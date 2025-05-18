@@ -45,19 +45,23 @@
 
       const response = await fetch( `${process.env.SERVER_URL}/notifications/subscriptions`, options );
 
-      const data = await response.json();
+      const result = await response.json();
 
       if ( response.ok ) {
 
-        // console.log( data );
+        // console.log( result );
 
-        if ( data.emailOptIn === 'true' ) pushAlert( 'success', 'Successfully opt in email notifications.' );
+        if ( result.emailOptIn === 'true' ) pushAlert( 'success', 'Successfully opt in email notifications.' );
 
         else pushAlert( 'success', 'Successfully opt out of email notifications.' );
 
+      } else if ( response.status === 429 ) {
+
+        pushAlert( 'failure', result.message );
+
       } else {
 
-        pushAlert( 'failure', data.message );
+        pushAlert( 'failure', result.message );
 
       }
 

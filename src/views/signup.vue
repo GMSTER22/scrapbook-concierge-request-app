@@ -87,13 +87,15 @@
 
       const result = await response.json();
 
-      console.log( result, 'result' );
-
       if ( response.ok ) {
 
         pushAlert( 'success', result.message );
 
         router.push( { name: 'login' } );
+
+      } else if ( response.status === 429 ) {
+
+        pushAlert( 'failure', result.message );
 
       } else {
 
